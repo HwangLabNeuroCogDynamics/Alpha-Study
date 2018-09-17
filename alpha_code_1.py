@@ -77,7 +77,7 @@ print(stimList)
 # ####stimulus##############################################################################################
 
 from psychopy import visual, core
-win = visual.Window([1024,768],fullscr=True,mon='dill_laptop')
+win = visual.Window([3000,2000],units='deg',fullscr=True,monitor='testMonitor')
 
 def draw_fixation(): #0 to 1, for the opacity
     fixation = visual.TextStim(win, text='+', color=(1,1,1))
@@ -115,8 +115,8 @@ if no_stim==12:
     
     noon = visual.Circle(
         win=win, name='12',
-        size=(0.09, 0.15),
-        ori=0, pos=(0, .5),
+        size=(0.60, 0.60),
+        ori=0, pos=(0, 2),
         lineWidth=7, lineColor=None, lineColorSpace='rgb',
         fillColor=None, fillColorSpace='rgb',
         opacity=1, depth=0.0, interpolate=True)
@@ -124,7 +124,7 @@ if no_stim==12:
     one_oclock = visual.Circle(
         win=win, name='1',
         size=(0.09, 0.15),
-        ori=0, pos=(0.25, ((sqrt(3)/2)*.5)),
+        ori=0, pos=(1, (sqrt(3)/2)*2),
         lineWidth=7, lineColor=None, lineColorSpace='rgb',
         fillColor=None, fillColorSpace='rgb',
         opacity=1, depth=-1.0, interpolate=True)
@@ -132,7 +132,7 @@ if no_stim==12:
     two_oclock = visual.Circle(
         win=win, name='2',
         size=(0.09, 0.15),
-        ori=0, pos=(((sqrt(3)/2)*.5), 0.25),
+        ori=0, pos=(((sqrt(3)/2)*2), 1),
         lineWidth=7, lineColor=None, lineColorSpace='rgb',
         fillColor=None, fillColorSpace='rgb',
         opacity=1, depth=-2.0, interpolate=True)
@@ -140,7 +140,7 @@ if no_stim==12:
     three_oclock = visual.Circle(
         win=win, name='3',
         size=(0.09, 0.15),
-        ori=0, pos=(0.5, 0),
+        ori=0, pos=(2, 0),
         lineWidth=7, lineColor=None, lineColorSpace='rgb',
         fillColor=None, fillColorSpace='rgb',
         opacity=1, depth=-3.0, interpolate=True)
@@ -148,15 +148,15 @@ if no_stim==12:
     four_oclock = visual.Circle(
         win=win, name='4',
         size=(0.09, 0.15),
-        ori=0, pos=(((sqrt(3)/2)*.5), -0.25),
+        ori=0, pos=(((sqrt(3)/2)*2), -1),
         lineWidth=7, lineColor=None, lineColorSpace='rgb',
         fillColor=None, fillColorSpace='rgb',
         opacity=1, depth=-4.0, interpolate=True)
     four_oclock.setAutoDraw(True)
-    five_oclock = visual.Polygon(
+    five_oclock = visual.Circle(
         win=win, name='5',
-        edges=100000, size=(0.09, 0.15),
-        ori=0, pos=(0.25, -((sqrt(3)/2)*.5)),
+        size=(0.09, 0.15),
+        ori=0, pos=(1, -((sqrt(3)/2)*2)),
         lineWidth=7, lineColor=None, lineColorSpace='rgb',
         fillColor=None, fillColorSpace='rgb',
         opacity=1, depth=-5.0, interpolate=True)
@@ -165,12 +165,12 @@ if no_stim==12:
         win=win, name= '6', 
         size=(.09,0.15),  
         lineWidth=7, lineColor=None, fillColor=None,
-        pos=(0.0,-0.5))
+        pos=(0.0,-2))
     six_oclock.setAutoDraw(True)
     eleven_oclock = visual.Circle(
         win=win, name='11',
         size=(0.09, 0.15),
-        ori=0, pos=(-0.25, ((sqrt(3)/2)*.5)),
+        ori=0, pos=(-1, ((sqrt(3)/2)*2)),
         lineWidth=7, lineColor=None, lineColorSpace='rgb',
         fillColor=None, fillColorSpace='rgb',
         opacity=1, depth=-1.0, interpolate=True)
@@ -178,7 +178,7 @@ if no_stim==12:
     ten_oclock = visual.Circle(
         win=win, name='10',
         size=(0.09, 0.15),
-        ori=0, pos=(-((sqrt(3)/2)*.5), 0.25),
+        ori=0, pos=(-((sqrt(3)/2)*2), 1),
         lineWidth=7, lineColor=None, lineColorSpace='rgb',
         fillColor=None, fillColorSpace='rgb',
         opacity=1, depth=-2.0, interpolate=True)
@@ -186,7 +186,7 @@ if no_stim==12:
     nine_oclock = visual.Circle(
         win=win, name='9',
         size=(0.09, 0.15),
-        ori=0, pos=(-0.5, 0),
+        ori=0, pos=(-2, 0),
         lineWidth=7, lineColor=None, lineColorSpace='rgb',
         fillColor=None, fillColorSpace='rgb',
         opacity=1, depth=-3.0, interpolate=True)
@@ -194,7 +194,7 @@ if no_stim==12:
     eight_oclock = visual.Circle(
         win=win, name='8',
         size=(0.09, 0.15),
-        ori=0, pos=(-((sqrt(3)/2)*.5), -0.25),
+        ori=0, pos=(-((sqrt(3)/2)*2), -1),
         lineWidth=7, lineColor=None, lineColorSpace='rgb',
         fillColor=None, fillColorSpace='rgb',
         opacity=1, depth=-4.0, interpolate=True)
@@ -202,21 +202,24 @@ if no_stim==12:
     seven_oclock = visual.Circle(
         win=win, name='7',
         size=(0.09, 0.15),
-        ori=0, pos=(-0.25, -((sqrt(3)/2)*.5)),
+        ori=0, pos=(-1, -((sqrt(3)/2)*2)),
         lineWidth=7, lineColor=None, lineColorSpace='rgb',
         fillColor=None, fillColorSpace='rgb',
         opacity=1, depth=-5.0, interpolate=True)
     seven_oclock.setAutoDraw(True)
     stimuli=[one_oclock,two_oclock,three_oclock,four_oclock,five_oclock,six_oclock,seven_oclock,eight_oclock,nine_oclock,ten_oclock,eleven_oclock,noon]
 
+for stim in stimuli:
+    stim.size=(0.60,0.60)
+
 # # MAKE SURE PATH TO STIMULI IS THE RIGHT ONE FOR THE COMPUTER YOU'RE USING
 
-target_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\T2.png',size=([.08,.10]))
-distractor_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\I3.png',size=([.06,.10])) #dillan's computer
+target_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\T2.png',size=([.6,.6]))
+distractor_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\I3.png',size=([.6,.6])) #dillan's computer
 
 
-#target_stim=visual.ImageStim(win, image='C:\Stimuli\T2.png',size=([.08,.10]))
-#distractor_stim=visual.ImageStim(win, image='C:\Stimuli\I3.png',size=([.06,.10])) #EEG stimulus presentation Dell
+#target_stim=visual.ImageStim(win, image='C:\Stimuli\T2.png',size=([.6,.6]))
+#distractor_stim=visual.ImageStim(win, image='C:\Stimuli\I3.png',size=([.6,.60])) #EEG stimulus presentation Dell
 
 
 # ############################################blocks#######################################
