@@ -80,17 +80,17 @@ from psychopy import visual, core
 win = visual.Window([3000,2000],units='deg',fullscr=True,monitor='testMonitor')
 
 def draw_fixation(): #0 to 1, for the opacity
-    fixation = visual.TextStim(win, text='+', color=(1,1,1))
-    fixation.size=5
+    fixation = visual.TextStim(win, text='+',units='norm', color=(1,1,1))
+    fixation.size=0.6
     #fixation.opacity=n
     fixation.draw()
     win.update
     
 #fixation.setAutoDraw(True)
 
-intro_msg= visual.TextStim(win, pos=[0, .5], text='Welcome to the experiment!')
-intro_msg2= visual.TextStim(win, pos=[0, 0], text='You will see a series of circles that will indicate the location of the target "T" or of the distractor "I" some portion of the time')
-intro_msg3=visual.TextStim(win, pos=[0,-0.5],text='Press any key to continue')
+intro_msg= visual.TextStim(win, pos=[0, .5],units='norm', text='Welcome to the experiment!')
+intro_msg2= visual.TextStim(win, pos=[0, 0], units='norm',text='You will see a series of circles that will indicate the location of the target "T" or of the distractor "I" some portion of the time')
+intro_msg3=visual.TextStim(win, pos=[0,-0.5],units='norm',text='Press any key to continue')
 intro_msg.draw()
 intro_msg2.draw() 
 intro_msg3.draw()
@@ -98,9 +98,9 @@ intro_msg3.draw()
 win.flip()
 event.waitKeys()
 
-intro_mesg4= visual.TextStim(win,pos=[0,.5],text='Please remain focused on the cross in the middle of the screen at all times')
-intro_mesg5=visual.TextStim(win,pos=[0,0], text='Respond to the orientation of the capital "T" using the arrow keys on the keyboard')
-intro_mesg6=visual.TextStim(win,pos=[0,-0.5],text='You will also see a capital "I." Do NOT respond to the orientation of the I. Press any key to continue.')
+intro_mesg4= visual.TextStim(win,pos=[0,.5],units='norm',text='Please remain focused on the cross in the middle of the screen at all times')
+intro_mesg5=visual.TextStim(win,pos=[0,0], units='norm',text='Respond to the orientation of the capital "T" using the arrow keys on the keyboard')
+intro_mesg6=visual.TextStim(win,pos=[0,-0.5],units='norm',text='You will also see a capital "I." Do NOT respond to the orientation of the I. Press any key to continue.')
 intro_mesg4.draw()
 intro_mesg5.draw()
 intro_mesg6.draw()
@@ -214,12 +214,12 @@ for stim in stimuli:
 
 # # MAKE SURE PATH TO STIMULI IS THE RIGHT ONE FOR THE COMPUTER YOU'RE USING
 
-target_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\T2.png',size=([.6,.6]))
-distractor_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\I3.png',size=([.6,.6])) #dillan's computer
+target_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\T2.png',size=([.5,.5]))
+distractor_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\I3.png',size=([.5,.5])) #dillan's computer
 
 
-#target_stim=visual.ImageStim(win, image='C:\Stimuli\T2.png',size=([.6,.6]))
-#distractor_stim=visual.ImageStim(win, image='C:\Stimuli\I3.png',size=([.6,.60])) #EEG stimulus presentation Dell
+#target_stim=visual.ImageStim(win, image='C:\Stimuli\T2.png',size=([.5,.5]))
+#distractor_stim=visual.ImageStim(win, image='C:\Stimuli\I3.png',size=([.5,.50])) #EEG stimulus presentation Dell
 
 
 # ############################################blocks#######################################
@@ -240,11 +240,11 @@ for thisBlock in blocks:
             
             for circs in stimuli:
                 circs.opacity = 0 
-            info_msg=visual.TextStim(win, pos=[0,.5],text='This block will show %s cues' %thisBlock['cue']) 
+            info_msg=visual.TextStim(win, pos=[0,.5],units='norm',text='This block will show %s cues' %thisBlock['cue']) 
             info_msg.draw()
-            info_msg2=visual.TextStim(win, pos=[0,-.5], text='Press any key to continue')
+            info_msg2=visual.TextStim(win, pos=[0,-.5], units='norm',text='Press any key to continue')
             info_msg2.draw()
-            info_msg3=visual.TextStim(win,pos=[0,0],text='The cued locations in this block will be predictive %.1f percent of the time' %(int(thisBlock['validity']*100)))
+            info_msg3=visual.TextStim(win,pos=[0,0],units='norm',text='The cued locations in this block will be predictive %.1f percent of the time' %(int(thisBlock['validity']*100)))
             info_msg3.draw()
             win.update()
             event.waitKeys()
