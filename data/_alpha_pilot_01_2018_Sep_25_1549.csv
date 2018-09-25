@@ -1,0 +1,22 @@
+flex or blocked?,no stim,TarInDistFlag,lateralized?,block,cue,validity,trialNum,trial_type,corrResp,subResp,trialCorr?,RT,tarinDisCond,ITI
+True,12,False,False,,,,,,,,,,,
+,,,,3,target,0.5,1,invalid,left,down,0,0.8845677016088302,0,4.1089833781176575
+,,,,,,,2,valid,right,None,0,None,0,4.327224552656444
+,,,,9,target,0.5,1,valid,down,None,0,None,0,4.143126820087783
+,,,,,,,2,invalid,right,None,0,None,0,3.827493941858124
+,,,,1,target,0.8,1,invalid,down,None,0,None,0,3.824498064515982
+,,,,,,,2,valid,down,None,0,None,0,4.17345524122803
+,,,,7,target,0.8,1,invalid,up,None,0,None,0,3.840042065035938
+,,,,,,,2,valid,right,right,1,0.881911215472428,0,4.0397420184801085
+,,,,2,distractor,0.5,1,valid,down,down,1,1.337889618371264,0,4.210143045452437
+,,,,,,,2,valid,down,None,0,None,0,3.9776283038203113
+,,,,6,distractor,0.5,1,invalid,left,left,1,0.3518086554213369,0,4.356694525602006
+,,,,,,,2,valid,down,None,0,None,0,4.3155784805291795
+,,,,0,distractor,0.8,1,valid,left,None,0,None,0,3.835482885397269
+,,,,,,,2,valid,up,None,0,None,0,3.988595081259345
+,,,,8,distractor,0.8,1,valid,left,None,0,None,0,4.279550953456402
+,,,,,,,2,valid,right,None,0,None,0,4.007724319110612
+,,,,4,neutral,0,1,n/a,right,None,0,None,0,4.04820326164088
+,,,,,,,2,n/a,right,down,0,0.07424052084388677,0,3.9530497587969515
+,,,,5,neutral,0,1,n/a,up,None,0,None,0,4.201025151305273
+,,,,,,,2,n/a,right,None,0,None,0,4.35529632998235
