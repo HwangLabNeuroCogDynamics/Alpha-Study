@@ -1,8 +1,0 @@
-flex or blocked?,no stim,TarInDistFlag,lateralized?,block,cue,validity,trialNum,trial_type,corrResp,subResp,trialCorr?,RT,tarinDisCond,ITI
-True,12,False,False,,,,,,,,,,,
-,,,,1,target,0.5,1,invalid,left,left,1,0.0005095760061522014,0,4.210569998825916
-,,,,4,target,0.5,1,valid,right,None,0,None,0,4.231060574509219
-,,,,2,distractor,0.5,1,invalid,up,None,0,None,0,4.012294482495038
-,,,,5,distractor,0.5,1,invalid,left,None,0,None,0,4.445757669373242
-,,,,0,neutral,0,1,n/a,down,down,1,0.9434254271145619,0,4.175725337849817
-,,,,3,neutral,0,1,n/a,right,None,0,None,0,4.345716603845193

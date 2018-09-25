@@ -1,5 +1,0 @@
-flex or blocked?,no stim,TarInDistFlag,lateralized?,block,cue,validity,trialNum,trial_type,corrResp,subResp,trialCorr?,RT,tarinDisCond,ITI
-True,12,False,False,,,,,,,,,,,
-,,,,2,target,0.5,1,valid,down,down,1,1.3586178708446823,0,4.259754445068516
-,,,,5,target,0.5,1,invalid,left,None,0,None,0,4.199885765926429
-,,,,7,target,0.5,1,valid,right,up,0,0.5662237896849547,0,4.036557158249789
