@@ -70,7 +70,7 @@ expInfo['expName'] = expName
 
 # Data file name stem = absolute path + name; later add .psyexp, .csv, .log, etc
 
-filename = _thisDir + os.sep + u'data/%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
+filename = _thisDir + os.sep + u'data/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
 
 
 
@@ -132,7 +132,7 @@ cue_valid=[.5,.8] # cue validity
 
 
 
-num_trials=33 #2 # change later to 33
+num_trials=33 # change later to 33
 
 
 
@@ -156,7 +156,7 @@ print(stimList)
 
 from psychopy import visual, core
 
-win = visual.Window([1680,1050],units='deg',fullscr=True,monitor='testMonitor')
+win = visual.Window([1680,1050],units='deg',fullscr=False,monitor='testMonitor')
 
 
 
@@ -430,17 +430,16 @@ for stim in stimuli:
 
 
 
-#target_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\T2.png',size=([.5,.5]))
-
-#distractor_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\I3.png',size=([.5,.5])) #dillan's computer
-
+target_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\T2.png',size=([.5,.5]))
+distractor_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\I3.png',size=([.5,.5])) #dillan's computer
 
 
 
 
-target_stim=visual.ImageStim(win, image='C:\Stimuli\T2.png',size=([.5,.5]))
 
-distractor_stim=visual.ImageStim(win, image='C:\Stimuli\I3.png',size=([.5,.50])) #EEG stimulus presentation Dell
+#target_stim=visual.ImageStim(win, image='C:\Stimuli\T2.png',size=([.5,.5]))
+
+#distractor_stim=visual.ImageStim(win, image='C:\Stimuli\I3.png',size=([.5,.50])) #EEG stimulus presentation Dell
 
 
 
@@ -841,9 +840,9 @@ for thisBlock in blocks:
 
         #key=event.getKeys()
 
-        if key and key[0]=='escape': #for the EEG stim presentation on the dell
+        #if key and key[0]=='escape': #for the EEG stim presentation on the dell
 
-        #if key and key[0]=='Esc': # for dillan's comp--key responses seem to be different?
+        if key and key[0]=='Esc': # for dillan's comp--key responses seem to be different?
 
             win.close()
 
@@ -863,43 +862,41 @@ for thisBlock in blocks:
 
     
 
-#print('\n\n\n')
-
-#print(blocks.data['blockInfo'])
-
-
-
-
-
 # #########################saving data out###########################################
 
 
 
 with open(filename+'.csv', mode='w') as csv_file:
 
-    fieldnames2=['flex or blocked?','no stim','TarInDistFlag','lateralized?','block','cue','validity','trialNum','trial_type','corrResp','subResp','trialCorr?','RT','tarinDisCond','ITI']
+    fieldnames=['flex or blocked?','no stim','TarInDistFlag','lateralized?','block','cue','validity','trialNum','trial_type','corrResp','subResp','trialCorr?','RT','tarinDisCond','ITI']
 
-    
+    #fieldnames is simply asserting the categories at the top of the CSV
 
-    writer=csv.DictWriter(csv_file,fieldnames=fieldnames2)
+    writer=csv.DictWriter(csv_file,fieldnames=fieldnames)
 
     writer.writeheader()
 
     
 
     writer.writerow({'flex or blocked?': flex_cond_flag,'no stim':expInfo['no stim'],'TarInDistFlag':TarindistFlag,'lateralized?':lat_stim_flag})
+    #This is just to give info about the session overall: was the session blocked or flexibly cued? How many stim? etc.
 
+    #print('\n\n\n')
+    #print(blocks.data['blockInfo'])
+    #print(len(blocks.data['blockInfo'][0]))
 
+    for n in range(len(blocks.data['blockInfo'][0])): #this should be the # of blocks
+        #print('\n\n\n')
 
-    for n in range(len(blocks.data['blockInfo'])):
+        ThisBlock=blocks.data['blockInfo'][0][n] #grabbing the block info out of data for this block
+        #print(ThisBlock)
+        #print('\n\n\n')
 
-        ThisBlock=blocks.data['blockInfo'][n][0]
-
-        for k in range(len(ThisBlock['trialsData'])):
-
-            ThisTrial=ThisBlock['trialsData'][k]
-
-            if k==0:
+        for k in range(len(ThisBlock['trialsData'])): #this should be the # of trials
+            #print('\n\n\n')
+            ThisTrial=ThisBlock['trialsData'][k] #grabbing the trial info out of data for this trial
+            #print(ThisTrial)
+            if k==0: #if it's the first trial i want the block info written next to it. Otherwise, this column should be blank
 
                 writer.writerow({'block':ThisBlock['blockNum'],'cue':ThisBlock['cueType'],'validity':ThisBlock['validity'],
 
@@ -922,3 +919,4 @@ with open(filename+'.csv', mode='w') as csv_file:
                                 'RT':ThisTrial['RT'],'tarinDisCond':ThisTrial['tarinDisCond'],
 
                                 'ITI':ThisTrial['ITI']})
+        #print('\n\n\n')

@@ -77,7 +77,7 @@ print(stimList)
 # ####stimulus##############################################################################################
 
 from psychopy import visual, core
-win = visual.Window([3000,2000],units='deg',fullscr=True,monitor='testMonitor')
+win = visual.Window([1000,1000],units='deg',fullscr=False,monitor='testMonitor')
 
 def draw_fixation(): #0 to 1, for the opacity
     fixation = visual.TextStim(win, text='+',units='norm', color=(1,1,1))
