@@ -881,42 +881,45 @@ with open(filename+'.csv', mode='w') as csv_file:
     writer.writerow({'flex or blocked?': flex_cond_flag,'no stim':expInfo['no stim'],'TarInDistFlag':TarindistFlag,'lateralized?':lat_stim_flag})
     #This is just to give info about the session overall: was the session blocked or flexibly cued? How many stim? etc.
 
-    #print('\n\n\n')
+    print('\n\n\n')
     #print(blocks.data['blockInfo'])
-    #print(len(blocks.data['blockInfo'][0]))
 
-    for n in range(len(blocks.data['blockInfo'][0])): #this should be the # of blocks
-        #print('\n\n\n')
-
-        ThisBlock=blocks.data['blockInfo'][0][n] #grabbing the block info out of data for this block
-        #print(ThisBlock)
-        #print('\n\n\n')
-
-        for k in range(len(ThisBlock['trialsData'])): #this should be the # of trials
+    cond_data=blocks.data['blockInfo'] #the data structure made by trialHandler seems to group conditions together in seperate lists. Want to access them one by one
+    print(len(cond_data))  # how many conditions? should be 5
+    for n in range(len(cond_data)): # loop through each condition
+        blocks_data = cond_data[n]
+        
+        for n in range(len(blocks_data)): #loop through each block of that condition
             #print('\n\n\n')
-            ThisTrial=ThisBlock['trialsData'][k] #grabbing the trial info out of data for this trial
-            #print(ThisTrial)
-            if k==0: #if it's the first trial i want the block info written next to it. Otherwise, this column should be blank
-
-                writer.writerow({'block':ThisBlock['blockNum'],'cue':ThisBlock['cueType'],'validity':ThisBlock['validity'],
-
-                                'trialNum':ThisTrial['trialNum'],'trial_type':ThisTrial['trial_type'],
-
-                                'corrResp':ThisTrial['corrResp'],'subResp':ThisTrial['subjectResp'],'trialCorr?':ThisTrial['trialCorr?'],
-
-                                'RT':ThisTrial['RT'],'tarinDisCond':ThisTrial['tarinDisCond'],
-
-                                'ITI':ThisTrial['ITI']})
-
-            else:
-
-                writer.writerow({'block':'','cue':'','validity':'',
-
-                                'trialNum':ThisTrial['trialNum'],'trial_type':ThisTrial['trial_type'],
-
-                                'corrResp':ThisTrial['corrResp'],'subResp':ThisTrial['subjectResp'],'trialCorr?':ThisTrial['trialCorr?'],
-
-                                'RT':ThisTrial['RT'],'tarinDisCond':ThisTrial['tarinDisCond'],
-
-                                'ITI':ThisTrial['ITI']})
-        #print('\n\n\n')
+    
+            ThisBlock=blocks_data[n] #grabbing the block info out of data for this block
+            #print(ThisBlock)
+            #print('\n')
+    
+            for k in range(len(ThisBlock['trialsData'])): #this should be the # of trials
+                ThisTrial=ThisBlock['trialsData'][k] #grabbing the trial info out of data for this trial
+                #print(ThisTrial)
+                if k==0: #if it's the first trial i want the block info written next to it. Otherwise, this column should be blank
+    
+                    writer.writerow({'block':ThisBlock['blockNum'],'cue':ThisBlock['cueType'],'validity':ThisBlock['validity'],
+    
+                                    'trialNum':ThisTrial['trialNum'],'trial_type':ThisTrial['trial_type'],
+    
+                                    'corrResp':ThisTrial['corrResp'],'subResp':ThisTrial['subjectResp'],'trialCorr?':ThisTrial['trialCorr?'],
+    
+                                    'RT':ThisTrial['RT'],'tarinDisCond':ThisTrial['tarinDisCond'],
+    
+                                    'ITI':ThisTrial['ITI']})
+    
+                else:
+    
+                    writer.writerow({'block':'','cue':'','validity':'',
+    
+                                    'trialNum':ThisTrial['trialNum'],'trial_type':ThisTrial['trial_type'],
+    
+                                    'corrResp':ThisTrial['corrResp'],'subResp':ThisTrial['subjectResp'],'trialCorr?':ThisTrial['trialCorr?'],
+    
+                                    'RT':ThisTrial['RT'],'tarinDisCond':ThisTrial['tarinDisCond'],
+    
+                                    'ITI':ThisTrial['ITI']})
+            #print('\n\n\n')
