@@ -136,8 +136,8 @@ elif expInfo['COMPUTER (b,e,d,m)']=='d':
     target_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\T2.png')
     distractor_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\I3.png') #dillan's computer
 elif expInfo['COMPUTER (b,e,d,m)']=='m':
-    target_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/T2.png')
-    distractor_stim=visual.ImageStim(win, image='\\Macintosh HD\\Users\\dcellier\\Documents\\GitHub\\Alpha-Study\\stimuli\\I3.png')
+    target_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/T2.png') #HAVING ISSUES WITH THIS 
+    distractor_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/I3.png')
     
     
 cue_types=['target','distractor'] # distractor or target or neutral cues
