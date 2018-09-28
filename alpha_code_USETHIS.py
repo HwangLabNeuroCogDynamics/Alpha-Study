@@ -40,7 +40,7 @@ os.chdir(_thisDir)
 
 expName = 'alpha_pilot'  # from the Builder filename that created this script
 
-expInfo = {'subject': '', 'session': '01','f or b?':'f','no stim':'12','t in d?':'n', 'lat?':'n'}
+expInfo = {'subject': '', 'session': '01','f or b?':'f','no stim':'12','t in d?':'n', 'lat?':'n','COMPUTER (b,e,d,m)':'b'}
 
 # where 'f or b?' is flexible v blocked. blocked is default
 
@@ -50,7 +50,7 @@ expInfo = {'subject': '', 'session': '01','f or b?':'f','no stim':'12','t in d?'
 
 # lat?' lateralized stim. default is non lat stim. resp should be y or n.. THIS FLAG IS NOT YET CODED
 
-
+# COMPUTER is the flag for which computer you're using, because this will influence the path to the I and T stimuli. Default is the behavioral computer. b=behavioral Dell, e=EEG dell, d=Dillan's laptop, m=Mac in Dillan's office  
 
 dlg = gui.DlgFromDict(dictionary=expInfo, title=expName)
 
@@ -121,7 +121,17 @@ if expInfo['lat?']=='y':
 else:
 
     lat_stim_flag=False
+    
 
+# # MAKE SURE PATH TO STIMULI IS THE RIGHT ONE FOR THE COMPUTER YOU'RE USING
+
+
+if expInfo['COMPUTER (b,e,d,m)']=='b':
+    target_stim=visual.ImageStim(win, image='C:\Stimuli\T2.png') #size=([.5,.5]
+    distractor_stim=visual.ImageStim(win, image='C:\Stimuli\I3.png') #behavioral stimulus presentation Dell
+elif expInfo['COMPUTER (b,e,d,m)']=='d':
+    target_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\T2.png')
+    distractor_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\I3.png') #dillan's computer
 
 
 cue_types=['target','distractor'] # distractor or target or neutral cues
@@ -222,7 +232,7 @@ draw_fixation()
 
 win.flip()
 
-
+vis_deg=2
 
 if no_stim==12:
 
@@ -234,7 +244,7 @@ if no_stim==12:
 
         size=(0.60, 0.60),
 
-        ori=0, pos=(0, 2),
+        ori=0, pos=(0, vis_deg),
 
         lineWidth=7, lineColor=None, lineColorSpace='rgb',
 
@@ -250,7 +260,7 @@ if no_stim==12:
 
         size=(0.09, 0.15),
 
-        ori=0, pos=(1, (sqrt(3)/2)*2),
+        ori=0, pos=((vis_deg/2), (sqrt(3)/2)*vis_deg),
 
         lineWidth=7, lineColor=None, lineColorSpace='rgb',
 
@@ -266,7 +276,7 @@ if no_stim==12:
 
         size=(0.09, 0.15),
 
-        ori=0, pos=(((sqrt(3)/2)*2), 1),
+        ori=0, pos=(((sqrt(3)/2)*vis_deg), (vis_deg/2)),
 
         lineWidth=7, lineColor=None, lineColorSpace='rgb',
 
@@ -282,7 +292,7 @@ if no_stim==12:
 
         size=(0.09, 0.15),
 
-        ori=0, pos=(2, 0),
+        ori=0, pos=(vis_deg, 0),
 
         lineWidth=7, lineColor=None, lineColorSpace='rgb',
 
@@ -298,7 +308,7 @@ if no_stim==12:
 
         size=(0.09, 0.15),
 
-        ori=0, pos=(((sqrt(3)/2)*2), -1),
+        ori=0, pos=(((sqrt(3)/2)*vis_deg), -(vis_deg/2)),
 
         lineWidth=7, lineColor=None, lineColorSpace='rgb',
 
@@ -314,7 +324,7 @@ if no_stim==12:
 
         size=(0.09, 0.15),
 
-        ori=0, pos=(1, -((sqrt(3)/2)*2)),
+        ori=0, pos=((vis_deg/2), -((sqrt(3)/2)*vis_deg)),
 
         lineWidth=7, lineColor=None, lineColorSpace='rgb',
 
@@ -358,7 +368,7 @@ if no_stim==12:
 
         size=(0.09, 0.15),
 
-        ori=0, pos=(-((sqrt(3)/2)*2), 1),
+        ori=0, pos=(-((sqrt(3)/2)*vis_deg), (vis_deg/2)),
 
         lineWidth=7, lineColor=None, lineColorSpace='rgb',
 
@@ -374,7 +384,7 @@ if no_stim==12:
 
         size=(0.09, 0.15),
 
-        ori=0, pos=(-2, 0),
+        ori=0, pos=(-vis_deg, 0),
 
         lineWidth=7, lineColor=None, lineColorSpace='rgb',
 
@@ -390,7 +400,7 @@ if no_stim==12:
 
         size=(0.09, 0.15),
 
-        ori=0, pos=(-((sqrt(3)/2)*2), -1),
+        ori=0, pos=(-((sqrt(3)/2)*vis_deg), -(vis_deg/2)),
 
         lineWidth=7, lineColor=None, lineColorSpace='rgb',
 
@@ -406,7 +416,7 @@ if no_stim==12:
 
         size=(0.09, 0.15),
 
-        ori=0, pos=(-1, -((sqrt(3)/2)*2)),
+        ori=0, pos=(-(vis_deg/2), -((sqrt(3)/2)*vis_deg)),
 
         lineWidth=7, lineColor=None, lineColorSpace='rgb',
 
@@ -423,25 +433,8 @@ if no_stim==12:
 for stim in stimuli:
 
     stim.size=(0.70,0.70)
-
-
-
-# # MAKE SURE PATH TO STIMULI IS THE RIGHT ONE FOR THE COMPUTER YOU'RE USING
-
-
-
-target_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\T2.png',size=([.5,.5]))
-distractor_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\I3.png',size=([.5,.5])) #dillan's computer
-
-
-
-
-
-#target_stim=visual.ImageStim(win, image='C:\Stimuli\T2.png',size=([.5,.5]))
-
-#distractor_stim=visual.ImageStim(win, image='C:\Stimuli\I3.png',size=([.5,.50])) #EEG stimulus presentation Dell
-
-
+distractor_stim.size=([.5,.5])
+target_stim.size=([.5,.5])
 
 
 
