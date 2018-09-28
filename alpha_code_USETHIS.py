@@ -73,6 +73,9 @@ expInfo['expName'] = expName
 filename = _thisDir + os.sep + u'data/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
 
 
+from psychopy import visual, core
+
+win = visual.Window([1680,1050],units='deg',fullscr=False,monitor='testMonitor')
 
 # ###############Flags####################################################################################
 
@@ -132,8 +135,11 @@ if expInfo['COMPUTER (b,e,d,m)']=='b':
 elif expInfo['COMPUTER (b,e,d,m)']=='d':
     target_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\T2.png')
     distractor_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\I3.png') #dillan's computer
-
-
+elif expInfo['COMPUTER (b,e,d,m)']=='m':
+    target_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/T2.png')
+    distractor_stim=visual.ImageStim(win, image='\\Macintosh HD\\Users\\dcellier\\Documents\\GitHub\\Alpha-Study\\stimuli\\I3.png')
+    
+    
 cue_types=['target','distractor'] # distractor or target or neutral cues
 
 
@@ -161,13 +167,6 @@ stimList.append({'cue':'neutral','validity':0})
 print(stimList)
 
 # ####stimulus##############################################################################################
-
-
-
-from psychopy import visual, core
-
-win = visual.Window([1680,1050],units='deg',fullscr=False,monitor='testMonitor')
-
 
 
 def draw_fixation(): #0 to 1, for the opacity
