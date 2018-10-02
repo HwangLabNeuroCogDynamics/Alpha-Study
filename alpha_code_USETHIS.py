@@ -458,13 +458,15 @@ print(cue_types_scramble)
 
 for cue in cue_types_scramble: #looping through the types of cues in sequence, since we care about the order now. 
     if cue=='neutral':
-        cue_type_count=cue_type_reps-num_reps #if the cue type is neutral, we don't want to run it for the full # of cue_type_reps. We just want it to be run for num_reps # FIX THIS ????
+        reps=num_reps #if the cue type is neutral, we don't want to run it for the full # of cue_type_reps. We just want it to be run for num_reps
     else:
-        cue_type_count=0
+        reps=cue_type_reps
+    
+    cue_type_count=0
     
     valid_count=[]
     
-    while cue_type_count<=cue_type_reps: #we want each cue type to repeat (num_reps * the # of validity conds) times 
+    while cue_type_count<reps: #we want each cue type to repeat (num_reps * the # of validity conds) times 
     
         cue_type_count=cue_type_count+1
         
@@ -879,9 +881,9 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     #            if key=='n':
     #                continue_msg2=visual.TextStim
     
+        k=k+1
         blocks.data.add('blockInfo',{'blockNum':k,'cueType':thisBlock['cue'],'validity':thisBlock['validity'],'trialsData':trialDataList})
-        
-    k=k+1
+
 
 print(blocks.data)
 
