@@ -140,7 +140,7 @@ elif expInfo['COMPUTER (b,e,d,m)']=='m':
     distractor_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/I3.png')
     
     
-cue_types=['target','distractor'] # distractor or target or neutral cues
+cue_types=[]#'target','distractor'] # distractor or target or neutral cues
 
 
 
@@ -148,9 +148,9 @@ cue_valid=[.5,.8] # cue validity
 
 
 
-num_trials=33 # change later to 33
+num_trials=2#33 # change later to 33
 
-
+num_reps=3 #the number of repeats for each condition, should be 3 in experiment
 
 stimList=[]
 
@@ -162,10 +162,9 @@ for cue in cue_types:
 
 stimList.append({'cue':'neutral','validity':0})
 
-
-
 print(stimList)
 
+cue_type_reps=len(cue_valid)*num_reps #the number of times that the 'target' or 'distractor' cue types should be repeated is equal to the number of validity types (i.e. 2 per cue type) times the n repeats for each condition (ie, 3)
 # ####stimulus##############################################################################################
 
 
@@ -437,422 +436,456 @@ target_stim.size=([.5,.5])
 
 
 
-# ############################################blocks#######################################
-
-# print(stimList)
+# ############################################blocks######################################
 
 
-
-blocks=data.TrialHandler(stimList,3,method='random')#one repeats each, randomly assorted but each cond is completed before they recycle #change to 3
-
+blocks=data.TrialHandler(stimList,num_reps)#,3,method='sequential') #three repeats each, randomly assorted but each cond is completed before they recycle #change to 3
 
 
 k=0
 
-for thisBlock in blocks:
+#we want to initialize another list of cues wherein the order is randomized so that target blocks or neutral or distractor blocks come first, counterbalanced over subjects
+order=np.random.choice((len(cue_types)+1),(len(cue_types)+1),replace=False) # num of conds in cue_types +1 for the neutral cue = 3  #this is randomly coming up with the indices of the conds in the scrambled list
+cue_types_scramble=np.zeros(((len(cue_types)+1))) 
+cues=['neutral']+cue_types #yields ['neutral','target','distractor'] so that the following for loop can select these and insert them into cue_types_scramble
+order=list(order)
+cue_types_scramble=list(cue_types_scramble)
+for ind in order:
+    #np.insert(cue_types_scramble,ind,cues[order.index(ind)])
+    cue_types_scramble[ind]=cues[order.index(ind)]
 
+print(cue_types_scramble)
+
+for cue in cue_types_scramble: #looping through the types of cues in sequence, since we care about the order now. 
+    if cue=='neutral':
+        cue_type_count=cue_type_reps-num_reps #if the cue type is neutral, we don't want to run it for the full # of cue_type_reps. We just want it to be run for num_reps # FIX THIS ????
+    else:
+        cue_type_count=0
     
-
-    trialDataList=[]
-
-    #cue_target=[]
-
-    for n in range(num_trials):
-
-        ITI=np.random.uniform(3.8,4.5)
-
+    valid_count=[]
+    
+    while cue_type_count<=cue_type_reps: #we want each cue type to repeat (num_reps * the # of validity conds) times 
+    
+        cue_type_count=cue_type_count+1
         
-
-        # info for this block --for subject ######################################
-
-        if n==0:
-
+        if cue =='neutral':
+            thisValid=0.0
+        else:
+            if (valid_count.count(0.5)<(num_reps/len(cue_valid))) and (valid_count.count(0.8)<(num_reps/len(cue_valid))): #if both validity conditions have occurred fewer than 3 times, randomly choose which one is next
+                p=np.random.random()
+                if p >.5:
+                    thisValid=0.5
+                else:
+                    thisValid=0.8
+            elif (valid_count.count(0.5)>=(num_reps/len(cue_valid))) and (valid_count.count(0.8)<(num_reps/len(cue_valid))): #else choose the one that has not yet occurred 3 times 
+                thisValid=0.8
+            elif (valid_count.count(0.5)<(num_reps/len(cue_valid))) and (valid_count.count(0.8)>=(num_reps/len(cue_valid))):
+                thisValid=0.5
+        
+        valid_count.append(thisValid)
+        
+        thisBlock=stimList[stimList.index({'cue':cue,'validity':thisValid})]
+        trialDataList=[]
+    
+        for n in range(num_trials):
+    
+            ITI=np.random.uniform(3.8,4.5)
+    
+    
+            # info for this block --for subject ######################################
+    
+            if n==0:
+    
+                
+    
+                for circs in stimuli:
+    
+                    circs.opacity = 0 
+    
+                info_msg=visual.TextStim(win, pos=[0,.5],units='norm',text='This block will show %s cues' %thisBlock['cue']) 
+    
+                info_msg.draw()
+    
+                info_msg2=visual.TextStim(win, pos=[0,-.5], units='norm',text='Press any key to continue')
+    
+                info_msg2.draw()
+    
+                info_msg3=visual.TextStim(win,pos=[0,0],units='norm',text='The cued locations in this block will be predictive %.1f percent of the time' %(int(thisBlock['validity']*100)))
+    
+                info_msg3.draw()
+    
+                win.update()
+    
+                key1=event.waitKeys()
+                
+                if key1 and key1[0]=='escape':
+                    win.close()
+                    core.quit()
+                
+    
+                draw_fixation()
+    
+                win.flip()
+    
+                core.wait(3)# pre-block pause
+    
             
-
+    
             for circs in stimuli:
-
-                circs.opacity = 0 
-
-            info_msg=visual.TextStim(win, pos=[0,.5],units='norm',text='This block will show %s cues' %thisBlock['cue']) 
-
-            info_msg.draw()
-
-            info_msg2=visual.TextStim(win, pos=[0,-.5], units='norm',text='Press any key to continue')
-
-            info_msg2.draw()
-
-            info_msg3=visual.TextStim(win,pos=[0,0],units='norm',text='The cued locations in this block will be predictive %.1f percent of the time' %(int(thisBlock['validity']*100)))
-
-            info_msg3.draw()
-
-            win.update()
-
-            key1=event.waitKeys()
-            
-            if key1 and key1[0]=='escape':
-                win.close()
-                core.quit()
-            
-
-            draw_fixation()
-
-            win.flip()
-
-            core.wait(3)# pre-block pause
-
-        
-
-        for circs in stimuli:
-
-            circs.opacity=1
-
-            circs.setLineColor([0,0,0])
-
-            circs.setFillColor([0,0,0])
-
-        
-
-        if not flex_cond_flag: # if the block is BLOCKED
-
-            if n==0: #and its the first trial
-
-                # randomly select two circles to cue
-
-                cue_target_1=np.random.choice(stimuli[:6],1)
-
-                cue_target_2=np.random.choice(stimuli[6:],1)
-
-        else: #otherwise, select a new circle every time
-
-            cue_target_1=np.random.choice(stimuli[:6],1)
-
-            cue_target_2=np.random.choice(stimuli[6:],1)
-
-
-
-        #ensure that cue'd circles don't end up too close to each other, ie at clock positions 12 and 1, or 6 and 7
-
-        while ((cue_target_1[0] is noon)and(cue_target_2[0] is one_oclock)) or ((cue_target_1[0] is six_oclock) and (cue_target_2[0] is seven_oclock)):
-
-            cue_target_1=np.random.choice(stimuli[:6],1)
-
-            cue_target_2=np.random.choice(stimuli[6:],1)
-
-
-
-        cue_target_1[0].setLineColor([-1,1,-1])
-
-        cue_target_2[0].setLineColor([-1,1,-1])
-
-        
-
-        win.flip()
-
-        core.wait(.5) # CUE PERIOD #################################################
-
-        
-
-        draw_fixation()
-
-        # ## SOA period
-
-        for circs in stimuli:
-
-            circs.setLineColor([0,0,0])
-
-        
-
-        win.flip()
-
-        core.wait(1.5) # DELAY #####################################################
-
-        
-
-        draw_fixation()
-
-        
-
-        target_loc1 = list(stimuli[:6]).index(cue_target_1[0]) #where are the two cued circles?
-
-        stim_minus_one = np.delete(stimuli[:6], target_loc1) 
-
-        target_loc2 = list(stimuli[6:]).index(cue_target_2[0]) 
-
-        stim_minus_two = np.delete(stimuli[6:],target_loc2) #get a list of stimuli that don't include cued circles
-
-        
-
-        
-
-        if thisBlock['validity']==.5: # THIS GIVES HALF THE CHANCE TO EITHER CUED SPOT, SO ANY ONE CUED SPOT HAS .25 or .40 chance of selection
-
-            which_circle= np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_two],1,p=[0.25,0.25,0.5]) #decide if cue is valid, using validity % of this condition
-
-        elif thisBlock['validity']==.8:
-
-            which_circle= np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_two],1,p=[0.4,0.4,0.2])
-
-
-
-        
-
-        if thisBlock['cue']=='neutral':#since the neutral cue is neutral, it isn't going to be valid and targets/distractors will be randomly assigned
-
-            trial_type='n/a'
-
-        elif (which_circle[0] in cue_target_1):
-
-            trial_type='valid'
-
-            cue_side='R'
-
-        elif (which_circle[0] in cue_target_2): #if the dis or target is in one of the circles cued, it was a predictive trial. SAVE OUT this info later!!!!!
-
-            trial_type='valid'
-
-            cue_side='L'
-
-        else:
-
-            trial_type='invalid'
-
-        
-
-        trial_tarInDist=0
-
-        
-
-        if thisBlock['cue']=='target':
-
-            
-
-            if trial_type=='valid': #if this trial's cued locations are valid, put the target in one of them
-
-                target_stim.pos= which_circle[0].pos 
-
-                if cue_side=='L': #if the target is on the Left side of the clock, we want the dist on the right and vice versa
-
-                    distractor_stim.pos=(np.random.choice(stimuli[:6],1))[0].pos
-
-                else:
-
-                    distractor_stim.pos= (np.random.choice(stimuli[6:],1))[0].pos
-
-            
-
-            else: #if this trial is invalid 
-
-                    tar=np.random.choice(stim_minus_one,1,replace=False) #select two circles that aren't the cued circles
-
-                    dist=np.random.choice(stim_minus_two,1,replace=False)
-
-                    distractor_stim.pos=dist[0].pos #put the distractor in one and the target in the other
-
-                    target_stim.pos=tar[0].pos
-
     
-
-        elif thisBlock['cue']=='distractor':
-
-            
-
-            if trial_type=='valid': #if this trial's cued locations are valid, put the distractor in one of them
-
-                distractor_stim.pos=which_circle[0].pos
-
-                if cue_side=='L': #if the dist is on the Left side of the clock, we want the target on the right and vice versa
-
-                    target_stim.pos=(np.random.choice(stimuli[:6],1))[0].pos
-
-                else:
-
-                    target_stim.pos= (np.random.choice(stimuli[6:],1))[0].pos
-
-            
-
-            else:
-
-                if TarindistFlag and (np.random.choice([True,False],1,p=[.10,.90])[0]): #if the trial's cued location is invalid AND we want a target in a distractor-cued loc
-
-                    #we only want a target in a dist cued loc once in a while (10% of all invalid trials)
-
-                    target_stim.pos=which_circle[0].pos #put the target in the chosen 'distractor' circle
-
-                    trial_tarInDist=1
-
-                    if cue_side=='L':
-
-                        distractor_stim.pos=(np.random.choice(stim_minus_one,1))[0].pos #put the distractor on the opposite side of the target
-
-                    else:
-
-                        distractor_stim.pos=(np.random.choice(stim_minus_two,1))[0].pos
-
-                else:
-
-                    probe1=np.random.choice(stim_minus_one,1,replace=False) #select two circles that aren't the cued circles
-
-                    probe2=np.random.choice(stim_minus_two,1,replace=False)
-
-                    tarNdist=np.random.choice([probe1[0],probe2[0]],2,replace=False) #them randomly assign the target to one and dist to another
-
-                    distractor_stim.pos=tarNdist[0].pos 
-
-                    target_stim.pos=tarNdist[1].pos
-
-        
-
-        elif thisBlock['cue']=='neutral':
-
-            probe1=np.random.choice(stim_minus_one,1,replace=False) #select two circles that aren't the cued circles
-
-            probe2=np.random.choice(stim_minus_two,1,replace=False)
-
-            tarNdist=np.random.choice([probe1[0],probe2[0]],2,replace=False) #them randomly assign the target to one and dist to another
-
-            distractor_stim.pos=tarNdist[0].pos 
-
-            target_stim.pos=tarNdist[1].pos
-
-
-
-        
-
-        distractor_stim.ori= (np.random.choice([0,90,180,270],1))[0] #choose the orientation of the distractor
-
-        distractor_stim.draw()
-
-        target_stim.ori= (np.random.choice([0,90,180,270],1))[0] #choose the orientation of the target
-
-        target_stim.draw()
-
-        
-
-        if target_stim.ori==0:
-
-            corrKey='up'
-
-        elif target_stim.ori==90:
-
-            corrKey='right'
-
-        elif target_stim.ori==180:
-
-            corrKey='down'
-
-        elif target_stim.ori==270:
-
-            corrKey='left'
-
-        
-
-        for circs in stimuli: 
-
-            if not (((circs.pos[0]==target_stim.pos[0]) and (circs.pos[1]==target_stim.pos[1])) or ((circs.pos[0]==distractor_stim.pos[0]) and (circs.pos[1]==distractor_stim.pos[1]))): #if the circle isn't a target or distractor, its grey
-
+                circs.opacity=1
+    
                 circs.setLineColor([0,0,0])
-
-                circs.setFillColor(None)
-
-            else:
-
-                circs.setLineColor([1,-1,-1])
-
-                circs.setFillColor(None)
-
-        
-
-        win.update()
-
-        
-
-        clock=core.Clock()
-
-        subResp= event.waitKeys(1.5,keyList=['up','down','left','right'],timeStamped=clock)
-
-        
-
-        
-
-        if subResp==None:
-
-            trial_corr=0
-
-            RT='None'
-
-            key='None'
-
-        else:
-
-            if subResp[0][0]==corrKey:
-
-                trial_corr=1
-
-            else:
-
-                trial_corr=0
-
-            RT=subResp[0][1]
-
-            key=subResp[0][0]
-
-        
-
-        #core.wait(0) # PROBE AND RESP ##############################################
-
-        
-
-        draw_fixation()
-
-        
-
-        for circs in stimuli:
-
-            circs.setLineColor([0,0,0])
-
-            circs.setFillColor([0,0,0])
-
-        
-
-        #this my have to be rounded up or down depending on refresh rate? see: https://discourse.psychopy.org/t/jittering-iti-by-code-in-the-builder/4116
-
-        #ITI=round(1,ITI)
-
-        
-
-        Thistrial_data= {'trialNum':(n+1),'trial_type':trial_type,'corrResp':corrKey,'subjectResp':key,'trialCorr?':trial_corr,'RT':RT, 'tarinDisCond':trial_tarInDist,'ITI':ITI}
-
-        trialDataList.append(Thistrial_data)
-
-        print(trialDataList)
-
-        
-
-        #event.clearKeys()
-
-        #key=event.getKeys()
-
-        #if key and key[0]=='escape': #for the EEG stim presentation on the dell
-
-        if key and key[0]=='Esc': # for dillan's comp--key responses seem to be different?
-
-            win.close()
-
-            core.quit()
-
-      
-
-        win.flip()
-
-        core.wait(ITI) #ITI--want to jitter this?, with an average of 4 seconds
-
     
-
-    blocks.data.add('blockInfo',{'blockNum':k,'cueType':thisBlock['cue'],'validity':thisBlock['validity'],'trialsData':trialDataList})
-
+                circs.setFillColor([0,0,0])
+    
+            
+    
+            if not flex_cond_flag: # if the block is BLOCKED
+    
+                if n==0: #and its the first trial
+    
+                    # randomly select two circles to cue
+    
+                    cue_target_1=np.random.choice(stimuli[:6],1)
+    
+                    cue_target_2=np.random.choice(stimuli[6:],1)
+    
+            else: #otherwise, select a new circle every time
+    
+                cue_target_1=np.random.choice(stimuli[:6],1)
+    
+                cue_target_2=np.random.choice(stimuli[6:],1)
+    
+    
+    
+            #ensure that cue'd circles don't end up too close to each other, ie at clock positions 12 and 1, or 6 and 7
+    
+            while ((cue_target_1[0] is noon)and(cue_target_2[0] is one_oclock)) or ((cue_target_1[0] is six_oclock) and (cue_target_2[0] is seven_oclock)):
+    
+                cue_target_1=np.random.choice(stimuli[:6],1)
+    
+                cue_target_2=np.random.choice(stimuli[6:],1)
+    
+    
+    
+            cue_target_1[0].setLineColor([-1,1,-1])
+    
+            cue_target_2[0].setLineColor([-1,1,-1])
+    
+            
+    
+            win.flip()
+    
+            core.wait(.5) # CUE PERIOD #################################################
+    
+            
+    
+            draw_fixation()
+    
+            # ## SOA period
+    
+            for circs in stimuli:
+    
+                circs.setLineColor([0,0,0])
+    
+            
+    
+            win.flip()
+    
+            core.wait(1.5) # DELAY #####################################################
+    
+            
+    
+            draw_fixation()
+    
+            
+    
+            target_loc1 = list(stimuli[:6]).index(cue_target_1[0]) #where are the two cued circles?
+    
+            stim_minus_one = np.delete(stimuli[:6], target_loc1) 
+    
+            target_loc2 = list(stimuli[6:]).index(cue_target_2[0]) 
+    
+            stim_minus_two = np.delete(stimuli[6:],target_loc2) #get a list of stimuli that don't include cued circles
+    
+            
+    
+            
+    
+            if thisBlock['validity']==.5: # THIS GIVES HALF THE CHANCE TO EITHER CUED SPOT, SO ANY ONE CUED SPOT HAS .25 or .40 chance of selection
+    
+                which_circle= np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_two],1,p=[0.25,0.25,0.5]) #decide if cue is valid, using validity % of this condition
+    
+            elif thisBlock['validity']==.8:
+    
+                which_circle= np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_two],1,p=[0.4,0.4,0.2])
+    
+    
+    
+            
+    
+            if thisBlock['cue']=='neutral':#since the neutral cue is neutral, it isn't going to be valid and targets/distractors will be randomly assigned
+    
+                trial_type='n/a'
+    
+            elif (which_circle[0] in cue_target_1):
+    
+                trial_type='valid'
+    
+                cue_side='R'
+    
+            elif (which_circle[0] in cue_target_2): #if the dis or target is in one of the circles cued, it was a predictive trial. SAVE OUT this info later!!!!!
+    
+                trial_type='valid'
+    
+                cue_side='L'
+    
+            else:
+    
+                trial_type='invalid'
+    
+            
+    
+            trial_tarInDist=0
+    
+            
+    
+            if thisBlock['cue']=='target':
+    
+                
+    
+                if trial_type=='valid': #if this trial's cued locations are valid, put the target in one of them
+    
+                    target_stim.pos= which_circle[0].pos 
+    
+                    if cue_side=='L': #if the target is on the Left side of the clock, we want the dist on the right and vice versa
+    
+                        distractor_stim.pos=(np.random.choice(stimuli[:6],1))[0].pos
+    
+                    else:
+    
+                        distractor_stim.pos= (np.random.choice(stimuli[6:],1))[0].pos
+    
+                
+    
+                else: #if this trial is invalid 
+    
+                        tar=np.random.choice(stim_minus_one,1,replace=False) #select two circles that aren't the cued circles
+    
+                        dist=np.random.choice(stim_minus_two,1,replace=False)
+    
+                        distractor_stim.pos=dist[0].pos #put the distractor in one and the target in the other
+    
+                        target_stim.pos=tar[0].pos
+    
+        
+    
+            elif thisBlock['cue']=='distractor':
+    
+                
+    
+                if trial_type=='valid': #if this trial's cued locations are valid, put the distractor in one of them
+    
+                    distractor_stim.pos=which_circle[0].pos
+    
+                    if cue_side=='L': #if the dist is on the Left side of the clock, we want the target on the right and vice versa
+    
+                        target_stim.pos=(np.random.choice(stimuli[:6],1))[0].pos
+    
+                    else:
+    
+                        target_stim.pos= (np.random.choice(stimuli[6:],1))[0].pos
+    
+                
+    
+                else:
+    
+                    if TarindistFlag and (np.random.choice([True,False],1,p=[.10,.90])[0]): #if the trial's cued location is invalid AND we want a target in a distractor-cued loc
+    
+                        #we only want a target in a dist cued loc once in a while (10% of all invalid trials)
+    
+                        target_stim.pos=which_circle[0].pos #put the target in the chosen 'distractor' circle
+    
+                        trial_tarInDist=1
+    
+                        if cue_side=='L':
+    
+                            distractor_stim.pos=(np.random.choice(stim_minus_one,1))[0].pos #put the distractor on the opposite side of the target
+    
+                        else:
+    
+                            distractor_stim.pos=(np.random.choice(stim_minus_two,1))[0].pos
+    
+                    else:
+    
+                        probe1=np.random.choice(stim_minus_one,1,replace=False) #select two circles that aren't the cued circles
+    
+                        probe2=np.random.choice(stim_minus_two,1,replace=False)
+    
+                        tarNdist=np.random.choice([probe1[0],probe2[0]],2,replace=False) #them randomly assign the target to one and dist to another
+    
+                        distractor_stim.pos=tarNdist[0].pos 
+    
+                        target_stim.pos=tarNdist[1].pos
+    
+            
+    
+            elif thisBlock['cue']=='neutral':
+    
+                probe1=np.random.choice(stim_minus_one,1,replace=False) #select two circles that aren't the cued circles
+    
+                probe2=np.random.choice(stim_minus_two,1,replace=False)
+    
+                tarNdist=np.random.choice([probe1[0],probe2[0]],2,replace=False) #them randomly assign the target to one and dist to another
+    
+                distractor_stim.pos=tarNdist[0].pos 
+    
+                target_stim.pos=tarNdist[1].pos
+    
+    
+    
+            
+    
+            distractor_stim.ori= (np.random.choice([0,90,180,270],1))[0] #choose the orientation of the distractor
+    
+            distractor_stim.draw()
+    
+            target_stim.ori= (np.random.choice([0,90,180,270],1))[0] #choose the orientation of the target
+    
+            target_stim.draw()
+    
+            
+    
+            if target_stim.ori==0:
+    
+                corrKey='up'
+    
+            elif target_stim.ori==90:
+    
+                corrKey='right'
+    
+            elif target_stim.ori==180:
+    
+                corrKey='down'
+    
+            elif target_stim.ori==270:
+    
+                corrKey='left'
+    
+            
+    
+            for circs in stimuli: 
+    
+                if not (((circs.pos[0]==target_stim.pos[0]) and (circs.pos[1]==target_stim.pos[1])) or ((circs.pos[0]==distractor_stim.pos[0]) and (circs.pos[1]==distractor_stim.pos[1]))): #if the circle isn't a target or distractor, its grey
+    
+                    circs.setLineColor([0,0,0])
+    
+                    circs.setFillColor(None)
+    
+                else:
+    
+                    circs.setLineColor([1,-1,-1])
+    
+                    circs.setFillColor(None)
+    
+            
+    
+            win.update()
+    
+            
+    
+            clock=core.Clock()
+    
+            subResp= event.waitKeys(1.5,keyList=['up','down','left','right'],timeStamped=clock)
+    
+            if subResp==None:
+    
+                trial_corr=0
+    
+                RT='None'
+    
+                key='None'
+    
+            else:
+    
+                if subResp[0][0]==corrKey:
+    
+                    trial_corr=1
+    
+                else:
+    
+                    trial_corr=0
+    
+                RT=subResp[0][1]
+    
+                key=subResp[0][0]
+    
+            
+    
+            #core.wait(0) # PROBE AND RESP ##############################################
+    
+            
+    
+            draw_fixation()
+    
+            
+    
+            for circs in stimuli:
+    
+                circs.setLineColor([0,0,0])
+    
+                circs.setFillColor([0,0,0])
+    
+            
+    
+            #this my have to be rounded up or down depending on refresh rate? see: https://discourse.psychopy.org/t/jittering-iti-by-code-in-the-builder/4116
+    
+            #ITI=round(1,ITI)
+    
+            
+    
+            Thistrial_data= {'trialNum':(n+1),'trial_type':trial_type,'corrResp':corrKey,'subjectResp':key,'trialCorr?':trial_corr,'RT':RT, 'tarinDisCond':trial_tarInDist,'ITI':ITI}
+    
+            trialDataList.append(Thistrial_data)
+    
+            print(trialDataList)
+    
+            
+    
+            #event.clearKeys()
+    
+            #key=event.getKeys()
+    
+            #if key and key[0]=='escape': #for the EEG stim presentation on the dell
+    
+            if key and key[0]=='Esc': # for dillan's comp--key responses seem to be different?
+    
+                win.close()
+    
+                core.quit()
+    
+          
+    
+            win.flip()
+    
+            core.wait(ITI) #ITI--want to jitter this?, with an average of 4 seconds
+            
+    #        if n==num_trials:
+    #            continue_msg=visual.TextStim(win,pos=[0,0],units='norm',text='Done with this block. Continue to the next? (y, n, or escape)' )
+    #            continue_msg.draw()
+    #            win.update()
+    #            key=event.waitKeys(keyList=['y','n','escape'])
+    #            if key=='n':
+    #                continue_msg2=visual.TextStim
+    
+        blocks.data.add('blockInfo',{'blockNum':k,'cueType':thisBlock['cue'],'validity':thisBlock['validity'],'trialsData':trialDataList})
+        
     k=k+1
 
-    
+print(blocks.data)
+
+print(blocks.data['blockInfo'])
 
 # #########################saving data out###########################################
 
