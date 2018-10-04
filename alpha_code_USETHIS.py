@@ -140,7 +140,7 @@ elif expInfo['COMPUTER (b,e,d,m)']=='m':
     distractor_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/I3.png')
     
     
-cue_types=[]#'target','distractor'] # distractor or target or neutral cues
+cue_types=['target']#,'distractor'] # distractor or target or neutral cues
 
 
 
@@ -248,9 +248,19 @@ def pracCond(thisBlock,n_practrials=3):
 
 
 
-        cue_target_1[0].setLineColor([-1,1,-1])
-
-        cue_target_2[0].setLineColor([-1,1,-1])
+        if thisBlock['cue']=='target':
+            cue_target_1[0].setLineColor([-1,1,-1])
+    
+            cue_target_2[0].setLineColor([-1,1,-1])
+        elif thisBlock['cue']=='distractor': # some other color than green. blue?
+            cue_target_1[0].setLineColor([0,0,1])
+    
+            cue_target_2[0].setLineColor([0,0,1])
+        elif thisBlock['cue']=='neutral': # yellow?
+            cue_target_1[0].setLineColor([1,1,0])
+    
+            cue_target_2[0].setLineColor([1,1,0])
+    
 
         
 
@@ -536,7 +546,7 @@ def pracCond(thisBlock,n_practrials=3):
         for circs in stimuli:
             circs.opacity=0
     
-    acc_feedback=visual.TextStim(win, pos=[0,0],units='norm',text='Your accuracy for the practice round was %i percent. Practice again? (y/n)' %((np.sum(pracDataList))/n_practrials))
+    acc_feedback=visual.TextStim(win, pos=[0,0],units='norm',text='Your accuracy for the practice round was %i percent. Practice again? (y/n)' %(100*(np.sum(pracDataList)/n_practrials)))
     acc_feedback.draw()
     win.update()
     cont=event.waitKeys(keyList=['y','n'])
@@ -838,19 +848,33 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
         
         valid_count.append(thisValid)
         
-        thisBlock=stimList[stimList.index({'cue':cue,'validity':thisValid})]
         trialDataList=[]
         
         if block==0: #if this is the first block of this cue type, we want to give them a practice round first
-            prac_intro1=visual.TextStim(win,pos=[0,.5],units='norm',text='We will begin with a practice block of the task you are about to perform')
-            prac_intro2=visual.TextStim(win,pos=[0,0],units='norm',text='Keep in mind that cue predictability in the practice round will be %f percent, however this may vary throughout the actual task'%thisValid)
-            prac_intro3=visual.TextStim(win,pos=[0,-.5],units='norm',text='You will always be informed what the cue type and predictability is before beginning a block. Press any key to start the practice round')
+            for circ in stimuli:
+                circ.opacity=0
+            thisBlock={'cue':cue,'validity':0.5}
+            prac_intro1=visual.TextStim(win,pos=[0,.5],units='norm',text='We will begin with a practice block of the task you are about to perform. This round the cue will be a %s cue.'%cue)
+            prac_intro2=visual.TextStim(win,pos=[0,0],units='norm',text='Keep in mind that cue accuracy in this practice round will be 50 percent, however this may vary throughout the actual task.')
+            prac_intro3=visual.TextStim(win,pos=[0,-.5],units='norm',text='You will always be informed what the cue type and accuracy is before beginning a block. Press any key to start the practice round')
             prac_intro1.draw()
             prac_intro2.draw()
             prac_intro3.draw()
             win.update()
             event.waitKeys()
             pracCond(thisBlock)
+            prac_intro4=visual.TextStim(win,pos=[0,.5],units='norm',text='Now we will do the same practice but with a different cue accuracy')
+            prac_intro5=visual.TextStim(win,pos=[0,0],units='norm',text='Keep in mind that cue accuracy in this practice round will be 80 percent, however this may vary throughout the actual task')
+            prac_intro6=visual.TextStim(win,pos=[0,-.5],units='norm',text='You will always be informed what the cue type and accuracy is before beginning a block. Press any key to start the practice round')
+            prac_intro4.draw()
+            prac_intro5.draw()
+            prac_intro6.draw()
+            thisBlock={'cue':cue,'validity':0.8}
+            win.update()
+            event.waitKeys()
+            pracCond(thisBlock)
+            
+        thisBlock=stimList[stimList.index({'cue':cue,'validity':thisValid})]
         
         for n in range(num_trials):
     
@@ -933,10 +957,18 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 cue_target_2=np.random.choice(stimuli[6:],1)
     
     
-    
-            cue_target_1[0].setLineColor([-1,1,-1])
-    
-            cue_target_2[0].setLineColor([-1,1,-1])
+            if thisBlock['cue']=='target':
+                cue_target_1[0].setLineColor([-1,1,-1])
+        
+                cue_target_2[0].setLineColor([-1,1,-1])
+            elif thisBlock['cue']=='distractor': # some other color than green. blue?
+                cue_target_1[0].setLineColor([0,0,1])
+        
+                cue_target_2[0].setLineColor([0,0,1])
+            elif thisBlock['cue']=='neutral': # yellow?
+                cue_target_1[0].setLineColor([1,1,0])
+        
+                cue_target_2[0].setLineColor([1,1,0])
     
             
     
