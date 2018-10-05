@@ -136,11 +136,13 @@ elif expInfo['COMPUTER (b,e,d,m)']=='d':
     target_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\T2.png')
     distractor_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\I3.png') #dillan's computer
 elif expInfo['COMPUTER (b,e,d,m)']=='m':
-    target_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/T2.png') #HAVING ISSUES WITH THIS 
+    target_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/T2.png') 
     distractor_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/I3.png')
-    
-    
-cue_types=['target']#,'distractor'] # distractor or target or neutral cues
+#elif expInfo['COMPUTER (b,e,d,m)']=='e':
+    #target_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/T2.png') ??????
+    #distractor_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/I3.png') ?????
+
+cue_types=[]#'target','distractor'] # distractor or target or neutral cues
 
 
 
@@ -554,6 +556,65 @@ def pracCond(thisBlock,n_practrials=3):
         pracCond(thisBlock,n_practrials)
 
 
+def make_csv(filename):
+    
+    with open(filename+'.csv', mode='w') as csv_file:
+    
+        fieldnames=['flex or blocked?','no stim','TarInDistFlag','lateralized?','block','cue','validity','trialNum','trial_type','corrResp','subResp','trialCorr?','RT','tarinDisCond','ITI']
+    
+        #fieldnames is simply asserting the categories at the top of the CSV
+    
+        writer=csv.DictWriter(csv_file,fieldnames=fieldnames)
+    
+        writer.writeheader()
+    
+        
+    
+        writer.writerow({'flex or blocked?': flex_cond_flag,'no stim':expInfo['no stim'],'TarInDistFlag':TarindistFlag,'lateralized?':lat_stim_flag})
+        #This is just to give info about the session overall: was the session blocked or flexibly cued? How many stim? etc.
+    
+        print('\n\n\n')
+    
+        for n in range(len(blocks.keys())): # loop through each block
+            blocks_data = blocks.keys()[n]
+     
+            ThisBlock=blocks[blocks_data] #grabbing the block info for this block
+            #print(ThisBlock)
+            #print('\n')
+    
+            for k in range(len(ThisBlock['trialsData'])): #this should be the # of trials
+                ThisTrial=ThisBlock['trialsData'][k] #grabbing the trial info out of data for this trial
+                #print(ThisTrial)
+                if k==0: #if it's the first trial i want the block info written next to it. Otherwise, this column should be blank
+    
+                    writer.writerow({'block':ThisBlock['block'],'cue':ThisBlock['cueType'],'validity':ThisBlock['validity'],
+    
+                                    'trialNum':ThisTrial['trialNum'],'trial_type':ThisTrial['trial_type'],
+    
+                                    'corrResp':ThisTrial['corrResp'],'subResp':ThisTrial['subjectResp'],'trialCorr?':ThisTrial['trialCorr?'],
+    
+                                    'RT':ThisTrial['RT'],'tarinDisCond':ThisTrial['tarinDisCond'],
+    
+                                    'ITI':ThisTrial['ITI']})
+    
+                else:
+    
+                    writer.writerow({'block':'','cue':'','validity':'',
+    
+                                    'trialNum':ThisTrial['trialNum'],'trial_type':ThisTrial['trial_type'],
+    
+                                    'corrResp':ThisTrial['corrResp'],'subResp':ThisTrial['subjectResp'],'trialCorr?':ThisTrial['trialCorr?'],
+    
+                                    'RT':ThisTrial['RT'],'tarinDisCond':ThisTrial['tarinDisCond'],
+    
+                                    'ITI':ThisTrial['ITI']})
+
+def make_ITI(exp_type):
+    if exp_type=='b' or exp_type=='m' or exp_type=='d':
+        ITI=np.random.uniform(1.5,2.5) #averagaes to around 2 second
+    elif exp_type=='e':
+        ITI=np.random.uniform(3.8,4.5) # averages to around 4 seconds
+    return ITI
 
 intro_msg= visual.TextStim(win, pos=[0, .5],units='norm', text='Welcome to the experiment!')
 
@@ -850,7 +911,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
         
         trialDataList=[]
         
-        if block==0: #if this is the first block of this cue type, we want to give them a practice round first
+        if block==0 and cue != 'neutral': #if this is the first block of this cue type, we want to give them a practice round first
             for circ in stimuli:
                 circ.opacity=0
             thisBlock={'cue':cue,'validity':0.5}
@@ -873,12 +934,24 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             win.update()
             event.waitKeys()
             pracCond(thisBlock)
-            
+        else:
+            for circ in stimuli:
+                circ.opacity=0
+            thisBlock={'cue':cue,'validity':0.0}
+            prac_intro1=visual.TextStim(win,pos=[0,.5],units='norm',text='We will begin with a practice block of the task you are about to perform. This round the cue will be a %s cue.'%cue)
+            prac_intro2=visual.TextStim(win,pos=[0,0],units='norm',text='Keep in mind that cue accuracy in this practice round will be 0 percent, meaning completely randomized, however this may vary throughout the actual task.')
+            prac_intro3=visual.TextStim(win,pos=[0,-.5],units='norm',text='You will always be informed what the cue type and accuracy is before beginning a block. Press any key to start the practice round')
+            prac_intro1.draw()
+            prac_intro2.draw()
+            prac_intro3.draw()
+            win.update()
+            event.waitKeys()
+            pracCond(thisBlock)
         thisBlock=stimList[stimList.index({'cue':cue,'validity':thisValid})]
         
         for n in range(num_trials):
-    
-            ITI=np.random.uniform(3.8,4.5)
+
+            ITI=make_ITI(expInfo['COMPUTER (b,e,d,m)'])
     
     
             # info for this block --for subject ######################################
@@ -936,7 +1009,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
                     # randomly select two circles to cue
     
-                    cue_target_1=np.random.choice(stimuli[:6],1)
+                    cue_target_1=np.random.choice(stimuli[:6],1) # SORRY that I named these stupidly-- the cues are not always cueing the target!
     
                     cue_target_2=np.random.choice(stimuli[6:],1)
     
@@ -950,7 +1023,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
             #ensure that cue'd circles don't end up too close to each other, ie at clock positions 12 and 1, or 6 and 7
     
-            while ((cue_target_1[0] is noon)and(cue_target_2[0] is one_oclock)) or ((cue_target_1[0] is six_oclock) and (cue_target_2[0] is seven_oclock)):
+            while (((cue_target_1[0] is noon)and(cue_target_2[0] is one_oclock)) or ((cue_target_2[0] is noon)and(cue_target_1[0] is one_oclock))) or (((cue_target_1[0] is six_oclock)and(cue_target_2[0] is seven_oclock)) or ((cue_target_2[0] is six_oclock)and(cue_target_1[0] is seven_oclock))):
     
                 cue_target_1=np.random.choice(stimuli[:6],1)
     
@@ -1006,21 +1079,19 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
             stim_minus_two = np.delete(stimuli[6:],target_loc2) #get a list of stimuli that don't include cued circles
     
-            
+            stim_minus_both=list(stim_minus_one)+list(stim_minus_two)
     
             
     
             if thisBlock['validity']==.5: # THIS GIVES HALF THE CHANCE TO EITHER CUED SPOT, SO ANY ONE CUED SPOT HAS .25 or .40 chance of selection
     
-                which_circle= np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_two],1,p=[0.25,0.25,0.5]) #decide if cue is valid, using validity % of this condition
+                which_circle= np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_both],1,p=[0.25,0.25,0.5]) #decide if cue is valid, using validity % of this condition
     
             elif thisBlock['validity']==.8:
     
-                which_circle= np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_two],1,p=[0.4,0.4,0.2])
-    
-    
-    
-            
+                which_circle= np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_both],1,p=[0.4,0.4,0.2]) # FIX THIS??? should stim_minus_two be changed ??
+                probe1=np.random.choice(stim_minus_one,1,replace=False) #select two circles that aren't the cued circles
+   
     
             if thisBlock['cue']=='neutral':#since the neutral cue is neutral, it isn't going to be valid and targets/distractors will be randomly assigned
     
@@ -1042,15 +1113,11 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
                 trial_type='invalid'
     
-            
-    
             trial_tarInDist=0
     
-            
     
             if thisBlock['cue']=='target':
     
-                
     
                 if trial_type=='valid': #if this trial's cued locations are valid, put the target in one of them
     
@@ -1067,20 +1134,19 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 
     
                 else: #if this trial is invalid 
-    
-                        tar=np.random.choice(stim_minus_one,1,replace=False) #select two circles that aren't the cued circles
-    
-                        dist=np.random.choice(stim_minus_two,1,replace=False)
-    
-                        distractor_stim.pos=dist[0].pos #put the distractor in one and the target in the other
-    
-                        target_stim.pos=tar[0].pos
-    
+                    probe1=np.random.choice(stim_minus_one,1,replace=False) #select two circles that aren't the cued circles
+                    probe2=np.random.choice(stim_minus_two,1,replace=False)
+                    tarNdist=np.random.choice([probe1[0],probe2[0]],2,replace=False) #then randomly assign the target to one and dist to another
+                    distractor_stim.pos=tarNdist[0].pos 
+                    target_stim.pos=tarNdist[1].pos
         
+#                        tar=np.random.choice(stim_minus_one,1,replace=False) #select two circles that aren't the cued circles
+#                        dist=np.random.choice(stim_minus_two,1,replace=False)
+#                        distractor_stim.pos=dist[0].pos #put the distractor in one and the target in the other
+#                        target_stim.pos=tar[0].pos
+
     
             elif thisBlock['cue']=='distractor':
-    
-                
     
                 if trial_type=='valid': #if this trial's cued locations are valid, put the distractor in one of them
     
@@ -1093,8 +1159,6 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                     else:
     
                         target_stim.pos= (np.random.choice(stimuli[6:],1))[0].pos
-    
-                
     
                 else:
     
@@ -1140,9 +1204,6 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
                 target_stim.pos=tarNdist[1].pos
     
-    
-    
-            
     
             distractor_stim.ori= (np.random.choice([0,90,180,270],1))[0] #choose the orientation of the distractor
     
@@ -1252,15 +1313,17 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
             #event.clearKeys()
     
-            #key=event.getKeys()
+            key=event.getKeys()
+            
     
-            #if key and key[0]=='escape': #for the EEG stim presentation on the dell
-    
-            if key and key[0]=='Esc': # for dillan's comp--key responses seem to be different?
-    
-                win.close()
-    
-                core.quit()
+            if key: 
+                if (expInfo['COMPUTER (b,e,d,m)']=='b' or expInfo['COMPUTER (b,e,d,m)']=='m') and key[0]=='escape': #for the EEG stim presentation on the dell or mac in Dillan's office
+                    win.close()
+                    core.quit()
+                elif expInfo['COMPUTER (b,e,d,m)']=='d'and key[0]=='Esc': # for dillan's comp--key responses seem to be different?
+                    win.close()
+                    core.quit()
+                print('FORCED QUIT')
     
           
     
@@ -1275,66 +1338,13 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     #            key=event.waitKeys(keyList=['y','n','escape'])
     #            if key=='n':
     #                continue_msg2=visual.TextStim
-    
+        
         blocks.update({'blockInfo_%i%s'%(block,cue):{'block':k,'cueType':thisBlock['cue'],'validity':thisBlock['validity'],'trialsData':trialDataList}})
+        # #########################saving data out###########################################
+        make_csv(filename)
         k=k+1
  
 print('\n\n')
 
 print(blocks)
 
-# #########################saving data out###########################################
-
-
-
-with open(filename+'.csv', mode='w') as csv_file:
-
-    fieldnames=['flex or blocked?','no stim','TarInDistFlag','lateralized?','block','cue','validity','trialNum','trial_type','corrResp','subResp','trialCorr?','RT','tarinDisCond','ITI']
-
-    #fieldnames is simply asserting the categories at the top of the CSV
-
-    writer=csv.DictWriter(csv_file,fieldnames=fieldnames)
-
-    writer.writeheader()
-
-    
-
-    writer.writerow({'flex or blocked?': flex_cond_flag,'no stim':expInfo['no stim'],'TarInDistFlag':TarindistFlag,'lateralized?':lat_stim_flag})
-    #This is just to give info about the session overall: was the session blocked or flexibly cued? How many stim? etc.
-
-    print('\n\n\n')
-
-    for n in range(len(blocks.keys())): # loop through each block
-        blocks_data = blocks.keys()[n]
- 
-        ThisBlock=blocks[blocks_data] #grabbing the block info for this block
-        #print(ThisBlock)
-        #print('\n')
-
-        for k in range(len(ThisBlock['trialsData'])): #this should be the # of trials
-            ThisTrial=ThisBlock['trialsData'][k] #grabbing the trial info out of data for this trial
-            #print(ThisTrial)
-            if k==0: #if it's the first trial i want the block info written next to it. Otherwise, this column should be blank
-
-                writer.writerow({'block':ThisBlock['block'],'cue':ThisBlock['cueType'],'validity':ThisBlock['validity'],
-
-                                'trialNum':ThisTrial['trialNum'],'trial_type':ThisTrial['trial_type'],
-
-                                'corrResp':ThisTrial['corrResp'],'subResp':ThisTrial['subjectResp'],'trialCorr?':ThisTrial['trialCorr?'],
-
-                                'RT':ThisTrial['RT'],'tarinDisCond':ThisTrial['tarinDisCond'],
-
-                                'ITI':ThisTrial['ITI']})
-
-            else:
-
-                writer.writerow({'block':'','cue':'','validity':'',
-
-                                'trialNum':ThisTrial['trialNum'],'trial_type':ThisTrial['trial_type'],
-
-                                'corrResp':ThisTrial['corrResp'],'subResp':ThisTrial['subjectResp'],'trialCorr?':ThisTrial['trialCorr?'],
-
-                                'RT':ThisTrial['RT'],'tarinDisCond':ThisTrial['tarinDisCond'],
-
-                                'ITI':ThisTrial['ITI']})
-        #print('\n\n\n')
