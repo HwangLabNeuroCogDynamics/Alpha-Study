@@ -1193,9 +1193,9 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
             elif thisBlock['cue']=='neutral':
     
-                probe1=np.random.choice(stim_minus_one,1,replace=False) #select two circles that aren't the cued circles
+                probe1=np.random.choice(stimuli,1,replace=False) #select two circles
     
-                probe2=np.random.choice(stim_minus_two,1,replace=False)
+                probe2=np.random.choice(stimuli,1,replace=False)
     
                 tarNdist=np.random.choice([probe1[0],probe2[0]],2,replace=False) #them randomly assign the target to one and dist to another
     
