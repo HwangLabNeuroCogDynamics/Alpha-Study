@@ -31,6 +31,7 @@ import csv
 # Ensure that relative paths start from the same directory as this script
 
 _thisDir = os.path.dirname(os.path.abspath(__file__))
+#_thisDir=
 
 os.chdir(_thisDir)
 
@@ -142,7 +143,7 @@ elif expInfo['COMPUTER (b,e,d,m)']=='m':
     #target_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/T2.png') ??????
     #distractor_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/I3.png') ?????
 
-cue_types=[]#'target','distractor'] # distractor or target or neutral cues
+cue_types=['target']#,'distractor'] # distractor or target or neutral cues
 
 
 
@@ -896,15 +897,15 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
         if cue =='neutral':
             thisValid=0.0
         else:
-            if (valid_count.count(0.5)<(num_reps/len(cue_valid))) and (valid_count.count(0.8)<(num_reps/len(cue_valid))): #if both validity conditions have occurred fewer than 3 times, randomly choose which one is next
+            if (valid_count.count(0.5)<(num_reps)) and (valid_count.count(0.8)<(num_reps)): #if both validity conditions have occurred fewer than 3 times, randomly choose which one is next
                 p=np.random.random()
                 if p >.5:
                     thisValid=0.5
                 else:
                     thisValid=0.8
-            elif (valid_count.count(0.5)>=(num_reps/len(cue_valid))) and (valid_count.count(0.8)<(num_reps/len(cue_valid))): #else choose the one that has not yet occurred 3 times 
+            elif (valid_count.count(0.5)>=(num_reps)) and (valid_count.count(0.8)<(num_reps)): #else choose the one that has not yet occurred 3 times 
                 thisValid=0.8
-            elif (valid_count.count(0.5)<(num_reps/len(cue_valid))) and (valid_count.count(0.8)>=(num_reps/len(cue_valid))):
+            elif (valid_count.count(0.5)<(num_reps)) and (valid_count.count(0.8)>=(num_reps)):
                 thisValid=0.5
         
         valid_count.append(thisValid)
@@ -934,7 +935,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             win.update()
             event.waitKeys()
             pracCond(thisBlock)
-        else:
+        elif block==0 and cue=='neutral':
             for circ in stimuli:
                 circ.opacity=0
             thisBlock={'cue':cue,'validity':0.0}
@@ -957,8 +958,6 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             # info for this block --for subject ######################################
 
             if n==0:
-    
-                
     
                 for circs in stimuli:
     
