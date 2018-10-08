@@ -104,7 +104,7 @@ no_stim = float(expInfo['no stim'])
 
 
 
-# distractor in target location condition?
+# target in the distractor location condition?
 
 if expInfo['t in d?']=='y':
 
