@@ -169,16 +169,21 @@ print(stimList)
 
 cue_type_reps=len(cue_valid)*num_reps #the number of times that the 'target' or 'distractor' cue types should be repeated is equal to the number of validity types (i.e. 2 per cue type) times the n repeats for each condition (ie, 3)
 
-#added trigs
-delay1trig=101
-probetrig=103
-ITItrig=115
-tIdtrig=117
-target5trig=105
-target8trig=107
-dis5trig=109
-dis8trig=111
-neutraltrig=113
+EEGflag=0
+if expInfo['COMPUTER (b,e,d,m)']=='e':
+    EEGflag=1
+    #added trigs
+    delay1trig=101
+    probetrig=103
+    ITItrig=115
+    tIdtrig=117
+    target5trig=105
+    target8trig=107
+    dis5trig=109
+    dis8trig=111
+    neutraltrig=113
+    
+    port=serial.Serial('COM10',baudrate=115200) # based on the biosemi website-- may be wrong?
 
 # ####stimulus##############################################################################################
 
@@ -1053,23 +1058,37 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 cue_target_2[0].setLineColor([1,1,0])
     
             
-            win.callonFlip(pport.setData,delay1trig)
+            if EEGflag:
+                #win.callonFlip(pport.setData,delay1trig)
+                port.write(delay1trig)
+                port.flush()
+                core.wait(.2)
+                port.close()
             win.flip()
     
             core.wait(.5) # CUE PERIOD #################################################
-
-            if stimList['cue']=='target':
-                if stimList['validity']==0.5:
-                    win.callonFlip(pport.setData,target5trig)
-                elif stimList['validity']==0.8:
-                    win.callonFlip(pport.setData,target8trig)
-            elif stimList['cue']=='distractor':
-                if stimList['validity']==0.5:
-                    win.callonFlip(pport.setData,dis5trig)
-                elif stimList['validity']==0.8:
-                    win.callonFlip(pport.setData,dis8trig)
-            elif stimList['cue']=='neutral':
-                win.callonFlip(pport.setData,neutraltrig)
+            
+            if EEGflag:
+                if stimList['cue']=='target':
+                    if stimList['validity']==0.5:
+                        #win.callonFlip(pport.setData,target5trig)
+                        port.write(target5trig)
+                    elif stimList['validity']==0.8:
+                        #win.callonFlip(pport.setData,target8trig)
+                        port.write(target8trig)
+                elif stimList['cue']=='distractor':
+                    if stimList['validity']==0.5:
+                        #win.callonFlip(pport.setData,dis5trig)
+                        port.write(dis5trig)
+                    elif stimList['validity']==0.8:
+                        #win.callonFlip(pport.setData,dis8trig)
+                        port.write(dis8trig)
+                elif stimList['cue']=='neutral':
+                    #win.callonFlip(pport.setData,neutraltrig)
+                    port.write(neutraltrig)
+                port.flush()
+                core.wait(.2)
+                port.close()
 
             draw_fixation()
     
@@ -1187,7 +1206,12 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                         target_stim.pos=which_circle[0].pos #put the target in the chosen 'distractor' circle
     
                         trial_tarInDist=1
-                        win.callonFlip(pport.setData,tIdtrig) # will this overwrite the probe flag?
+                        if EEGflag:
+                            #win.callonFlip(pport.setData,tIdtrig) # will this overwrite the probe flag?
+                            port.write(tIdtrig)
+                            port.flush()
+                            core.wait(.2)
+                            port.close()
     
                         if cue_side=='L':
     
@@ -1298,7 +1322,12 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
                 key=subResp[0][0]
     
-            win.callonFlip(pport.setData,probetrig)
+            if EEGflag:
+                #win.callonFlip(pport.setData,probetrig)
+                port.write(probetrig)
+                port.flush()
+                core.wait(.2)
+                port.close()
     
             #core.wait(0) # PROBE AND RESP ##############################################
     
@@ -1345,7 +1374,12 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 print('FORCED QUIT')
     
           
-            win.callonFlip(pport.setData,ITItrig)
+            if EEGflag:
+                #win.callonFlip(pport.setData,ITItrig)
+                port.write(ITItrig)
+                port.flush()
+                core.wait(.2)
+                port.close()
             win.flip()
     
             core.wait(ITI) #ITI--want to jitter this?, with an average of 4 seconds
