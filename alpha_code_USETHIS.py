@@ -168,6 +168,17 @@ stimList.append({'cue':'neutral','validity':0})
 print(stimList)
 
 cue_type_reps=len(cue_valid)*num_reps #the number of times that the 'target' or 'distractor' cue types should be repeated is equal to the number of validity types (i.e. 2 per cue type) times the n repeats for each condition (ie, 3)
+
+delay1trig=101
+probetrig=103
+ITItrig=115
+tIdtrig=117
+target5trig=105
+target8trig=107
+dis5trig=109
+dis8trig=111
+neutraltrig=113
+
 # ####stimulus##############################################################################################
 
 
@@ -1017,9 +1028,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 cue_target_1=np.random.choice(stimuli[:6],1)
     
                 cue_target_2=np.random.choice(stimuli[6:],1)
-    
-    
-    
+
             #ensure that cue'd circles don't end up too close to each other, ie at clock positions 12 and 1, or 6 and 7
     
             while (((cue_target_1[0] is noon)and(cue_target_2[0] is one_oclock)) or ((cue_target_2[0] is noon)and(cue_target_1[0] is one_oclock))) or (((cue_target_1[0] is six_oclock)and(cue_target_2[0] is seven_oclock)) or ((cue_target_2[0] is six_oclock)and(cue_target_1[0] is seven_oclock))):
@@ -1043,13 +1052,24 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 cue_target_2[0].setLineColor([1,1,0])
     
             
-    
+            win.callonFlip(pport.setData,delay1trig)
             win.flip()
     
             core.wait(.5) # CUE PERIOD #################################################
-    
-            
-    
+
+            if stimList['cue']=='target':
+                if stimList['validity']==0.5:
+                    win.callonFlip(pport.setData,target5trig)
+                elif stimList['validity']==0.8:
+                    win.callonFlip(pport.setData,target8trig)
+            elif stimList['cue']=='distractor':
+                if stimList['validity']==0.5:
+                    win.callonFlip(pport.setData,dis5trig)
+                elif stimList['validity']==0.8:
+                    win.callonFlip(pport.setData,dis8trig)
+            elif stimList['cue']=='neutral':
+                win.callonFlip(pport.setData,neutraltrig)
+
             draw_fixation()
     
             # ## SOA period
@@ -1057,9 +1077,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             for circs in stimuli:
     
                 circs.setLineColor([0,0,0])
-    
-            
-    
+
             win.flip()
     
             core.wait(1.5) # DELAY #####################################################
@@ -1135,7 +1153,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 else: #if this trial is invalid 
                     probe1=np.random.choice(stim_minus_one,1,replace=False) #select two circles that aren't the cued circles
                     probe2=np.random.choice(stim_minus_two,1,replace=False)
-                    tarNdist=np.random.choice([probe1[0],probe2[0]],2,replace=False) #then randomly assign the target to one and dist to another
+                    tarNdist=np.random.choice([probe1[0],probe2[0]],2,replace=False) #then randomly as  sign the target to one and dist to another
                     distractor_stim.pos=tarNdist[0].pos 
                     target_stim.pos=tarNdist[1].pos
         
@@ -1168,6 +1186,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                         target_stim.pos=which_circle[0].pos #put the target in the chosen 'distractor' circle
     
                         trial_tarInDist=1
+                        win.callonFlip(pport.setData,tIdtrig) # will this overwrite the probe flag?
     
                         if cue_side=='L':
     
@@ -1278,7 +1297,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
                 key=subResp[0][0]
     
-            
+            win.callonFlip(pport.setData,probetrig)
     
             #core.wait(0) # PROBE AND RESP ##############################################
     
@@ -1325,7 +1344,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 print('FORCED QUIT')
     
           
-    
+            win.callonFlip(pport.setData,ITItrig)
             win.flip()
     
             core.wait(ITI) #ITI--want to jitter this?, with an average of 4 seconds
