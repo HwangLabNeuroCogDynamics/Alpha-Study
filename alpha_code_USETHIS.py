@@ -1,29 +1,21 @@
 # Hwang Lab alpha study #
 
-
-
 from __future__ import absolute_import, division
-
 from psychopy import locale_setup, sound, gui, visual, core, data, event, logging, clock
-
 from psychopy.constants import (NOT_STARTED, STARTED, PLAYING, PAUSED,
 
                                 STOPPED, FINISHED, PRESSED, RELEASED, FOREVER)
 
 import numpy as np  # whole numpy lib is available, prepend 'np.'
-
 from numpy import (sin, cos, tan, log, log10, pi, average,
 
                    sqrt, std, deg2rad, rad2deg, linspace, asarray)
 
 from numpy.random import random, randint, normal, shuffle,uniform
-
 import os  # handy system and path functions
-
 import sys  # to get file system encoding
-
+import serial #for sending triggers from this computer to biosemi computer
 import csv
-
 
 
 #testing github
@@ -133,15 +125,11 @@ else:
     # Data file name stem = absolute path + name; later add .psyexp, .csv, .log, etc
     filename = _thisDir + os.sep + u'data/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
 
-cue_types=['target','distractor'] # distractor or target or neutral cues
-
-
+cue_types=['distractor']#'target','distractor'] # distractor or target or neutral cues
 
 cue_valid=[.5,.8] # cue validity
 
-
-
-num_trials=2#33 # change later to 33
+num_trials=30#33 # change later to 33
 
 num_reps=3 #the number of repeats for each condition, should be 3 in experiment
 
@@ -153,7 +141,7 @@ for cue in cue_types:
 
         stimList.append({'cue':cue,'validity':num})
 
-stimList.append({'cue':'neutral','validity':0})
+#stimList.append({'cue':'neutral','validity':0})
 
 print(stimList)
 
@@ -190,7 +178,7 @@ def draw_fixation(): #0 to 1, for the opacity
 
     win.update
 
-def pracCond(thisBlock,n_practrials=3):
+def pracCond(thisBlock,n_practrials=1):
     pracDataList=[]
     for n in range(n_practrials):
     
@@ -399,33 +387,15 @@ def pracCond(thisBlock,n_practrials=3):
 
             else:
 
-                if TarindistFlag and (np.random.choice([True,False],1,p=[.10,.90])[0]): #if the trial's cued location is invalid AND we want a target in a distractor-cued loc
+                probe1=np.random.choice(stim_minus_one,1,replace=False) #select two circles that aren't the cued circles
 
-                    #we only want a target in a dist cued loc once in a while (10% of all invalid trials)
+                probe2=np.random.choice(stim_minus_two,1,replace=False)
 
-                    target_stim.pos=which_circle[0].pos #put the target in the chosen 'distractor' circle
+                tarNdist=np.random.choice([probe1[0],probe2[0]],2,replace=False) #them randomly assign the target to one and dist to another
 
-                    trial_tarInDist=1
+                distractor_stim.pos=tarNdist[0].pos 
 
-                    if cue_side=='L':
-
-                        distractor_stim.pos=(np.random.choice(stim_minus_one,1))[0].pos #put the distractor on the opposite side of the target
-
-                    else:
-
-                        distractor_stim.pos=(np.random.choice(stim_minus_two,1))[0].pos
-
-                else:
-
-                    probe1=np.random.choice(stim_minus_one,1,replace=False) #select two circles that aren't the cued circles
-
-                    probe2=np.random.choice(stim_minus_two,1,replace=False)
-
-                    tarNdist=np.random.choice([probe1[0],probe2[0]],2,replace=False) #them randomly assign the target to one and dist to another
-
-                    distractor_stim.pos=tarNdist[0].pos 
-
-                    target_stim.pos=tarNdist[1].pos
+                target_stim.pos=tarNdist[1].pos
 
         
 
@@ -1113,7 +1083,6 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             elif thisBlock['validity']==.8:
     
                 which_circle= np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_both],1,p=[0.4,0.4,0.2]) # FIX THIS??? should stim_minus_two be changed ??
-                probe1=np.random.choice(stim_minus_one,1,replace=False) #select two circles that aren't the cued circles
    
     
             if thisBlock['cue']=='neutral':#since the neutral cue is neutral, it isn't going to be valid and targets/distractors will be randomly assigned
@@ -1186,12 +1155,16 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
                 else:
     
-                    if TarindistFlag and (np.random.choice([True,False],1,p=[.10,.90])[0]): #if the trial's cued location is invalid AND we want a target in a distractor-cued loc
+                    if TarindistFlag: #and (np.random.choice([True,False],1,p=[.10,.90])[0]): #if the trial's cued location is invalid AND we want a target in a distractor-cued loc
     
                         #we only want a target in a dist cued loc once in a while (10% of all invalid trials)
-    
-                        target_stim.pos=which_circle[0].pos #put the target in the chosen 'distractor' circle
-    
+                        tarinDistloc=np.random.choice([cue_target_1[0],cue_target_2[0]],1) #randomly choose the left or right cue to put it in
+                        target_stim.pos=tarinDistloc[0].pos #put the target in the chosen 'distractor' circle
+                        
+                        if tarinDistloc[0]==cue_target_1[0]:
+                            cue_side=='R'
+                        else:
+                            cue_side=='L'
                         trial_tarInDist=1
                         if EEGflag:
                             #win.callonFlip(pport.setData,tIdtrig) # will this overwrite the probe flag?
