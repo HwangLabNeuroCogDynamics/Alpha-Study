@@ -125,7 +125,7 @@ elif expInfo['COMPUTER (b,e,d,m)']=='d':
 elif expInfo['COMPUTER (b,e,d,m)']=='m':
     target_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/T2.png') 
     distractor_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/I3.png')
-    filename='/Users/Shared/data/'+u'data/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
+    filename='/Users/Shared/'+u'data/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
 #elif expInfo['COMPUTER (b,e,d,m)']=='e':
     #target_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/T2.png') ??????
     #distractor_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/I3.png') ?????
@@ -566,7 +566,7 @@ def make_csv(filename):
     
     with open(filename+'.csv', mode='w') as csv_file:
     
-        fieldnames=['flex or blocked?','no stim','TarInDistFlag','lateralized?','block','cue','validity','trialNum','trial_type','corrResp','subResp','trialCorr?','RT','tarinDisCond','ITI']
+        fieldnames=['flex or blocked?','no stim','TarInDistFlag','lateralized?','block','cue','validity','trialNum','trial_type','corrResp','subResp','trialCorr?','RT','stim_loc(T,D)','tarinDisCond','ITI']
     
         #fieldnames is simply asserting the categories at the top of the CSV
     
@@ -599,7 +599,7 @@ def make_csv(filename):
     
                                     'corrResp':ThisTrial['corrResp'],'subResp':ThisTrial['subjectResp'],'trialCorr?':ThisTrial['trialCorr?'],
     
-                                    'RT':ThisTrial['RT'],'stim_loc':ThisTrial['stim_loc'],'tarinDisCond':ThisTrial['tarinDisCond'],
+                                    'RT':ThisTrial['RT'],'stim_loc(T,D)':ThisTrial['stim_loc'],'tarinDisCond':ThisTrial['tarinDisCond'],
     
                                     'ITI':ThisTrial['ITI']})
     
@@ -611,7 +611,7 @@ def make_csv(filename):
     
                                     'corrResp':ThisTrial['corrResp'],'subResp':ThisTrial['subjectResp'],'trialCorr?':ThisTrial['trialCorr?'],
     
-                                    'RT':ThisTrial['RT'],'stim_loc':ThisTrial['stim_loc'],'tarinDisCond':ThisTrial['tarinDisCond'],
+                                    'RT':ThisTrial['RT'],'stim_loc(T,D)':ThisTrial['stim_loc'],'tarinDisCond':ThisTrial['tarinDisCond'],
     
                                     'ITI':ThisTrial['ITI']})
 
@@ -1118,7 +1118,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
             if thisBlock['cue']=='neutral':#since the neutral cue is neutral, it isn't going to be valid and targets/distractors will be randomly assigned
     
-                trial_type='n/a'
+                trial_type= 'None' 
     
             elif (which_circle[0] in cue_target_1):
     
@@ -1148,18 +1148,19 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
                     if cue_side=='L': #if the target is on the Left side of the clock, we want the dist on the right and vice versa
     
-                        distractor_stim.pos=(np.random.choice(stimuli[:6],1))[0].pos
+                        distractor_stim.pos=(np.random.choice(stim_minus_one,1))[0].pos #make sure the dist goes in a non-cued location
     
                     else:
     
-                        distractor_stim.pos= (np.random.choice(stimuli[6:],1))[0].pos
+                        distractor_stim.pos= (np.random.choice(stim_minus_two,1))[0].pos
     
                 
     
                 else: #if this trial is invalid 
                     probe1=np.random.choice(stim_minus_one,1,replace=False) #select two circles that aren't the cued circles
                     probe2=np.random.choice(stim_minus_two,1,replace=False)
-                    tarNdist=np.random.choice([probe1[0],probe2[0]],2,replace=False) #then randomly as  sign the target to one and dist to another
+
+                    tarNdist=np.random.choice([probe1[0],probe2[0]],2,replace=False) #then randomly  assign the target to one and dist to another
                     distractor_stim.pos=tarNdist[0].pos 
                     target_stim.pos=tarNdist[1].pos
         
@@ -1177,11 +1178,11 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
                     if cue_side=='L': #if the dist is on the Left side of the clock, we want the target on the right and vice versa
     
-                        target_stim.pos=(np.random.choice(stimuli[:6],1))[0].pos
+                        target_stim.pos=(np.random.choice(stim_minus_one,1))[0].pos
     
                     else:
     
-                        target_stim.pos= (np.random.choice(stimuli[6:],1))[0].pos
+                        target_stim.pos= (np.random.choice(stim_minus_two,1))[0].pos
     
                 else:
     
@@ -1223,15 +1224,24 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
             elif thisBlock['cue']=='neutral':
     
-                probe1=np.random.choice(stimuli,1,replace=False) #select two circles
+                probe1=np.random.choice(stimuli[:6],1,replace=False) #select two circles, one on left and one on right
     
-                probe2=np.random.choice(stimuli,1,replace=False)
+                probe2=np.random.choice(stimuli[6:],1,replace=False)
     
                 tarNdist=np.random.choice([probe1[0],probe2[0]],2,replace=False) #them randomly assign the target to one and dist to another
     
                 distractor_stim.pos=tarNdist[0].pos 
     
                 target_stim.pos=tarNdist[1].pos
+                # want to document if any of the randomly assigned circles match the cued circles
+                if ((distractor_stim.pos[0]==cue_target_1[0].pos[0] and distractor_stim.pos[1]==cue_target_1[0].pos[1]) or (distractor_stim.pos[0]==cue_target_2[0].pos[0] and distractor_stim.pos[1]==cue_target_2[0].pos[1])) and ((target_stim.pos[0]==cue_target_1[0].pos[0] and target_stim.pos[1]==cue_target_1[0].pos[1]) or (target_stim.pos[0]==cue_target_2[0].pos[0] and target_stim.pos[1]==cue_target_2[0].pos[1])):
+                    trial_type='bothvalid' #if they somehow happen to both be assigned a distractor and a target, both cues are valid
+                elif (target_stim.pos[0]==cue_target_1[0].pos[0] and target_stim.pos[1]==cue_target_1[0].pos[1]) or (target_stim.pos[0]==cue_target_2[0].pos[0] and target_stim.pos[1]==cue_target_2[0].pos[1]):
+                    trial_type='Tvalid' #if the target is assigned to one of the cue'd location, the cue was valid for the target
+                elif (distractor_stim.pos[0]==cue_target_1[0].pos[0] and distractor_stim.pos[1]==cue_target_1[0].pos[1]) or (distractor_stim.pos[0]==cue_target_2[0].pos[0] and distractor_stim.pos[1]==cue_target_2[0].pos[1]):
+                    trial_type='Dvalid' #and vice versa for distractor
+                else: 
+                    trial_type='invalid' # else, the cues were entirely unhelpful
     
     
             distractor_stim.ori= (np.random.choice([0,90,180,270],1))[0] #choose the orientation of the distractor
@@ -1336,14 +1346,14 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             #ITI=round(1,ITI)
     
             for stim in stimuli:
-                if stim.pos==target_stim.pos:
+                if (stim.pos[0]==target_stim.pos[0]) and (stim.pos[1]==target_stim.pos[1]):
                     target_circle=stim
-                elif stim.pos==distractor_stim.pos:
+                elif (stim.pos[0]==distractor_stim.pos[0]) and (stim.pos[1]==distractor_stim.pos[1]):
                     distractor_circle=stim
                 else:
                     continue
     
-            Thistrial_data= {'trialNum':(n+1),'trial_type':trial_type,'corrResp':corrKey,'subjectResp':key,'trialCorr?':trial_corr,'RT':RT, 'stim_loc':(target_circle,distractor_circle),'tarinDisCond':trial_tarInDist,'ITI':ITI}
+            Thistrial_data= {'trialNum':(n+1),'trial_type':trial_type,'corrResp':corrKey,'subjectResp':key,'trialCorr?':trial_corr,'RT':RT, 'stim_loc':(target_circle.name,distractor_circle.name),'tarinDisCond':trial_tarInDist,'ITI':ITI}
     
             trialDataList.append(Thistrial_data)
     
