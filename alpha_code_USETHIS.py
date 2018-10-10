@@ -31,11 +31,8 @@ import csv
 # Ensure that relative paths start from the same directory as this script
 
 _thisDir = os.path.dirname(os.path.abspath(__file__))
-#_thisDir=
 
 os.chdir(_thisDir)
-
-
 
 # Store info about the experiment session
 
@@ -62,17 +59,6 @@ if dlg.OK == False:
 expInfo['date'] = data.getDateStr()  # add a simple timestamp
 
 expInfo['expName'] = expName
-
-
-
-#endExpNow = False  # flag for 'escape' or other condition => quit the exp
-
-
-
-# Data file name stem = absolute path + name; later add .psyexp, .csv, .log, etc
-
-filename = _thisDir + os.sep + u'data/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
-
 
 from psychopy import visual, core
 
@@ -125,7 +111,7 @@ if expInfo['lat?']=='y':
 else:
 
     lat_stim_flag=False
-    
+
 
 # # MAKE SURE PATH TO STIMULI IS THE RIGHT ONE FOR THE COMPUTER YOU'RE USING
 
@@ -139,11 +125,15 @@ elif expInfo['COMPUTER (b,e,d,m)']=='d':
 elif expInfo['COMPUTER (b,e,d,m)']=='m':
     target_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/T2.png') 
     distractor_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/I3.png')
+    filename='/Users/Shared/data/'+u'data/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
 #elif expInfo['COMPUTER (b,e,d,m)']=='e':
     #target_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/T2.png') ??????
     #distractor_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/I3.png') ?????
+else:
+    # Data file name stem = absolute path + name; later add .psyexp, .csv, .log, etc
+    filename = _thisDir + os.sep + u'data/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
 
-cue_types=['target']#,'distractor'] # distractor or target or neutral cues
+cue_types=['target','distractor'] # distractor or target or neutral cues
 
 
 
@@ -153,7 +143,7 @@ cue_valid=[.5,.8] # cue validity
 
 num_trials=2#33 # change later to 33
 
-num_reps=2 #the number of repeats for each condition, should be 3 in experiment
+num_reps=3 #the number of repeats for each condition, should be 3 in experiment
 
 stimList=[]
 
@@ -200,7 +190,6 @@ def draw_fixation(): #0 to 1, for the opacity
 
     win.update
 
-    
 def pracCond(thisBlock,n_practrials=3):
     pracDataList=[]
     for n in range(n_practrials):
@@ -573,7 +562,6 @@ def pracCond(thisBlock,n_practrials=3):
     if cont[0]=='y':
         pracCond(thisBlock,n_practrials)
 
-
 def make_csv(filename):
     
     with open(filename+'.csv', mode='w') as csv_file:
@@ -611,7 +599,7 @@ def make_csv(filename):
     
                                     'corrResp':ThisTrial['corrResp'],'subResp':ThisTrial['subjectResp'],'trialCorr?':ThisTrial['trialCorr?'],
     
-                                    'RT':ThisTrial['RT'],'tarinDisCond':ThisTrial['tarinDisCond'],
+                                    'RT':ThisTrial['RT'],'stim_loc':ThisTrial['stim_loc'],'tarinDisCond':ThisTrial['tarinDisCond'],
     
                                     'ITI':ThisTrial['ITI']})
     
@@ -623,7 +611,7 @@ def make_csv(filename):
     
                                     'corrResp':ThisTrial['corrResp'],'subResp':ThisTrial['subjectResp'],'trialCorr?':ThisTrial['trialCorr?'],
     
-                                    'RT':ThisTrial['RT'],'tarinDisCond':ThisTrial['tarinDisCond'],
+                                    'RT':ThisTrial['RT'],'stim_loc':ThisTrial['stim_loc'],'tarinDisCond':ThisTrial['tarinDisCond'],
     
                                     'ITI':ThisTrial['ITI']})
 
@@ -873,8 +861,6 @@ if no_stim==12:
     seven_oclock.setAutoDraw(True)
 
     stimuli=[one_oclock,two_oclock,three_oclock,four_oclock,five_oclock,six_oclock,seven_oclock,eight_oclock,nine_oclock,ten_oclock,eleven_oclock,noon]
-
-
 
 for stim in stimuli:
 
@@ -1349,9 +1335,15 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
             #ITI=round(1,ITI)
     
-            
+            for stim in stimuli:
+                if stim.pos==target_stim.pos:
+                    target_circle=stim
+                elif stim.pos==distractor_stim.pos:
+                    distractor_circle=stim
+                else:
+                    continue
     
-            Thistrial_data= {'trialNum':(n+1),'trial_type':trial_type,'corrResp':corrKey,'subjectResp':key,'trialCorr?':trial_corr,'RT':RT, 'tarinDisCond':trial_tarInDist,'ITI':ITI}
+            Thistrial_data= {'trialNum':(n+1),'trial_type':trial_type,'corrResp':corrKey,'subjectResp':key,'trialCorr?':trial_corr,'RT':RT, 'stim_loc':(target_circle,distractor_circle),'tarinDisCond':trial_tarInDist,'ITI':ITI}
     
             trialDataList.append(Thistrial_data)
     
@@ -1368,7 +1360,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 if (expInfo['COMPUTER (b,e,d,m)']=='b' or expInfo['COMPUTER (b,e,d,m)']=='m') and key[0]=='escape': #for the EEG stim presentation on the dell or mac in Dillan's office
                     win.close()
                     core.quit()
-                elif expInfo['COMPUTER (b,e,d,m)']=='d'and key[0]=='Esc': # for dillan's comp--key responses seem to be different?
+                elif expInfo['COMPUTER (b,e,d,m)']=='d'and key[0]=='Esc': # for dillan's laptop--key responses seem to be different?
                     win.close()
                     core.quit()
                 print('FORCED QUIT')
