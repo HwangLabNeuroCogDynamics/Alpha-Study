@@ -625,7 +625,6 @@ for thisBlock in blocks:
 
         if thisBlock['cue']=='target':
 
-            
 
             if trial_type=='valid': #if this trial's cued locations are valid, put the target in one of them
 
@@ -639,7 +638,7 @@ for thisBlock in blocks:
 
                     distractor_stim.pos= (np.random.choice(stimuli[6:],1))[0].pos
 
-            
+
 
             else: #if this trial is invalid 
 
@@ -831,15 +830,19 @@ for thisBlock in blocks:
 
         #event.clearKeys()
 
-        #key=event.getKeys()
+        key=event.getKeys()
 
-        #if key and key[0]=='escape': #for the EEG stim presentation on the dell
+        if expInfo['COMPUTER (b,e,d,m)']='b':
+            
+           if key and key[0]=='escape': #for the EEG stim presentation on the dell
+                win.close()
+                core.quit()
 
-        if key and key[0]=='Esc': # for dillan's comp--key responses seem to be different?
-
-            win.close()
-
-            core.quit()
+        elif expInfo['COMPUTER (b,e,d,m)']='d':
+            
+            if key and key[0]=='Esc': # for dillan's comp--key responses seem to be different?
+                win.close()
+                core.quit()
 
       
 
