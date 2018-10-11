@@ -148,20 +148,20 @@ print(stimList)
 cue_type_reps=len(cue_valid)*num_reps #the number of times that the 'target' or 'distractor' cue types should be repeated is equal to the number of validity types (i.e. 2 per cue type) times the n repeats for each condition (ie, 3)
 
 EEGflag=0
-if expInfo['COMPUTER (b,e,d,m)']=='e':
-    EEGflag=1
+if expInfo['COMPUTER (b,e,d,m)']=='b':
+    EEGflag=bytes([1])
     #added trigs
-    delay1trig=101
-    probetrig=103
-    ITItrig=115
-    tIdtrig=117
-    target5trig=105
-    target8trig=107
-    dis5trig=109
-    dis8trig=111
-    neutraltrig=113
+    delay1trig=bytes([101])
+    probetrig=bytes([103])
+    ITItrig=bytes([115])
+    tIdtrig=bytes([117])
+    target5trig=bytes([105])
+    target8trig=bytes([107])
+    dis5trig=bytes([109])
+    dis8trig=bytes([111])
+    neutraltrig=bytes([113])
     
-    port=serial.Serial('COM10',baudrate=115200) # based on the biosemi website-- may be wrong?
+    port=serial.Serial('COM4',baudrate=115200) # based on the biosemi website-- may be wrong?
 
 # ####stimulus##############################################################################################
 
@@ -1015,6 +1015,8 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
             
             if EEGflag:
+                port.close()
+                port.open()
                 #win.callonFlip(pport.setData,delay1trig)
                 port.write(delay1trig)
                 port.flush()
@@ -1025,21 +1027,22 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             core.wait(.5) # CUE PERIOD #################################################
             
             if EEGflag:
-                if stimList['cue']=='target':
-                    if stimList['validity']==0.5:
+                port.open()
+                if thisBlock['cue']=='target':
+                    if thisBlock['validity']==0.5:
                         #win.callonFlip(pport.setData,target5trig)
                         port.write(target5trig)
-                    elif stimList['validity']==0.8:
+                    elif thisBlock['validity']==0.8:
                         #win.callonFlip(pport.setData,target8trig)
                         port.write(target8trig)
-                elif stimList['cue']=='distractor':
-                    if stimList['validity']==0.5:
+                elif thisBlock['cue']=='distractor':
+                    if thisBlock['validity']==0.5:
                         #win.callonFlip(pport.setData,dis5trig)
                         port.write(dis5trig)
-                    elif stimList['validity']==0.8:
+                    elif thisBlock['validity']==0.8:
                         #win.callonFlip(pport.setData,dis8trig)
                         port.write(dis8trig)
-                elif stimList['cue']=='neutral':
+                elif thisBlock['cue']=='neutral':
                     #win.callonFlip(pport.setData,neutraltrig)
                     port.write(neutraltrig)
                 port.flush()
@@ -1168,6 +1171,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                             cue_side=='L'
                         trial_tarInDist=1
                         if EEGflag:
+                            port.open()
                             #win.callonFlip(pport.setData,tIdtrig) # will this overwrite the probe flag?
                             port.write(tIdtrig)
                             port.flush()
@@ -1293,6 +1297,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 key=subResp[0][0]
     
             if EEGflag:
+                port.open()
                 #win.callonFlip(pport.setData,probetrig)
                 port.write(probetrig)
                 port.flush()
@@ -1351,6 +1356,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
           
             if EEGflag:
+                port.open()
                 #win.callonFlip(pport.setData,ITItrig)
                 port.write(ITItrig)
                 port.flush()
