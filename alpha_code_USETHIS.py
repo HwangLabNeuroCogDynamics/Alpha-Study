@@ -111,6 +111,7 @@ else:
 if expInfo['COMPUTER (b,e,d,m)']=='b':
     target_stim=visual.ImageStim(win, image='C:\Stimuli\T2.png') #size=([.5,.5]
     distractor_stim=visual.ImageStim(win, image='C:\Stimuli\I3.png') #behavioral stimulus presentation Dell
+    filename='C:/psychopyData'+u'/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
 elif expInfo['COMPUTER (b,e,d,m)']=='d':
     target_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\T2.png')
     distractor_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\I3.png') #dillan's computer
@@ -125,11 +126,11 @@ else:
     # Data file name stem = absolute path + name; later add .psyexp, .csv, .log, etc
     filename = _thisDir + os.sep + u'data/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
 
-cue_types=['target','distractor'] # distractor or target or neutral cues
+cue_types=[]#'target','distractor'] # distractor or target or neutral cues
 
 cue_valid=[.5,.8] # cue validity
 
-num_trials=33 # change later to 33
+num_trials=4 # change later to 33
 
 num_reps=3 #the number of repeats for each condition, should be 3 in experiment
 
@@ -149,7 +150,7 @@ cue_type_reps=len(cue_valid)*num_reps #the number of times that the 'target' or 
 
 EEGflag=0
 if expInfo['COMPUTER (b,e,d,m)']=='b':
-    EEGflag=bytes([1])
+    EEGflag=1
     #added trigs
     delay1trig=bytes([101])
     probetrig=bytes([103])
@@ -552,7 +553,7 @@ def make_csv(filename):
         print('\n\n\n')
     
         for n in range(len(blocks.keys())): # loop through each block
-            blocks_data = blocks.keys()[n]
+            blocks_data = list(blocks.keys())[n]
      
             ThisBlock=blocks[blocks_data] #grabbing the block info for this block
             #print(ThisBlock)
