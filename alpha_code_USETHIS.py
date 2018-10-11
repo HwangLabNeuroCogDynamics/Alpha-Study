@@ -125,11 +125,11 @@ else:
     # Data file name stem = absolute path + name; later add .psyexp, .csv, .log, etc
     filename = _thisDir + os.sep + u'data/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
 
-cue_types=['distractor']#'target','distractor'] # distractor or target or neutral cues
+cue_types=['target','distractor'] # distractor or target or neutral cues
 
 cue_valid=[.5,.8] # cue validity
 
-num_trials=30#33 # change later to 33
+num_trials=33 # change later to 33
 
 num_reps=3 #the number of repeats for each condition, should be 3 in experiment
 
@@ -141,7 +141,7 @@ for cue in cue_types:
 
         stimList.append({'cue':cue,'validity':num})
 
-#stimList.append({'cue':'neutral','validity':0})
+stimList.append({'cue':'neutral','validity':0})
 
 print(stimList)
 
@@ -1088,6 +1088,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             if thisBlock['cue']=='neutral':#since the neutral cue is neutral, it isn't going to be valid and targets/distractors will be randomly assigned
     
                 trial_type= 'None' 
+                cue_side='None'
     
             elif (which_circle[0] in cue_target_1):
     
@@ -1155,7 +1156,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
                 else:
     
-                    if TarindistFlag: #and (np.random.choice([True,False],1,p=[.10,.90])[0]): #if the trial's cued location is invalid AND we want a target in a distractor-cued loc
+                    if TarindistFlag and (np.random.choice([True,False],1,p=[.10,.90])[0]): #if the trial's cued location is invalid AND we want a target in a distractor-cued loc
     
                         #we only want a target in a dist cued loc once in a while (10% of all invalid trials)
                         tarinDistloc=np.random.choice([cue_target_1[0],cue_target_2[0]],1) #randomly choose the left or right cue to put it in
