@@ -626,6 +626,7 @@ for thisBlock in blocks:
         if thisBlock['cue']=='target':
 
 
+
             if trial_type=='valid': #if this trial's cued locations are valid, put the target in one of them
 
                 target_stim.pos= which_circle[0].pos 
