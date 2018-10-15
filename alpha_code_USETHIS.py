@@ -115,6 +115,7 @@ if expInfo['COMPUTER (b,e,d,m)']=='b':
 elif expInfo['COMPUTER (b,e,d,m)']=='d':
     target_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\T2.png')
     distractor_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\I3.png') #dillan's computer
+    filename='C:/Users/dillc/Documents'+u'/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
 elif expInfo['COMPUTER (b,e,d,m)']=='m':
     target_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/T2.png') 
     distractor_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/I3.png')
@@ -472,7 +473,7 @@ def pracCond(thisBlock,n_practrials=1):
 
             trial_corr=0
 
-            RT='None'
+            RT=-1
 
             key='None'
 
@@ -547,7 +548,7 @@ def make_csv(filename):
     
         
     
-        writer.writerow({'flex or blocked?': flex_cond_flag,'no stim':expInfo['no stim'],'TarInDistFlag':TarindistFlag,'lateralized?':lat_stim_flag})
+        #writer.writerow({'flex or blocked?': flex_cond_flag,'no stim':expInfo['no stim'],'TarInDistFlag':TarindistFlag,'lateralized?':lat_stim_flag})
         #This is just to give info about the session overall: was the session blocked or flexibly cued? How many stim? etc.
     
         print('\n\n\n')
@@ -562,29 +563,16 @@ def make_csv(filename):
             for k in range(len(ThisBlock['trialsData'])): #this should be the # of trials
                 ThisTrial=ThisBlock['trialsData'][k] #grabbing the trial info out of data for this trial
                 #print(ThisTrial)
-                if k==0: #if it's the first trial i want the block info written next to it. Otherwise, this column should be blank
-    
-                    writer.writerow({'block':ThisBlock['block'],'cue':ThisBlock['cueType'],'validity':ThisBlock['validity'],
-    
-                                    'trialNum':ThisTrial['trialNum'],'trial_type':ThisTrial['trial_type'],
-    
-                                    'corrResp':ThisTrial['corrResp'],'subResp':ThisTrial['subjectResp'],'trialCorr?':ThisTrial['trialCorr?'],
-    
-                                    'RT':ThisTrial['RT'],'stim_loc(T,D)':ThisTrial['stim_loc'],'tarinDisCond':ThisTrial['tarinDisCond'],
-    
-                                    'ITI':ThisTrial['ITI']})
-    
-                else:
-    
-                    writer.writerow({'block':'','cue':'','validity':'',
-    
-                                    'trialNum':ThisTrial['trialNum'],'trial_type':ThisTrial['trial_type'],
-    
-                                    'corrResp':ThisTrial['corrResp'],'subResp':ThisTrial['subjectResp'],'trialCorr?':ThisTrial['trialCorr?'],
-    
-                                    'RT':ThisTrial['RT'],'stim_loc(T,D)':ThisTrial['stim_loc'],'tarinDisCond':ThisTrial['tarinDisCond'],
-    
-                                    'ITI':ThisTrial['ITI']})
+                writer.writerow({'flex or blocked?': flex_cond_flag,'no stim':expInfo['no stim'],'TarInDistFlag':TarindistFlag,'lateralized?':lat_stim_flag,'block':ThisBlock['block'],'cue':ThisBlock['cueType'],'validity':ThisBlock['validity'],
+
+                                'trialNum':ThisTrial['trialNum'],'trial_type':ThisTrial['trial_type'],
+
+                                'corrResp':ThisTrial['corrResp'],'subResp':ThisTrial['subjectResp'],'trialCorr?':ThisTrial['trialCorr?'],
+
+                                'RT':ThisTrial['RT'],'stim_loc(T,D)':ThisTrial['stim_loc'],'tarinDisCond':ThisTrial['tarinDisCond'],
+
+                                'ITI':ThisTrial['ITI']})
+
 
 def make_ITI(exp_type):
     if exp_type=='b' or exp_type=='m' or exp_type=='d':
