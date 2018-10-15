@@ -1,5 +1,5 @@
 from psychopy import visual, core
-win = visual.Window([1680,1050],color=(0,0,0),colorSpace='rgb',units='deg',monitor='testMonitor',fullscr=False)
+win = visual.Window([1680,1050],color=(0,0,0),colorSpace='rgb',units='deg',monitor='testMonitor',fullscr=True)
 
 import numpy as np  # whole numpy lib is available, prepend 'np.'
 from numpy import (sin, cos, tan, log, log10, pi, average,
@@ -8,7 +8,7 @@ import serial
 
 port=serial.Serial('COM4',baudrate=115200) # based on the biosemi website-- may be wrong?
 vis_deg=2
-n_trials=200
+n_trials=100
 no_stim=12
 if no_stim==12:
 
@@ -213,17 +213,23 @@ for stim in stimuli:
 #target_stim.size=([.5,.5])
 
 for n in range(n_trials):
+    port.close()
+    
     for stim in stimuli:
         stim.opacity=0
-    win.flip()
-    core.wait(.5)
+
+    #core.wait(.50844)
+    for n in range(30):
+        win.flip()
     for stim in stimuli:
         stim.opacity=1
-    port.close()
+    
     port.open()
     port.write(bytes([255]))
-    port.flush()
+    #port.flush()
     #core.wait(.2)
     #port.close()
-    win.flip()
-    core.wait(.5)
+    for n in range(30):
+        win.flip()
+    #core.wait(.50844)
+    

@@ -54,7 +54,7 @@ expInfo['expName'] = expName
 
 from psychopy import visual, core
 
-win = visual.Window([1680,1050],units='deg',fullscr=True,monitor='testMonitor')
+win = visual.Window([1680,1050],units='deg',fullscr=False,monitor='testMonitor')
 
 # ###############Flags####################################################################################
 
@@ -625,7 +625,7 @@ draw_fixation()
 
 win.flip()
 
-vis_deg=2
+vis_deg=3.5
 
 if no_stim==12:
 
@@ -823,9 +823,10 @@ if no_stim==12:
 
 for stim in stimuli:
 
-    stim.size=(0.70,0.70)
-distractor_stim.size=([.5,.5])
-target_stim.size=([.5,.5])
+    stim.size=(1.5,1.5)
+    stim.lineWidth=5
+distractor_stim.size=([1.25,1.25])
+target_stim.size=([1.25,1.25])
 
 
 
