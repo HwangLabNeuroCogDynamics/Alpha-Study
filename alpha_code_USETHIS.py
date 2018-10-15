@@ -54,7 +54,7 @@ expInfo['expName'] = expName
 
 from psychopy import visual, core
 
-win = visual.Window([1680,1050],units='deg',fullscr=False,monitor='testMonitor')
+win = visual.Window([1680,1050],units='deg',fullscr=True,monitor='testMonitor')
 
 # ###############Flags####################################################################################
 
@@ -127,11 +127,11 @@ else:
     # Data file name stem = absolute path + name; later add .psyexp, .csv, .log, etc
     filename = _thisDir + os.sep + u'data/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
 
-cue_types=[]#'target','distractor'] # distractor or target or neutral cues
+cue_types=['target','distractor'] # distractor or target or neutral cues
 
 cue_valid=[.5,.8] # cue validity
 
-num_trials=4 # change later to 33
+num_trials=33 # change later to 33
 
 num_reps=3 #the number of repeats for each condition, should be 3 in experiment
 
@@ -180,7 +180,7 @@ def draw_fixation(): #0 to 1, for the opacity
 
     win.update
 
-def pracCond(thisBlock,n_practrials=1):
+def pracCond(thisBlock,n_practrials=10):
     pracDataList=[]
     for n in range(n_practrials):
     
