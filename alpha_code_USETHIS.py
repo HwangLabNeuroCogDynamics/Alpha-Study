@@ -54,7 +54,7 @@ expInfo['expName'] = expName
 
 from psychopy import visual, core
 
-win = visual.Window([1680,1050],units='deg',fullscr=False,monitor='testMonitor')
+win = visual.Window([1680,1050],units='deg',fullscr=True,monitor='testMonitor')
 
 # ###############Flags####################################################################################
 
@@ -132,7 +132,7 @@ cue_types=['target','distractor'] # distractor or target or neutral cues
 
 cue_valid=[.5,.8] # cue validity
 
-num_trials=33 # change later to 33
+num_trials=3 # change later to 33
 
 num_reps=3 #the number of repeats for each condition, should be 3 in experiment
 
@@ -169,23 +169,17 @@ if expInfo['COMPUTER (b,e,d,m)']=='b':
 # ####stimulus##############################################################################################
 
 def wait_here(t):
-    num_frames=refresh_rate*t
+    num_frames=int(refresh_rate*t)
     for n in range(num_frames):
+        draw_fixation()
         win.flip()
 
 def draw_fixation(): #0 to 1, for the opacity
 
-    fixation = visual.TextStim(win, text='+',units='norm', color=(1,1,1))
-
-    fixation.size=0.6
-
-    #fixation.opacity=n
-
     fixation.draw()
 
-    win.update
 
-def pracCond(thisBlock,n_practrials=10):
+def pracCond(thisBlock,n_practrials=1):
     pracDataList=[]
     for n in range(n_practrials):
     
@@ -266,7 +260,7 @@ def pracCond(thisBlock,n_practrials=10):
             cue_target_2[0].setLineColor([1,1,0])
     
 
-        
+        draw_fixation()
 
         win.flip()
 
@@ -581,9 +575,9 @@ def make_csv(filename):
 
 def make_ITI(exp_type):
     if exp_type=='b' or exp_type=='m' or exp_type=='d':
-        ITI=np.random.choice([1.5,2.0,2.5],1) #averagaes to around 2 second
+        ITI=np.random.choice([1.5,2.0,2.5],1)[0] #averagaes to around 2 second
     elif exp_type=='e':
-        ITI=np.random.uniform([3.5,4,4.5],1) # averages to around 4 seconds
+        ITI=np.random.uniform([3.5,4,4.5],1)[0] # averages to around 4 seconds
     return ITI
 
 intro_msg= visual.TextStim(win, pos=[0, .5],units='norm', text='Welcome to the experiment!')
@@ -626,15 +620,13 @@ event.waitKeys()
 
 
 
-draw_fixation()
+#draw_fixation()
 
 win.flip()
 
 vis_deg=3.5
 
 if no_stim==12:
-
-    
 
     noon = visual.Circle(
 
@@ -736,11 +728,9 @@ if no_stim==12:
 
         win=win, name= '6', 
 
-        size=(.09,0.15),  
+        size=(.09,0.15),  ori=0, pos=(0, -vis_deg),
 
-        lineWidth=7, lineColor=None, fillColor=None,
-
-        pos=(0.0,-2))
+        lineWidth=7, lineColor=None, fillColor=None)
 
     six_oclock.setAutoDraw(True)
 
@@ -750,7 +740,7 @@ if no_stim==12:
 
         size=(0.09, 0.15),
 
-        ori=0, pos=(-1, ((sqrt(3)/2)*2)),
+        ori=0, pos=(-(vis_deg/2), ((sqrt(3)/2)*vis_deg)),
 
         lineWidth=7, lineColor=None, lineColorSpace='rgb',
 
@@ -833,6 +823,9 @@ for stim in stimuli:
 distractor_stim.size=([1.25,1.25])
 target_stim.size=([1.25,1.25])
 
+fixation = visual.TextStim(win, text='+',units='norm', color=(1,1,1))
+
+fixation.size=0.6
 
 
 # ############################################blocks######################################
@@ -1007,8 +1000,6 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 cue_target_1[0].setLineColor([1,1,0])
         
                 cue_target_2[0].setLineColor([1,1,0])
-        
-            draw_fixation()
             
             if EEGflag:
                 port.close()
@@ -1021,8 +1012,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             
             
             #win.flip()
-            
-            wait_here(0.5)
+            wait_here(.5)
             #core.wait(.5) # CUE PERIOD #################################################
             
             if EEGflag:
@@ -1047,25 +1037,20 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 port.flush()
                 core.wait(.2)
                 port.close()
-
-            draw_fixation()
     
             # ## SOA period
     
             for circs in stimuli:
     
                 circs.setLineColor([0,0,0])
+            
 
             #win.flip()
     
             wait_here(1.5)
             #core.wait(1.5) # DELAY #####################################################
     
-            
-    
             draw_fixation()
-    
-            
     
             target_loc1 = list(stimuli[:6]).index(cue_target_1[0]) #where are the two cued circles?
     
@@ -1304,13 +1289,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 core.wait(.2)
                 port.close()
     
-            #core.wait(0) # PROBE AND RESP ##############################################
-    
-            
-    
-            draw_fixation()
-    
-            
+            #core.wait(0) # PROBE AND RESP ############################################## 
     
             for circs in stimuli:
     
