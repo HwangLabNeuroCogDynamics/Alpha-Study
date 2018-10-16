@@ -112,6 +112,7 @@ if expInfo['COMPUTER (b,e,d,m)']=='b':
     target_stim=visual.ImageStim(win, image='C:\Stimuli\T2.png') #size=([.5,.5]
     distractor_stim=visual.ImageStim(win, image='C:\Stimuli\I3.png') #behavioral stimulus presentation Dell
     filename='C:/psychopyData'+u'/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
+    refresh_rate=50
 elif expInfo['COMPUTER (b,e,d,m)']=='d':
     target_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\T2.png')
     distractor_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\I3.png') #dillan's computer
@@ -167,6 +168,10 @@ if expInfo['COMPUTER (b,e,d,m)']=='b':
 
 # ####stimulus##############################################################################################
 
+def wait_here(t):
+    num_frames=refresh_rate*t
+    for n in range(num_frames):
+        win.flip()
 
 def draw_fixation(): #0 to 1, for the opacity
 
@@ -576,9 +581,9 @@ def make_csv(filename):
 
 def make_ITI(exp_type):
     if exp_type=='b' or exp_type=='m' or exp_type=='d':
-        ITI=np.random.uniform(1.5,2.5) #averagaes to around 2 second
+        ITI=np.random.choice([1.5,2.0,2.5],1) #averagaes to around 2 second
     elif exp_type=='e':
-        ITI=np.random.uniform(3.8,4.5) # averages to around 4 seconds
+        ITI=np.random.uniform([3.5,4,4.5],1) # averages to around 4 seconds
     return ITI
 
 intro_msg= visual.TextStim(win, pos=[0, .5],units='norm', text='Welcome to the experiment!')
@@ -1002,7 +1007,8 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 cue_target_1[0].setLineColor([1,1,0])
         
                 cue_target_2[0].setLineColor([1,1,0])
-    
+        
+            draw_fixation()
             
             if EEGflag:
                 port.close()
@@ -1012,9 +1018,12 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 port.flush()
                 core.wait(.2)
                 port.close()
-            win.flip()
-    
-            core.wait(.5) # CUE PERIOD #################################################
+            
+            
+            #win.flip()
+            
+            wait_here(0.5)
+            #core.wait(.5) # CUE PERIOD #################################################
             
             if EEGflag:
                 port.open()
@@ -1047,9 +1056,10 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
                 circs.setLineColor([0,0,0])
 
-            win.flip()
+            #win.flip()
     
-            core.wait(1.5) # DELAY #####################################################
+            wait_here(1.5)
+            #core.wait(1.5) # DELAY #####################################################
     
             
     
@@ -1352,9 +1362,9 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 port.flush()
                 core.wait(.2)
                 port.close()
-            win.flip()
-    
-            core.wait(ITI) #ITI--want to jitter this?, with an average of 4 seconds
+            #win.flip()
+            wait_here(ITI)
+            #core.wait(ITI) #ITI--want to jitter this?, with an average of 4 seconds
             
     #        if n==num_trials:
     #            continue_msg=visual.TextStim(win,pos=[0,0],units='norm',text='Done with this block. Continue to the next? (y, n, or escape)' )
