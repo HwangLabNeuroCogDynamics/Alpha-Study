@@ -1,5 +1,5 @@
 
-
+import time 
 import serial #for sending triggers from this computer to biosemi computer
 
 
@@ -10,5 +10,6 @@ for n in range(1,256):
     port.open()
     port.write(bytes([n]))
     port.flush()
-    core.wait(.5)
+    time.sleep(.5)
+    print(n)
     #port.close()

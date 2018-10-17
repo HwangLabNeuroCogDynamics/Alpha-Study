@@ -223,9 +223,7 @@ for n in range(n_trials):
     
     port.open()
     port.write(bytes([255]))
-    #port.flush()
-    #core.wait(.2)
-    #port.close()
+
     for n in range(30):
         win.flip()
     #core.wait(.50844)
