@@ -468,7 +468,7 @@ def pracCond(thisBlock,n_practrials=1):
 
             RT=-1
 
-            key='None'
+            key=-1
 
         else:
 
