@@ -1,6 +1,4 @@
-from __future__ import absolute_import, division
 
-from numpy.random import random, randint, normal, shuffle,uniform
 
 import serial #for sending triggers from this computer to biosemi computer
 
