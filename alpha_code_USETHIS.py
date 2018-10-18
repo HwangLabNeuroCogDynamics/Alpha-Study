@@ -54,7 +54,7 @@ expInfo['expName'] = expName
 
 from psychopy import visual, core
 
-win = visual.Window([1680,1050],units='deg',fullscr=False,monitor='testMonitor')
+win = visual.Window([1680,1050],units='deg',fullscr=True,monitor='testMonitor')
 
 # ###############Flags####################################################################################
 
@@ -125,7 +125,7 @@ elif expInfo['COMPUTER (b,e,d,m)']=='m':
 elif expInfo['COMPUTER (b,e,d,m)']=='e':
     target_stim=visual.ImageStim(win, image='C:\Stimuli\T2.png') 
     distractor_stim=visual.ImageStim(win, image='C:\Stimuli\I3.png') #EEG stimulus presentation Dell
-    filename='C:/psychopyData'+u'/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
+    filename='Z:/AlphaStudy/eegData'+u'/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
     refresh_rate=50
 else:
     # Data file name stem = absolute path + name; later add .psyexp, .csv, .log, etc
@@ -135,7 +135,7 @@ cue_types=['target','distractor'] # distractor or target or neutral cues
 
 cue_valid=[.5,.8] # cue validity
 
-num_trials=3 # change later to 33
+num_trials=33 # change later to 33
 
 num_reps=3 #the number of repeats for each condition, should be 3 in experiment
 
@@ -157,6 +157,8 @@ EEGflag=0
 if expInfo['COMPUTER (b,e,d,m)']=='e':
     EEGflag=1
     #added trigs
+    startSaveflag=bytes([254])
+    stopSaveflag=bytes([255])
     delay1trig=bytes([101])
     probetrig=bytes([103])
     ITItrig=bytes([115])
@@ -183,7 +185,7 @@ def draw_fixation(): #0 to 1, for the opacity
     fixation.draw()
 
 
-def pracCond(thisBlock,n_practrials=1):
+def pracCond(thisBlock,n_practrials=10):
     pracDataList=[]
     for n in range(n_practrials):
     
@@ -995,7 +997,14 @@ fixation.size=0.6
 
 #blocks=data.TrialHandler(stimList,num_reps)#,3,method='sequential') #three repeats each, randomly assorted but each cond is completed before they recycle #change to 3
 blocks={}
-
+if EEGflag:
+    port.close()
+    port.open()
+    #win.callonFlip(pport.setData,delay1trig)
+    port.write(startSaveflag)
+    port.flush()
+    wait_here(.2)
+    port.close()
 #we want to initialize another list of cues wherein the order is randomized so that target blocks or neutral or distractor blocks come first, counterbalanced over subjects
 order=np.random.choice((len(cue_types)+1),(len(cue_types)+1),replace=False) # num of conds in cue_types +1 for the neutral cue = 3  #this is randomly coming up with the indices of the conds in the scrambled list
 cue_types_scramble=np.zeros(((len(cue_types)+1))) 
@@ -1176,7 +1185,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 #win.callonFlip(pport.setData,delay1trig)
                 port.write(delay1trig)
                 port.flush()
-                core.wait(.2)
+                wait_here(.2)
                 port.close()
             
             
@@ -1204,7 +1213,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                     #win.callonFlip(pport.setData,neutraltrig)
                     port.write(neutraltrig)
                 port.flush()
-                core.wait(.2)
+                wait_here(.2)
                 port.close()
     
             # ## SOA period
@@ -1329,7 +1338,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                             #win.callonFlip(pport.setData,tIdtrig) # will this overwrite the probe flag?
                             port.write(tIdtrig)
                             port.flush()
-                            core.wait(.2)
+                            wait_here(.2)
                             port.close()
     
                         if cue_side=='L':
@@ -1433,9 +1442,9 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
             if subResp==None:
     
-                trial_corr=0
+                trial_corr=-1
     
-                RT='None'
+                RT=-1
     
                 key='None'
     
@@ -1458,7 +1467,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 #win.callonFlip(pport.setData,probetrig)
                 port.write(probetrig)
                 port.flush()
-                core.wait(.2)
+                wait_here(.2)
                 port.close()
     
             #core.wait(0) # PROBE AND RESP ############################################## 
@@ -1511,7 +1520,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 #win.callonFlip(pport.setData,ITItrig)
                 port.write(ITItrig)
                 port.flush()
-                core.wait(.2)
+                wait_here(.2)
                 port.close()
             #win.flip()
             wait_here(ITI)
@@ -1529,7 +1538,15 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
         # #########################saving data out###########################################
         make_csv(filename)
         k=k+1
- 
+
+if EEGflag:
+    port.close()
+    port.open()
+    #win.callonFlip(pport.setData,delay1trig)
+    port.write(stopSaveflag)
+    port.flush()
+    wait_here(.2)
+    port.close()
 print('\n\n')
 
 print(blocks)
