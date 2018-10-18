@@ -464,11 +464,11 @@ def pracCond(thisBlock,n_practrials=1):
 
         if subResp==None:
 
-            trial_corr=0
+            trial_corr=-1
 
             RT=-1
 
-            key=-1
+            key="None"
 
         else:
 
