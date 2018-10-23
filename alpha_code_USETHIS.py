@@ -113,7 +113,7 @@ else:
 if expInfo['COMPUTER (b,e,d,m)']=='b': 
     target_stim=visual.ImageStim(win, image='C:\Stimuli\T2.png') 
     distractor_stim=visual.ImageStim(win, image='C:\Stimuli\I3.png') #behavioral stimulus presentation Dell
-    filename='Z:/AlphaStudy/behavData'+u'/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
+    filename='Z:/AlphaStudy_Data/behavData'+u'/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
     refresh_rate=50
 elif expInfo['COMPUTER (b,e,d,m)']=='d':
     target_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\T2.png')
@@ -127,7 +127,7 @@ elif expInfo['COMPUTER (b,e,d,m)']=='m':
 elif expInfo['COMPUTER (b,e,d,m)']=='e':
     target_stim=visual.ImageStim(win, image='C:\Stimuli\T2.png') 
     distractor_stim=visual.ImageStim(win, image='C:\Stimuli\I3.png') #EEG stimulus presentation Dell
-    filename='Z:/AlphaStudy/eegData'+u'/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
+    filename='Z:/AlphaStudy_Data/eegData'+u'/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
     refresh_rate=50
 else:
     # Data file name stem = absolute path + name; later add .psyexp, .csv, .log, etc
