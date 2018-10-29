@@ -1,4 +1,4 @@
-# ##############test##################
+# ##############ver 10/29/18 1:05PM##################
 
 # Hwang Lab alpha study #
 
@@ -32,7 +32,7 @@ os.chdir(_thisDir)
 
 expName = 'alpha_pilot'  # from the Builder filename that created this script
 
-expInfo = {'subject': '', 'session': '01','f or b?':'f','no stim':'10','t in d?':'n', 'lat?':'n','COMPUTER (b,e,d,m)':'b'}
+expInfo = {'subject': '', 'session': '01','f or b?':'f','no stim':'6','t in d?':'n', 'lat?':'n','COMPUTER (b,e,d,m)':'b','neutral?':'n'}
 
 # where 'f or b?' is flexible v blocked. blocked is default
 
@@ -64,7 +64,10 @@ win = visual.Window([1680,1050],units='deg',fullscr=True,monitor='testMonitor')
 
 # this is where we'll flag the different piloted conditions
 
-
+if expInfo['neutral?']=='y':
+    neutralFlag=1
+else:
+    neutralFlag=0
 
 #will blocks be flexbile or predictable?
 
@@ -124,6 +127,7 @@ elif expInfo['COMPUTER (b,e,d,m)']=='m':
     target_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/T2.png') 
     distractor_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/I3.png')
     filename='/Users/Shared/'+u'data/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
+    refresh_rate=60 #not sure what the real refresh rate is
 elif expInfo['COMPUTER (b,e,d,m)']=='e':
     target_stim=visual.ImageStim(win, image='C:\Stimuli\T2.png') 
     distractor_stim=visual.ImageStim(win, image='C:\Stimuli\I3.png') #EEG stimulus presentation Dell
@@ -135,7 +139,12 @@ else:
 
 cue_types=['target','distractor'] # distractor or target or neutral cues
 
-cue_valid=[.5,.8] # cue validity
+if neutralFlag:
+    cue_valid=[.5,.8] # cue validity
+else:
+    chance= ((1/no_stim)*2) #the random likelihood of the target ending up in one circle is equal to 1/(# of circles), and there are 2 cued circles
+    cue_valid=[chance,.5,.8]
+    print(chance/2)
 
 num_trials=33 # change later to 33
 
@@ -149,11 +158,12 @@ for cue in cue_types:
 
         stimList.append({'cue':cue,'validity':num})
 
-stimList.append({'cue':'neutral','validity':0})
+if neutralFlag:
+    stimList.append({'cue':'neutral','validity':0})
 
 print(stimList)
 
-cue_type_reps=len(cue_valid)*num_reps #the number of times that the 'target' or 'distractor' cue types should be repeated is equal to the number of validity types (i.e. 2 per cue type) times the n repeats for each condition (ie, 3)
+cue_type_reps=len(cue_valid)*num_reps #the number of times that the 'target' or 'distractor' cue types should be repeated is equal to the number of validity types (i.e. 2 or 3 per cue type) times the n repeats for each condition (ie, 3)
 
 EEGflag=0
 if expInfo['COMPUTER (b,e,d,m)']=='e':
@@ -170,11 +180,12 @@ if expInfo['COMPUTER (b,e,d,m)']=='e':
     dis5trig=bytes([109])
     dis8trig=bytes([111])
     neutraltrig=bytes([113])
+    subRespTrig=bytes([119])
+    subNonRespTrig=bytes([121])
     
     port=serial.Serial('COM4',baudrate=115200) # based on the biosemi website-- may be wrong?
 
 # ####stimulus##############################################################################################
-
 def wait_here(t):
     interval=1/refresh_rate
     num_frames=int(t/interval)
@@ -186,8 +197,7 @@ def draw_fixation(): #0 to 1, for the opacity
 
     fixation.draw()
 
-
-def pracCond(thisBlock,n_practrials=10):
+def pracCond(thisBlock,n_practrials=10,demo=False):
     pracDataList=[]
     for n in range(n_practrials):
     
@@ -200,10 +210,12 @@ def pracCond(thisBlock,n_practrials=10):
             for circs in stimuli:
 
                 circs.opacity = 0 
-
-            info_msg3=visual.TextStim(win,pos=[0,0],units='norm',text='Begin practice block')
-
-            info_msg3.draw()
+            if demo:
+                info_msg3=visual.TextStim(win,pos=[0,0],units='norm',text=thisBlock['cue']+' cue demonstration')
+                info_msg3.draw()
+            else:
+                info_msg3=visual.TextStim(win,pos=[0,0],units='norm',text='Begin practice block')
+                info_msg3.draw()
 
             win.update()
             core.wait(2)
@@ -305,6 +317,8 @@ def pracCond(thisBlock,n_practrials=10):
         elif thisBlock['validity']==.8:
 
             which_circle= np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_two],1,p=[0.4,0.4,0.2])
+        elif thisBlock['validity']==1:
+            which_circle = np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_two],1,p=[0.5,0.5,0.0])
 
 
 
@@ -346,11 +360,11 @@ def pracCond(thisBlock,n_practrials=10):
 
                 if cue_side=='L': #if the target is on the Left side of the clock, we want the dist on the right and vice versa
 
-                    distractor_stim.pos=(np.random.choice(right_stim,1))[0].pos
+                    distractor_stim.pos=(np.random.choice(stim_minus_one,1))[0].pos
 
                 else:
 
-                    distractor_stim.pos= (np.random.choice(left_stim,1))[0].pos
+                    distractor_stim.pos= (np.random.choice(stim_minus_two,1))[0].pos
 
             
 
@@ -376,11 +390,11 @@ def pracCond(thisBlock,n_practrials=10):
 
                 if cue_side=='L': #if the dist is on the Left side of the clock, we want the target on the right and vice versa
 
-                    target_stim.pos=(np.random.choice(right_stim,1))[0].pos
+                    target_stim.pos=(np.random.choice(stim_minus_one,1))[0].pos
 
                 else:
 
-                    target_stim.pos= (np.random.choice(left_stim,1))[0].pos
+                    target_stim.pos= (np.random.choice(stim_minus_two,1))[0].pos
 
             
 
@@ -463,30 +477,33 @@ def pracCond(thisBlock,n_practrials=10):
         
 
         clock=core.Clock()
-
-        subResp= event.waitKeys(1.5,keyList=['up','down','left','right'],timeStamped=clock)
-
-        if subResp==None:
-
-            trial_corr=-1
-
-            RT=-1
-
-            key="None"
-
-        else:
-
-            if subResp[0][0]==corrKey:
-
-                trial_corr=1
-
-            else:
-
+        
+        if not demo:
+            subResp= event.waitKeys(1.5,keyList=['up','down','left','right'],timeStamped=clock)
+    
+            if subResp==None:
+    
                 trial_corr=0
-
-            RT=subResp[0][1]
-
-            key=subResp[0][0]
+    
+                RT=-1
+    
+                key="None"
+    
+            else:
+    
+                if subResp[0][0]==corrKey:
+    
+                    trial_corr=1
+    
+                else:
+    
+                    trial_corr=0
+    
+                RT=subResp[0][1]
+    
+                key=subResp[0][0]
+        else: 
+            core.wait(1.5)
 
         
 
@@ -511,10 +528,10 @@ def pracCond(thisBlock,n_practrials=10):
         #ITI=round(1,ITI)
 
         
-
-        Thistrial_data= trial_corr
-
-        pracDataList.append(Thistrial_data)
+        if not demo:
+            Thistrial_data= trial_corr
+    
+            pracDataList.append(Thistrial_data)
 
         #print(trialDataList)
 
@@ -524,12 +541,13 @@ def pracCond(thisBlock,n_practrials=10):
         for circs in stimuli:
             circs.opacity=0
     
-    acc_feedback=visual.TextStim(win, pos=[0,0],units='norm',text='Your accuracy for the practice round was %i percent. Practice again? (y/n)' %(100*(np.sum(pracDataList)/n_practrials)))
-    acc_feedback.draw()
-    win.update()
-    cont=event.waitKeys(keyList=['y','n'])
-    if cont[0]=='y':
-        pracCond(thisBlock,n_practrials)
+    if not demo:
+        acc_feedback=visual.TextStim(win, pos=[0,0],units='norm',text='Your accuracy for the practice round was %i percent. Practice again? (y/n)' %(100*(np.sum(pracDataList)/n_practrials)))
+        acc_feedback.draw()
+        win.update()
+        cont=event.waitKeys(keyList=['y','n'])
+        if cont[0]=='y':
+            pracCond(thisBlock,n_practrials)
 
 def make_csv(filename):
     
@@ -569,7 +587,6 @@ def make_csv(filename):
                                 'RT':ThisTrial['RT'],'stim_loc(T,D)':ThisTrial['stim_loc'],'tarinDisCond':ThisTrial['tarinDisCond'],
 
                                 'ITI':ThisTrial['ITI']})
-
 
 def make_ITI(exp_type):
     if exp_type=='b' or exp_type=='m' or exp_type=='d':
@@ -982,6 +999,101 @@ if no_stim==10:
     right_stim=stimuli[:5]
     left_stim=stimuli[5:]
 
+if no_stim==6:
+    one_oclock = visual.Circle(
+    
+            win=win, name='1',
+    
+            size=(0.09, 0.15),
+    
+            ori=0, pos=((vis_deg/2), (sqrt(3)/2)*vis_deg),
+    
+            lineWidth=7, lineColor=None, lineColorSpace='rgb',
+    
+            fillColor=None, fillColorSpace='rgb',
+    
+            opacity=1, depth=-1.0, interpolate=True)
+    
+    one_oclock.setAutoDraw(True)
+    three_oclock = visual.Circle(
+        win=win, name='3',
+
+        size=(0.09, 0.15),
+
+        ori=0, pos=(vis_deg, 0),
+
+        lineWidth=7, lineColor=None, lineColorSpace='rgb',
+
+        fillColor=None, fillColorSpace='rgb',
+
+        opacity=1, depth=-3.0, interpolate=True)
+
+    three_oclock.setAutoDraw(True)
+    
+    five_oclock = visual.Circle(
+
+        win=win, name='5',
+
+        size=(0.09, 0.15),
+
+        ori=0, pos=((vis_deg/2), -((sqrt(3)/2)*vis_deg)),
+
+        lineWidth=7, lineColor=None, lineColorSpace='rgb',
+
+        fillColor=None, fillColorSpace='rgb',
+
+        opacity=1, depth=-5.0, interpolate=True)
+
+    five_oclock.setAutoDraw(True)
+    seven_oclock = visual.Circle(
+
+        win=win, name='7',
+
+        size=(0.09, 0.15),
+
+        ori=0, pos=(-(vis_deg/2), -((sqrt(3)/2)*vis_deg)),
+
+        lineWidth=7, lineColor=None, lineColorSpace='rgb',
+
+        fillColor=None, fillColorSpace='rgb',
+
+        opacity=1, depth=-5.0, interpolate=True)
+
+    seven_oclock.setAutoDraw(True)
+    nine_oclock = visual.Circle(
+
+        win=win, name='9',
+
+        size=(0.09, 0.15),
+
+        ori=0, pos=(-vis_deg, 0),
+
+        lineWidth=7, lineColor=None, lineColorSpace='rgb',
+
+        fillColor=None, fillColorSpace='rgb',
+
+        opacity=1, depth=-3.0, interpolate=True)
+
+    nine_oclock.setAutoDraw(True)
+    eleven_oclock = visual.Circle(
+
+        win=win, name='11',
+
+        size=(0.09, 0.15),
+
+        ori=0, pos=(-(vis_deg/2), ((sqrt(3)/2)*vis_deg)),
+
+        lineWidth=7, lineColor=None, lineColorSpace='rgb',
+
+        fillColor=None, fillColorSpace='rgb',
+
+        opacity=1, depth=-1.0, interpolate=True)
+
+    eleven_oclock.setAutoDraw(True)
+    stimuli=[one_oclock,three_oclock,five_oclock,seven_oclock,nine_oclock,eleven_oclock]
+    right_stim=stimuli[:3]
+    left_stim=stimuli[3:]
+
 for stim in stimuli:
 
     stim.size=(1.5,1.5)
@@ -995,7 +1107,6 @@ fixation.size=0.6
 
 
 # ############################################blocks######################################
-
 
 #blocks=data.TrialHandler(stimList,num_reps)#,3,method='sequential') #three repeats each, randomly assorted but each cond is completed before they recycle #change to 3
 blocks={}
@@ -1021,6 +1132,7 @@ for ind in order:
     colors_scramble[ind]=colors[order.index(ind)]
 
 print(cue_types_scramble)
+
 k=0
 for cue in cue_types_scramble: #looping through the types of cues in sequence, since we care about the order now. 
     if cue=='neutral':
@@ -1053,6 +1165,20 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
         if block==0 and cue != 'neutral': #if this is the first block of this cue type, we want to give them a practice round first
             for circ in stimuli:
                 circ.opacity=0
+            
+            #demo start
+            intro_msg7= visual.TextStim(win, pos=[0, .5],units='norm', text='Now you will see a preview of the task you are about to perform.')
+            intro_msg8= visual.TextStim(win, pos=[0, 0], units='norm',text='Please listen carefully to the experimenter while you watch the screen.')
+            intro_msg9=visual.TextStim(win, pos=[0,-0.5],units='norm',text='Please feel free to ask any clarifying questions after the fact.')
+            intro_msg7.draw()
+            intro_msg8.draw() 
+            intro_msg9.draw()
+            win.flip()
+            core.wait(6)
+            demoBlock={'cue':cue,'validity':1}
+            pracCond(thisBlock=demoBlock,n_practrials=6,demo=True)
+            
+            #practice start
             thisBlock={'cue':cue,'validity':0.5}
             prac_intro1=visual.TextStim(win,pos=[0,.5],units='norm',text='We will begin with a practice block of the task you are about to perform. This round the cue will be a %s cue.'%cue)
             prac_intro2=visual.TextStim(win,pos=[0,0],units='norm',text='Keep in mind that cue accuracy in this practice round will be 50 percent, however this may vary throughout the actual task.')
@@ -1073,9 +1199,24 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             win.update()
             event.waitKeys()
             pracCond(thisBlock)
+            
         elif block==0 and cue=='neutral':
             for circ in stimuli:
                 circ.opacity=0
+            
+            #begin demo
+            intro_msg7= visual.TextStim(win, pos=[0, .5],units='norm', text='Now you will see a preview of the task you are about to perform.')
+            intro_msg8= visual.TextStim(win, pos=[0, 0], units='norm',text='Please listen carefully to the experimenter while you watch the screen.')
+            intro_msg9=visual.TextStim(win, pos=[0,-0.5],units='norm',text='Please feel free to ask any clarifying questions after the fact.')
+            intro_msg7.draw()
+            intro_msg8.draw() 
+            intro_msg9.draw()
+            win.flip()
+            core.wait(6)
+            demoBlock={'cue':'neutral','validity':0}
+            pracCond(thisBlock=demoBlock,n_practrials=6,demo=True)
+            
+            #begin practice
             thisBlock={'cue':cue,'validity':0.0}
             prac_intro1=visual.TextStim(win,pos=[0,.5],units='norm',text='We will begin with a practice block of the task you are about to perform. This round the cue will be a %s cue.'%cue)
             prac_intro2=visual.TextStim(win,pos=[0,0],units='norm',text='Keep in mind that cue accuracy in this practice round will be 0 percent, meaning completely randomized, however this may vary throughout the actual task.')
@@ -1086,6 +1227,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             win.update()
             event.waitKeys()
             pracCond(thisBlock)
+            
         thisBlock=stimList[stimList.index({'cue':cue,'validity':thisValid})]
         
         for n in range(num_trials):
@@ -1138,7 +1280,6 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
                 circs.setFillColor([0,0,0])
     
-            
     
             if not flex_cond_flag: # if the block is BLOCKED
     
@@ -1182,20 +1323,6 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
 #                cue_target_2[0].setLineColor([1,1,0])
             
             if EEGflag:
-                port.close()
-                port.open()
-                #win.callonFlip(pport.setData,delay1trig)
-                port.write(delay1trig)
-                port.flush()
-                wait_here(.2)
-                port.close()
-            
-            
-            #win.flip()
-            wait_here(.5)
-            #core.wait(.5) # CUE PERIOD #################################################
-            
-            if EEGflag:
                 port.open()
                 if thisBlock['cue']=='target':
                     if thisBlock['validity']==0.5:
@@ -1217,6 +1344,11 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 port.flush()
                 wait_here(.2)
                 port.close()
+            
+            
+            #win.flip()
+            wait_here(.5)
+            #core.wait(.5) # CUE PERIOD #################################################
     
             # ## SOA period
     
@@ -1432,26 +1564,42 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
                     circs.setFillColor(None)
     
-            
-    
+            if EEGflag:
+                port.open()
+                #win.callonFlip(pport.setData,probetrig)
+                port.write(probetrig)
+                port.flush()
+                wait_here(.2)
+                port.close()
+           
             win.update()
-    
-            
-    
             clock=core.Clock()
     
             subResp= event.waitKeys(1.5,keyList=['up','down','left','right'],timeStamped=clock)
-    
+            
             if subResp==None:
-    
-                trial_corr=-1
+                if EEGflag:
+                    port.open()
+                    port.write(subNonRespTrig)
+                    port.flush()
+                    wait_here(.2)
+                    port.close()
+            
+                trial_corr=0
     
                 RT=-1
     
                 key='None'
     
             else:
-    
+                
+                if EEGflag:
+                    port.open()
+                    port.write(subRespTrig)
+                    port.flush()
+                    wait_here(.2)
+                    port.close()
+                
                 if subResp[0][0]==corrKey:
     
                     trial_corr=1
@@ -1463,14 +1611,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 RT=subResp[0][1]
     
                 key=subResp[0][0]
-    
-            if EEGflag:
-                port.open()
-                #win.callonFlip(pport.setData,probetrig)
-                port.write(probetrig)
-                port.flush()
-                wait_here(.2)
-                port.close()
+   
     
             #core.wait(0) # PROBE AND RESP ############################################## 
     
