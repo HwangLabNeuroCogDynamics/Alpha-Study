@@ -1,4 +1,4 @@
-# ##############ver 10/29/18 1:05PM##################
+# ##############ver 10/29/18 3:29PM##################
 
 # Hwang Lab alpha study #
 
@@ -19,9 +19,6 @@ import sys  # to get file system encoding
 import serial #for sending triggers from this computer to biosemi computer
 import csv
 
-
-#testing github
-
 # Ensure that relative paths start from the same directory as this script
 
 _thisDir = os.path.dirname(os.path.abspath(__file__))
@@ -32,7 +29,7 @@ os.chdir(_thisDir)
 
 expName = 'alpha_pilot'  # from the Builder filename that created this script
 
-expInfo = {'subject': '', 'session': '01','f or b?':'f','no stim':'6','t in d?':'n', 'lat?':'n','COMPUTER (b,e,d,m)':'b','neutral?':'n'}
+expInfo = {'subject': '', 'session': '01','f or b?':'f','no stim':'6','t in d?':'y', 'lat?':'n','COMPUTER (b,e,d,m)':'b','neutral?':'n'}
 
 # where 'f or b?' is flexible v blocked. blocked is default
 
@@ -43,6 +40,8 @@ expInfo = {'subject': '', 'session': '01','f or b?':'f','no stim':'6','t in d?':
 # lat?' lateralized stim. default is non lat stim. resp should be y or n.. THIS FLAG IS NOT YET CODED
 
 # COMPUTER is the flag for which computer you're using, because this will influence the path to the I and T stimuli. Default is the behavioral computer. b=behavioral Dell, e=EEG dell, d=Dillan's laptop, m=Mac in Dillan's office  
+
+# 'neutral?' if == y turns on the neutralFlag, engaging the neutral cue condition. if ==n, the neutralFlag is false and there will be 2 cue types and 3 types of validity
 
 dlg = gui.DlgFromDict(dictionary=expInfo, title=expName)
 
@@ -56,7 +55,7 @@ expInfo['expName'] = expName
 
 from psychopy import visual, core
 
-win = visual.Window([1680,1050],units='deg',fullscr=True,monitor='testMonitor')
+win = visual.Window([1680,1050],units='deg',fullscr=False,monitor='testMonitor')
 
 # ###############Flags####################################################################################
 
@@ -144,11 +143,11 @@ if neutralFlag:
 else:
     chance= ((1/no_stim)*2) #the random likelihood of the target ending up in one circle is equal to 1/(# of circles), and there are 2 cued circles
     cue_valid=[chance,.5,.8]
-    print(chance/2)
+    #print(chance/2)
 
-num_trials=33 # change later to 33
+num_trials=2#33 # change later to 33
 
-num_reps=3 #the number of repeats for each condition, should be 3 in experiment
+num_reps=2#3 #the number of repeats for each condition, should be 3 in experiment
 
 stimList=[]
 
@@ -553,7 +552,7 @@ def make_csv(filename):
     
     with open(filename+'.csv', mode='w') as csv_file:
     
-        fieldnames=['flex or blocked?','no stim','TarInDistFlag','lateralized?','block','cue','validity','trialNum','trial_type','corrResp','subResp','trialCorr?','RT','stim_loc(T,D)','tarinDisCond','ITI']
+        fieldnames=['flex or blocked?','no stim','TarInDistFlag','lateralized?','neutral?','block','cue','validity','trialNum','trial_type','corrResp','subResp','trialCorr?','RT','stim_loc(T,D)','tarinDisCond','ITI']
     
         #fieldnames is simply asserting the categories at the top of the CSV
     
@@ -578,14 +577,12 @@ def make_csv(filename):
             for k in range(len(ThisBlock['trialsData'])): #this should be the # of trials
                 ThisTrial=ThisBlock['trialsData'][k] #grabbing the trial info out of data for this trial
                 #print(ThisTrial)
-                writer.writerow({'flex or blocked?': flex_cond_flag,'no stim':expInfo['no stim'],'TarInDistFlag':TarindistFlag,'lateralized?':lat_stim_flag,'block':ThisBlock['block'],'cue':ThisBlock['cueType'],'validity':ThisBlock['validity'],
-
+                writer.writerow({'flex or blocked?': flex_cond_flag,'no stim':expInfo['no stim'],
+                                'TarInDistFlag':TarindistFlag,'lateralized?':lat_stim_flag,
+                                'neutral?':expInfo['neutral?'],'block':ThisBlock['block'],'cue':ThisBlock['cueType'],'validity':ThisBlock['validity'],
                                 'trialNum':ThisTrial['trialNum'],'trial_type':ThisTrial['trial_type'],
-
                                 'corrResp':ThisTrial['corrResp'],'subResp':ThisTrial['subjectResp'],'trialCorr?':ThisTrial['trialCorr?'],
-
                                 'RT':ThisTrial['RT'],'stim_loc(T,D)':ThisTrial['stim_loc'],'tarinDisCond':ThisTrial['tarinDisCond'],
-
                                 'ITI':ThisTrial['ITI']})
 
 def make_ITI(exp_type):
@@ -1118,12 +1115,20 @@ if EEGflag:
     port.flush()
     wait_here(.2)
     port.close()
+
 #we want to initialize another list of cues wherein the order is randomized so that target blocks or neutral or distractor blocks come first, counterbalanced over subjects
-order=np.random.choice((len(cue_types)+1),(len(cue_types)+1),replace=False) # num of conds in cue_types +1 for the neutral cue = 3  #this is randomly coming up with the indices of the conds in the scrambled list
-cue_types_scramble=np.zeros(((len(cue_types)+1))) 
-colors_scramble=np.zeros((3))
-cues=['neutral']+cue_types #yields ['neutral','target','distractor'] so that the following for loop can select these and insert them into cue_types_scramble
-colors=([-1,1,-1],[0,0,1],[1,1,0])
+if neutralFlag:
+    order=np.random.choice((len(cue_types)+1),(len(cue_types)+1),replace=False) # num of conds in cue_types +1 for the neutral cue = 3  #this is randomly coming up with the indices of the conds in the scrambled list
+    cue_types_scramble=np.zeros(((len(cue_types)+1))) 
+    colors_scramble=np.zeros((3))
+    cues=['neutral']+cue_types #yields ['neutral','target','distractor'] so that the following for loop can select these and insert them into cue_types_scramble
+    colors=([-1,1,-1],[0,0,1],[1,1,0])
+else:
+    order=np.random.choice(len(cue_types),len(cue_types),replace=False) # num of conds in cue_types #this is randomly coming up with the indices of the conds in the scrambled list
+    cue_types_scramble=np.zeros((len(cue_types))) 
+    colors_scramble=np.zeros((2))
+    cues=cue_types #yields ['target','distractor'] so that the following for loop can select these and insert them into cue_types_scramble
+    colors=([-1,1,-1],[1,1,0])
 order=list(order)
 cue_types_scramble=list(cue_types_scramble)
 colors_scramble=list(colors_scramble)
@@ -1135,7 +1140,7 @@ print(cue_types_scramble)
 
 k=0
 for cue in cue_types_scramble: #looping through the types of cues in sequence, since we care about the order now. 
-    if cue=='neutral':
+    if neutralFlag and cue=='neutral':
         reps=num_reps #if the cue type is neutral, we don't want to run it for the full # of cue_type_reps. We just want it to be run for num_reps
     else:
         reps=cue_type_reps
@@ -1144,9 +1149,9 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
     for block in (range(reps)): #we want each cue type to repeat (num_reps * the # of validity conds) times 
         
-        if cue =='neutral':
+        if neutralFlag and cue =='neutral':
             thisValid=0.0
-        else:
+        elif neutralFlag:
             if (valid_count.count(0.5)<(num_reps)) and (valid_count.count(0.8)<(num_reps)): #if both validity conditions have occurred fewer than 3 times, randomly choose which one is next
                 p=np.random.random()
                 if p >.5:
@@ -1157,12 +1162,45 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 thisValid=0.8
             elif (valid_count.count(0.5)<(num_reps)) and (valid_count.count(0.8)>=(num_reps)):
                 thisValid=0.5
-        
+        elif not neutralFlag:
+            if (valid_count.count(0.5)<(num_reps)) and (valid_count.count(0.8)<(num_reps)) and (valid_count.count(chance)<(num_reps)): #if all validity conditions have occurred fewer than 3 times, randomly choose which one is next
+                p=np.random.random()
+                if p < 0.33:
+                    thisValid=0.5
+                elif 0.33<p<0.66:
+                    thisValid=chance 
+                elif p > 0.66:
+                    thisValid=0.8
+            elif (valid_count.count(0.5)>=(num_reps)) and (valid_count.count(chance)<(num_reps)) and (valid_count.count(0.8)<(num_reps)): #if 5 is done but 8 and chance aren't done
+                p=np.random.random()
+                if p>0.5:
+                    thisValid=0.8
+                else:
+                    thisValid=chance
+            elif (valid_count.count(0.5)<(num_reps)) and (valid_count.count(chance)<(num_reps)) and (valid_count.count(0.8)>=(num_reps)): # if 8 is done but 5 and chance aren't
+                p=np.random.random()
+                if p>0.5:
+                    thisValid=0.5
+                else:
+                    thisValid=chance
+            elif (valid_count.count(0.5)<(num_reps)) and (valid_count.count(0.8)<(num_reps)) and (valid_count.count(chance)>=(num_reps)): # if chance is done but 8 and 5 aren't
+                p=np.random.random()
+                if p>0.5:
+                    thisValid=0.5
+                else:
+                    thisValid=chance
+            else: #if two of the three are done but one other isn't 
+                for v in cue_valid: #then loop through valid_count and stop at the one that isn't done and engage that one
+                    if valid_count.count(v) >= num_reps:
+                        continue 
+                    elif valid_count.count(v)<num_reps:
+                        thisValid=v
+
         valid_count.append(thisValid)
         
         trialDataList=[]
         
-        if block==0 and cue != 'neutral': #if this is the first block of this cue type, we want to give them a practice round first
+        if neutralFlag and block==0 and cue != 'neutral': #if this is the first block of this target or distractor cue type, we want to give them a practice round first
             for circ in stimuli:
                 circ.opacity=0
             
@@ -1200,7 +1238,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             event.waitKeys()
             pracCond(thisBlock)
             
-        elif block==0 and cue=='neutral':
+        elif neutralFlag and block==0 and cue=='neutral': # if neutralFlag is true and the block is neutral
             for circ in stimuli:
                 circ.opacity=0
             
@@ -1227,7 +1265,35 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             win.update()
             event.waitKeys()
             pracCond(thisBlock)
+        
+        elif (not neutralFlag) and block==0: # THIS ONE ################################################## there is only target or distractor when neutralFlag = False
+            for circ in stimuli:
+                circ.opacity=0
             
+            #begin demo
+            intro_msg7= visual.TextStim(win, pos=[0, .5],units='norm', text='Now you will see a preview of the task you are about to perform.')
+            intro_msg8= visual.TextStim(win, pos=[0, 0], units='norm',text='Please listen carefully to the experimenter while you watch the screen.')
+            intro_msg9=visual.TextStim(win, pos=[0,-0.5],units='norm',text='Please feel free to ask any clarifying questions after the fact.')
+            intro_msg7.draw()
+            intro_msg8.draw() 
+            intro_msg9.draw()
+            win.flip()
+            core.wait(6)
+            demoBlock={'cue':cue,'validity':1}
+            pracCond(thisBlock=demoBlock,n_practrials=6,demo=True)
+            
+            #begin practice
+            thisBlock={'cue':cue,'validity':0.8}
+            prac_intro1=visual.TextStim(win,pos=[0,.5],units='norm',text='We will begin with a practice block of the task you are about to perform. The cue will be a %s cue.'%cue)
+            #prac_intro2=visual.TextStim(win,pos=[0,0],units='norm',text='Keep in mind that cue accuracy in this practice round will be 0 percent, meaning completely randomized, however this may vary throughout the actual task.')
+            prac_intro3=visual.TextStim(win,pos=[0,-.5],units='norm',text='You will always be informed what the cue type is before beginning a block. Press any key to start the practice round')
+            prac_intro1.draw()
+            #prac_intro2.draw()
+            prac_intro3.draw()
+            win.update()
+            event.waitKeys()
+            pracCond(thisBlock)
+        
         thisBlock=stimList[stimList.index({'cue':cue,'validity':thisValid})]
         
         for n in range(num_trials):
@@ -1250,10 +1316,10 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 info_msg2=visual.TextStim(win, pos=[0,-.5], units='norm',text='Press any key to continue')
     
                 info_msg2.draw()
-    
-                info_msg3=visual.TextStim(win,pos=[0,0],units='norm',text='The cued locations in this block will be predictive %.1f percent of the time' %(int(thisBlock['validity']*100)))
-    
-                info_msg3.draw()
+                
+                if neutralFlag:
+                    info_msg3=visual.TextStim(win,pos=[0,0],units='norm',text='The cued locations in this block will be predictive %.1f percent of the time' %(int(thisBlock['validity']*100)))
+                    info_msg3.draw()
     
                 win.update()
     
@@ -1338,7 +1404,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                     elif thisBlock['validity']==0.8:
                         #win.callonFlip(pport.setData,dis8trig)
                         port.write(dis8trig)
-                elif thisBlock['cue']=='neutral':
+                elif neutralFlag and thisBlock['cue']=='neutral':
                     #win.callonFlip(pport.setData,neutraltrig)
                     port.write(neutraltrig)
                 port.flush()
@@ -1383,9 +1449,10 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             elif thisBlock['validity']==.8:
     
                 which_circle= np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_both],1,p=[0.4,0.4,0.2]) # FIX THIS??? should stim_minus_two be changed ??
-   
+            elif thisBlock['validity']==chance:
+                which_circle= np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_both],1,p=[(chance/2),(chance/2),(1-chance)])
     
-            if thisBlock['cue']=='neutral':#since the neutral cue is neutral, it isn't going to be valid and targets/distractors will be randomly assigned
+            if neutralFlag and thisBlock['cue']=='neutral':#since the neutral cue is neutral, it isn't going to be valid and targets/distractors will be randomly assigned
     
                 trial_type= 'None' 
                 cue_side='None'
@@ -1497,7 +1564,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
             
     
-            elif thisBlock['cue']=='neutral':
+            elif neutralFlag and thisBlock['cue']=='neutral':
     
                 probe1=np.random.choice(right_stim,1,replace=False) #select two circles, one on left and one on right
     
