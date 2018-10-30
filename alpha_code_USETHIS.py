@@ -29,7 +29,7 @@ os.chdir(_thisDir)
 
 expName = 'alpha_pilot'  # from the Builder filename that created this script
 
-expInfo = {'subject': '', 'session': '01','f or b?':'f','no stim':'6','t in d?':'y', 'lat?':'n','COMPUTER (b,e,d,m)':'b','neutral?':'n'}
+expInfo = {'subject': '', 'session': '01','f or b?':'f','no stim':'6','t in d?':'y', 'lat?':'n','COMPUTER (b,e,d,m)':'b','neutral?':'n','high, low, or no':'high'}
 
 # where 'f or b?' is flexible v blocked. blocked is default
 
@@ -42,7 +42,7 @@ expInfo = {'subject': '', 'session': '01','f or b?':'f','no stim':'6','t in d?':
 # COMPUTER is the flag for which computer you're using, because this will influence the path to the I and T stimuli. Default is the behavioral computer. b=behavioral Dell, e=EEG dell, d=Dillan's laptop, m=Mac in Dillan's office  
 
 # 'neutral?' if == y turns on the neutralFlag, engaging the neutral cue condition. if ==n, the neutralFlag is false and there will be 2 cue types and 3 types of validity
-
+# high low or no refers to the validity conditions. High= [.65,.95], low= [.5,.8], no=??
 dlg = gui.DlgFromDict(dictionary=expInfo, title=expName)
 
 if dlg.OK == False:
@@ -62,6 +62,12 @@ win = visual.Window([1680,1050],units='deg',fullscr=False,monitor='testMonitor')
 
 
 # this is where we'll flag the different piloted conditions
+if expInfo['high, low, or no']=='high':
+    vFlag=1
+elif expInfo['high, low, or no']=='low':
+    vFlag=0
+elif expInfo['high, low, or no']=='no':
+    vFlag=-1
 
 if expInfo['neutral?']=='y':
     neutralFlag=1
@@ -138,16 +144,23 @@ else:
 
 cue_types=['target','distractor'] # distractor or target or neutral cues
 
-if neutralFlag:
-    cue_valid=[.5,.8] # cue validity
-else:
+if vFlag==0:
+    lo=.5
+    hi=.8
+elif vFlag==1:
+    lo=.65
+    hi=.95
+#elif vFlag==-1: ??
+
+cue_valid=[lo,hi] # cue validity
+
+if (not neutralFlag):
     chance= ((1/no_stim)*2) #the random likelihood of the target ending up in one circle is equal to 1/(# of circles), and there are 2 cued circles
-    cue_valid=[chance,.5,.8]
-    #print(chance/2)
+    cue_valid.append(chance)
 
-num_trials=2#33 # change later to 33
+num_trials=1#33 # change later to 33
 
-num_reps=2#3 #the number of repeats for each condition, should be 3 in experiment
+num_reps=3 #the number of repeats for each condition, should be 3 in experiment
 
 stimList=[]
 
@@ -309,13 +322,13 @@ def pracCond(thisBlock,n_practrials=10,demo=False):
 
         
 
-        if thisBlock['validity']==.5: # THIS GIVES HALF THE CHANCE TO EITHER CUED SPOT, SO ANY ONE CUED SPOT HAS .25 or .40 chance of selection
+        if thisBlock['validity']==lo: # THIS GIVES HALF THE CHANCE TO EITHER CUED SPOT, SO ANY ONE CUED SPOT HAS .25 or .40 chance of selection
 
-            which_circle= np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_two],1,p=[0.25,0.25,0.5]) #decide if cue is valid, using validity % of this condition
+            which_circle= np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_two],1,p=[(lo/2),(lo/2),(1-lo)]) #decide if cue is valid, using validity % of this condition
 
-        elif thisBlock['validity']==.8:
+        elif thisBlock['validity']==hi:
 
-            which_circle= np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_two],1,p=[0.4,0.4,0.2])
+            which_circle= np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_two],1,p=[(hi/2),(hi/2),(1-hi)])
         elif thisBlock['validity']==1:
             which_circle = np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_two],1,p=[0.5,0.5,0.0])
 
@@ -1152,43 +1165,43 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
         if neutralFlag and cue =='neutral':
             thisValid=0.0
         elif neutralFlag:
-            if (valid_count.count(0.5)<(num_reps)) and (valid_count.count(0.8)<(num_reps)): #if both validity conditions have occurred fewer than 3 times, randomly choose which one is next
+            if (valid_count.count(lo)<(num_reps)) and (valid_count.count(hi)<(num_reps)): #if both validity conditions have occurred fewer than 3 times, randomly choose which one is next
                 p=np.random.random()
                 if p >.5:
-                    thisValid=0.5
+                    thisValid=lo
                 else:
-                    thisValid=0.8
-            elif (valid_count.count(0.5)>=(num_reps)) and (valid_count.count(0.8)<(num_reps)): #else choose the one that has not yet occurred 3 times 
-                thisValid=0.8
-            elif (valid_count.count(0.5)<(num_reps)) and (valid_count.count(0.8)>=(num_reps)):
-                thisValid=0.5
-        elif not neutralFlag:
-            if (valid_count.count(0.5)<(num_reps)) and (valid_count.count(0.8)<(num_reps)) and (valid_count.count(chance)<(num_reps)): #if all validity conditions have occurred fewer than 3 times, randomly choose which one is next
+                    thisValid=hi
+            elif (valid_count.count(lo)>=(num_reps)) and (valid_count.count(hi)<(num_reps)): #else choose the one that has not yet occurred 3 times 
+                thisValid=hi
+            elif (valid_count.count(lo)<(num_reps)) and (valid_count.count(hi)>=(num_reps)):
+                thisValid=lo
+        elif not neutralFlag and (vFlag != -1):
+            if (valid_count.count(lo)<(num_reps)) and (valid_count.count(hi)<(num_reps)) and (valid_count.count(chance)<(num_reps)): #if all validity conditions have occurred fewer than 3 times, randomly choose which one is next
                 p=np.random.random()
                 if p < 0.33:
-                    thisValid=0.5
+                    thisValid=lo
                 elif 0.33<p<0.66:
                     thisValid=chance 
                 elif p > 0.66:
-                    thisValid=0.8
-            elif (valid_count.count(0.5)>=(num_reps)) and (valid_count.count(chance)<(num_reps)) and (valid_count.count(0.8)<(num_reps)): #if 5 is done but 8 and chance aren't done
+                    thisValid=hi
+            elif (valid_count.count(lo)>=(num_reps)) and (valid_count.count(chance)<(num_reps)) and (valid_count.count(hi)<(num_reps)): #if 5 is done but 8 and chance aren't done
                 p=np.random.random()
                 if p>0.5:
-                    thisValid=0.8
+                    thisValid=hi
                 else:
                     thisValid=chance
-            elif (valid_count.count(0.5)<(num_reps)) and (valid_count.count(chance)<(num_reps)) and (valid_count.count(0.8)>=(num_reps)): # if 8 is done but 5 and chance aren't
+            elif (valid_count.count(lo)<(num_reps)) and (valid_count.count(chance)<(num_reps)) and (valid_count.count(hi)>=(num_reps)): # if 8 is done but 5 and chance aren't
                 p=np.random.random()
                 if p>0.5:
-                    thisValid=0.5
+                    thisValid=lo
                 else:
                     thisValid=chance
-            elif (valid_count.count(0.5)<(num_reps)) and (valid_count.count(0.8)<(num_reps)) and (valid_count.count(chance)>=(num_reps)): # if chance is done but 8 and 5 aren't
+            elif (valid_count.count(lo)<(num_reps)) and (valid_count.count(hi)<(num_reps)) and (valid_count.count(chance)>=(num_reps)): # if chance is done but 8 and 5 aren't
                 p=np.random.random()
                 if p>0.5:
-                    thisValid=0.5
+                    thisValid=lo
                 else:
-                    thisValid=chance
+                    thisValid=hi
             else: #if two of the three are done but one other isn't 
                 for v in cue_valid: #then loop through valid_count and stop at the one that isn't done and engage that one
                     if valid_count.count(v) >= num_reps:
@@ -1217,7 +1230,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             pracCond(thisBlock=demoBlock,n_practrials=6,demo=True)
             
             #practice start
-            thisBlock={'cue':cue,'validity':0.5}
+            thisBlock={'cue':cue,'validity':lo}
             prac_intro1=visual.TextStim(win,pos=[0,.5],units='norm',text='We will begin with a practice block of the task you are about to perform. This round the cue will be a %s cue.'%cue)
             prac_intro2=visual.TextStim(win,pos=[0,0],units='norm',text='Keep in mind that cue accuracy in this practice round will be 50 percent, however this may vary throughout the actual task.')
             prac_intro3=visual.TextStim(win,pos=[0,-.5],units='norm',text='You will always be informed what the cue type and accuracy is before beginning a block. Press any key to start the practice round')
@@ -1233,7 +1246,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             prac_intro4.draw()
             prac_intro5.draw()
             prac_intro6.draw()
-            thisBlock={'cue':cue,'validity':0.8}
+            thisBlock={'cue':cue,'validity':hi}
             win.update()
             event.waitKeys()
             pracCond(thisBlock)
@@ -1283,7 +1296,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             pracCond(thisBlock=demoBlock,n_practrials=6,demo=True)
             
             #begin practice
-            thisBlock={'cue':cue,'validity':0.8}
+            thisBlock={'cue':cue,'validity':hi}
             prac_intro1=visual.TextStim(win,pos=[0,.5],units='norm',text='We will begin with a practice block of the task you are about to perform. The cue will be a %s cue.'%cue)
             #prac_intro2=visual.TextStim(win,pos=[0,0],units='norm',text='Keep in mind that cue accuracy in this practice round will be 0 percent, meaning completely randomized, however this may vary throughout the actual task.')
             prac_intro3=visual.TextStim(win,pos=[0,-.5],units='norm',text='You will always be informed what the cue type is before beginning a block. Press any key to start the practice round')
@@ -1391,17 +1404,17 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             if EEGflag:
                 port.open()
                 if thisBlock['cue']=='target':
-                    if thisBlock['validity']==0.5:
+                    if thisBlock['validity']==lo:
                         #win.callonFlip(pport.setData,target5trig)
                         port.write(target5trig)
-                    elif thisBlock['validity']==0.8:
+                    elif thisBlock['validity']==hi:
                         #win.callonFlip(pport.setData,target8trig)
                         port.write(target8trig)
                 elif thisBlock['cue']=='distractor':
-                    if thisBlock['validity']==0.5:
+                    if thisBlock['validity']==lo:
                         #win.callonFlip(pport.setData,dis5trig)
                         port.write(dis5trig)
-                    elif thisBlock['validity']==0.8:
+                    elif thisBlock['validity']==hi:
                         #win.callonFlip(pport.setData,dis8trig)
                         port.write(dis8trig)
                 elif neutralFlag and thisBlock['cue']=='neutral':
@@ -1442,13 +1455,13 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
             
     
-            if thisBlock['validity']==.5: # THIS GIVES HALF THE CHANCE TO EITHER CUED SPOT, SO ANY ONE CUED SPOT HAS .25 or .40 chance of selection
+            if thisBlock['validity']==lo: # THIS GIVES HALF THE CHANCE TO EITHER CUED SPOT, SO ANY ONE CUED SPOT HAS .25 or .40 chance of selection
     
-                which_circle= np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_both],1,p=[0.25,0.25,0.5]) #decide if cue is valid, using validity % of this condition
+                which_circle= np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_both],1,p=[(lo/2),(lo/2),(1-lo)]) #decide if cue is valid, using validity % of this condition
     
-            elif thisBlock['validity']==.8:
+            elif thisBlock['validity']==hi:
     
-                which_circle= np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_both],1,p=[0.4,0.4,0.2]) # FIX THIS??? should stim_minus_two be changed ??
+                which_circle= np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_both],1,p=[(hi/2),(hi/2),(1-hi)]) # FIX THIS??? should stim_minus_two be changed ??
             elif thisBlock['validity']==chance:
                 which_circle= np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_both],1,p=[(chance/2),(chance/2),(1-chance)])
     
