@@ -1,4 +1,4 @@
-# ##############ver 10/31/18 12:47PM##################
+# ##############ver 10/31/18 3:53PM##################
 
 # Hwang Lab alpha study #
 
@@ -55,7 +55,7 @@ expInfo['expName'] = expName
 
 from psychopy import visual, core
 
-win = visual.Window([1680,1050],units='deg',fullscr=False,monitor='testMonitor')
+win = visual.Window([1680,1050],units='deg',fullscr=True,monitor='testMonitor')
 
 # ###############Flags####################################################################################
 
@@ -121,6 +121,8 @@ else:
 if expInfo['COMPUTER (b,e,d,m)']=='b': 
     redT=visual.ImageStim(win, image='C:\Stimuli\T2.png') 
     redI=visual.ImageStim(win, image='C:\Stimuli\I3.png') #behavioral stimulus presentation Dell
+    yellowT=visual.ImageStim(win, image='C:\Stimuli\YellowT.png')
+    redLpath='C:\Stimuli'
     filename='Z:/AlphaStudy_Data/behavData'+u'/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
     refresh_rate=60
 elif expInfo['COMPUTER (b,e,d,m)']=='d':
@@ -138,15 +140,24 @@ elif expInfo['COMPUTER (b,e,d,m)']=='m':
 elif expInfo['COMPUTER (b,e,d,m)']=='e':
     redT=visual.ImageStim(win, image='C:\Stimuli\T2.png') 
     redI=visual.ImageStim(win, image='C:\Stimuli\I3.png') #EEG stimulus presentation Dell
+    yellowT=visual.ImageStim(win, image='C:\Stimuli\YellowT.png')
+    redLpath='C:\Stimuli'
     filename='Z:/AlphaStudy_Data/eegData'+u'/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
     refresh_rate=50
 else:
     # Data file name stem = absolute path + name; later add .psyexp, .csv, .log, etc
     filename = _thisDir + os.sep + u'data/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
 
-redL=[visual.ImageStim(win, image=redLpath+'RedL copy 0'),visual.ImageStim(win, image=redLpath+'RedL copy 1'),visual.ImageStim(win, image=redLpath+'RedL copy 2'),
+if (expInfo['COMPUTER (b,e,d,m)']=='b') or (expInfo['COMPUTER (b,e,d,m)']=='e'):
+    redL=[visual.ImageStim(win, image=redLpath+'\RedL copy 0'),visual.ImageStim(win, image=redLpath+'\RedL copy 1'),visual.ImageStim(win, image=redLpath+'\RedL copy 2'),
+            visual.ImageStim(win, image=redLpath+'\RedL copy 3'),visual.ImageStim(win, image=redLpath+'\RedL copy 4'),visual.ImageStim(win, image=redLpath+'\RedL copy 5'),
+            visual.ImageStim(win, image=redLpath+'\RedL copy 6'),visual.ImageStim(win, image=redLpath+'\RedL copy 7'),visual.ImageStim(win, image=redLpath+'\RedL copy 8')]
+else:
+    redL=[visual.ImageStim(win, image=redLpath+'RedL copy 0'),visual.ImageStim(win, image=redLpath+'RedL copy 1'),visual.ImageStim(win, image=redLpath+'RedL copy 2'),
         visual.ImageStim(win, image=redLpath+'RedL copy 3'),visual.ImageStim(win, image=redLpath+'RedL copy 4'),visual.ImageStim(win, image=redLpath+'RedL copy 5'),
         visual.ImageStim(win, image=redLpath+'RedL copy 6'),visual.ImageStim(win, image=redLpath+'RedL copy 7'),visual.ImageStim(win, image=redLpath+'RedL copy 8')]
+
+
 
 if not allCircsFlag:
     distractor_stim=redI
