@@ -1,4 +1,4 @@
-# ##############ver 10/30/18 12:54PM##################
+# ##############ver 10/31/18 12:47PM##################
 
 # Hwang Lab alpha study #
 
@@ -55,10 +55,9 @@ expInfo['expName'] = expName
 
 from psychopy import visual, core
 
-win = visual.Window([1680,1050],units='deg',fullscr=True,monitor='testMonitor')
+win = visual.Window([1680,1050],units='deg',fullscr=False,monitor='testMonitor')
 
 # ###############Flags####################################################################################
-
 
 
 # this is where we'll flag the different piloted conditions
@@ -84,7 +83,8 @@ else:
 
     flex_cond_flag = False
 
-
+#will our probe include non-singleton distractors? #yellow distractor and red everything else. 
+allCircsFlag=1
 
 #number of cue locations
 
@@ -119,28 +119,42 @@ else:
 
 
 if expInfo['COMPUTER (b,e,d,m)']=='b': 
-    target_stim=visual.ImageStim(win, image='C:\Stimuli\T2.png') 
-    distractor_stim=visual.ImageStim(win, image='C:\Stimuli\I3.png') #behavioral stimulus presentation Dell
+    redT=visual.ImageStim(win, image='C:\Stimuli\T2.png') 
+    redI=visual.ImageStim(win, image='C:\Stimuli\I3.png') #behavioral stimulus presentation Dell
     filename='Z:/AlphaStudy_Data/behavData'+u'/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
     refresh_rate=60
 elif expInfo['COMPUTER (b,e,d,m)']=='d':
-    target_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\T2.png')
-    distractor_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\I3.png') #dillan's computer
+    redT=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\T2.png')
+    redI=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\I3.png') #dillan's computer
     filename='C:/Users/dillc/Documents'+u'/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
     refresh_rate=50
 elif expInfo['COMPUTER (b,e,d,m)']=='m':
-    target_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/T2.png') 
-    distractor_stim=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/I3.png')
+    redT=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/T2.png') 
+    redI=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/I3.png')
+    yellowT=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/YellowT.png')
+    redLpath='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/'
     filename='/Users/Shared/'+u'data/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
     refresh_rate=60 #not sure what the real refresh rate is
 elif expInfo['COMPUTER (b,e,d,m)']=='e':
-    target_stim=visual.ImageStim(win, image='C:\Stimuli\T2.png') 
-    distractor_stim=visual.ImageStim(win, image='C:\Stimuli\I3.png') #EEG stimulus presentation Dell
+    redT=visual.ImageStim(win, image='C:\Stimuli\T2.png') 
+    redI=visual.ImageStim(win, image='C:\Stimuli\I3.png') #EEG stimulus presentation Dell
     filename='Z:/AlphaStudy_Data/eegData'+u'/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
     refresh_rate=50
 else:
     # Data file name stem = absolute path + name; later add .psyexp, .csv, .log, etc
     filename = _thisDir + os.sep + u'data/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
+
+redL=[visual.ImageStim(win, image=redLpath+'RedL copy 0'),visual.ImageStim(win, image=redLpath+'RedL copy 1'),visual.ImageStim(win, image=redLpath+'RedL copy 2'),
+        visual.ImageStim(win, image=redLpath+'RedL copy 3'),visual.ImageStim(win, image=redLpath+'RedL copy 4'),visual.ImageStim(win, image=redLpath+'RedL copy 5'),
+        visual.ImageStim(win, image=redLpath+'RedL copy 6'),visual.ImageStim(win, image=redLpath+'RedL copy 7'),visual.ImageStim(win, image=redLpath+'RedL copy 8')]
+
+if not allCircsFlag:
+    distractor_stim=redI
+    target_stim=redT
+else:
+    distractor_stim=yellowT
+    target_stim=redT
+    other_stim=redL
 
 cue_types=['target','distractor'] # distractor or target or neutral cues
 
@@ -468,21 +482,33 @@ def pracCond(thisBlock,n_practrials=10,demo=False):
 
         
 
-        for circs in stimuli: 
-
-            if not (((circs.pos[0]==target_stim.pos[0]) and (circs.pos[1]==target_stim.pos[1])) or ((circs.pos[0]==distractor_stim.pos[0]) and (circs.pos[1]==distractor_stim.pos[1]))): #if the circle isn't a target or distractor, its grey
-
-                circs.setLineColor([0,0,0])
-
-                circs.setFillColor(None)
-
+        for n in range(len(stimuli)): 
+            circs=stimuli[n]
+            if not allCircsFlag:
+                if not (((circs.pos[0]==target_stim.pos[0]) and (circs.pos[1]==target_stim.pos[1])) or ((circs.pos[0]==distractor_stim.pos[0]) and (circs.pos[1]==distractor_stim.pos[1]))): #if the circle isn't a target or distractor, its grey
+                    circs.setLineColor([0,0,0])
+    
+                    circs.setFillColor(None)
+                else:
+    
+                    circs.setLineColor([1,-1,-1])
+    
+                    circs.setFillColor(None)
             else:
+                if not (((circs.pos[0]==target_stim.pos[0]) and (circs.pos[1]==target_stim.pos[1])) or ((circs.pos[0]==distractor_stim.pos[0]) and (circs.pos[1]==distractor_stim.pos[1]))): #if the circle is not a target or distractor then put other_stim in it
+                    circs.setLineColor([1,-1,-1]) #if the circle is a non singleton distractor make it red
+                    circs.setFillColor(None)
+                    redL[n].ori=(np.random.choice([0,90,180,270],1))[0]
+                    redL[n].pos=circs.pos
+                    redL[n].draw()
+                elif (circs.pos[0]==target_stim.pos[0] and circs.pos[1]==target_stim.pos[1]):
+                    circs.setLineColor([1,-1,-1]) #if the circle is a target we want it to be red, too
+                    circs.setFillColor(None)
+                else: #if the circle is a chosen distractor, make it yellow
+                    circs.lineColorSpace='rgb255'
+                    circs.setLineColor([255,255,0])
+                    circs.setFillColor(None)
 
-                circs.setLineColor([1,-1,-1])
-
-                circs.setFillColor(None)
-
-        
 
         win.update()
 
@@ -528,7 +554,7 @@ def pracCond(thisBlock,n_practrials=10,demo=False):
         
 
         for circs in stimuli:
-
+            circs.lineColorSpace='rgb'
             circs.setLineColor([0,0,0])
 
             circs.setFillColor([0,0,0])
@@ -565,15 +591,13 @@ def make_csv(filename):
     
     with open(filename+'.csv', mode='w') as csv_file:
     
-        fieldnames=['flex or blocked?','no stim','TarInDistFlag','lateralized?','neutral?','block','cue','validity','trialNum','trial_type','corrResp','subResp','trialCorr?','RT','stim_loc(T,D)','tarinDisCond','ITI']
+        fieldnames=['flex or blocked?','no stim','allCircsFlag','TarInDistFlag','lateralized?','neutral?','block','cue','validity','trialNum','trial_type','corrResp','subResp','trialCorr?','RT','stim_loc(T,D)','tarinDisCond','ITI']
     
         #fieldnames is simply asserting the categories at the top of the CSV
     
         writer=csv.DictWriter(csv_file,fieldnames=fieldnames)
     
         writer.writeheader()
-    
-        
     
         #writer.writerow({'flex or blocked?': flex_cond_flag,'no stim':expInfo['no stim'],'TarInDistFlag':TarindistFlag,'lateralized?':lat_stim_flag})
         #This is just to give info about the session overall: was the session blocked or flexibly cued? How many stim? etc.
@@ -591,7 +615,7 @@ def make_csv(filename):
                 ThisTrial=ThisBlock['trialsData'][k] #grabbing the trial info out of data for this trial
                 #print(ThisTrial)
                 writer.writerow({'flex or blocked?': flex_cond_flag,'no stim':expInfo['no stim'],
-                                'TarInDistFlag':TarindistFlag,'lateralized?':lat_stim_flag,
+                                'allCircsFlag':allCircsFlag,'TarInDistFlag':TarindistFlag,'lateralized?':lat_stim_flag,
                                 'neutral?':expInfo['neutral?'],'block':ThisBlock['block'],'cue':ThisBlock['cueType'],'validity':ThisBlock['validity'],
                                 'trialNum':ThisTrial['trialNum'],'trial_type':ThisTrial['trial_type'],
                                 'corrResp':ThisTrial['corrResp'],'subResp':ThisTrial['subjectResp'],'trialCorr?':ThisTrial['trialCorr?'],
@@ -1110,6 +1134,8 @@ for stim in stimuli:
     stim.lineWidth=5
 distractor_stim.size=([1.25,1.25])
 target_stim.size=([1.25,1.25])
+for stim in other_stim:
+    stim.size=([1.25,1.25])
 
 fixation = visual.TextStim(win, text='+',units='norm', color=(1,1,1))
 
@@ -1141,7 +1167,7 @@ else:
     cue_types_scramble=np.zeros((len(cue_types))) 
     colors_scramble=np.zeros((2))
     cues=cue_types #yields ['target','distractor'] so that the following for loop can select these and insert them into cue_types_scramble
-    colors=([-1,1,-1],[1,1,0])
+    colors=([-1,-1,1],[1,1,0])
 order=list(order)
 cue_types_scramble=list(cue_types_scramble)
 colors_scramble=list(colors_scramble)
@@ -1630,19 +1656,32 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     
             
     
-            for circs in stimuli: 
-    
-                if not (((circs.pos[0]==target_stim.pos[0]) and (circs.pos[1]==target_stim.pos[1])) or ((circs.pos[0]==distractor_stim.pos[0]) and (circs.pos[1]==distractor_stim.pos[1]))): #if the circle isn't a target or distractor, its grey
-    
-                    circs.setLineColor([0,0,0])
-    
-                    circs.setFillColor(None)
-    
+            for s in range(len(stimuli)): 
+                circs=stimuli[s]
+                if not allCircsFlag:
+                    if not (((circs.pos[0]==target_stim.pos[0]) and (circs.pos[1]==target_stim.pos[1])) or ((circs.pos[0]==distractor_stim.pos[0]) and (circs.pos[1]==distractor_stim.pos[1]))): #if the circle isn't a target or distractor, its grey
+                        circs.setLineColor([0,0,0])
+        
+                        circs.setFillColor(None)
+                    else:
+        
+                        circs.setLineColor([1,-1,-1])
+        
+                        circs.setFillColor(None)
                 else:
-    
-                    circs.setLineColor([1,-1,-1])
-    
-                    circs.setFillColor(None)
+                    if not (((circs.pos[0]==target_stim.pos[0]) and (circs.pos[1]==target_stim.pos[1])) or ((circs.pos[0]==distractor_stim.pos[0]) and (circs.pos[1]==distractor_stim.pos[1]))): #if the circle is not a target or distractor then put other_stim in it
+                        circs.setLineColor([1,-1,-1]) #if the circle is a non singleton distractor make it red
+                        circs.setFillColor(None)
+                        redL[s].ori=(np.random.choice([0,90,180,270],1))[0]
+                        redL[s].pos=circs.pos
+                        redL[s].draw()
+                    elif (circs.pos[0]==target_stim.pos[0] and circs.pos[1]==target_stim.pos[1]):
+                        circs.setLineColor([1,-1,-1]) #if the circle is a target we want it to be red, too
+                        circs.setFillColor(None)
+                    else: #if the circle is a chosen distractor, make it yellow
+                        circs.lineColorSpace='rgb255'
+                        circs.setLineColor([255,255,0])
+                        circs.setFillColor(None)
     
             if EEGflag:
                 port.open()
@@ -1665,9 +1704,9 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                     wait_here(.2)
                     port.close()
             
-                trial_corr=0
+                trial_corr=np.nan
     
-                RT=-1
+                RT=np.nan
     
                 key='None'
     
@@ -1696,7 +1735,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             #core.wait(0) # PROBE AND RESP ############################################## 
     
             for circs in stimuli:
-    
+                circs.lineColorSpace='rgb'
                 circs.setLineColor([0,0,0])
     
                 circs.setFillColor([0,0,0])
