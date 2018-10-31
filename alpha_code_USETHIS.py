@@ -1,4 +1,4 @@
-# ##############ver 10/29/18 3:29PM##################
+# ##############ver 10/30/18 12:54PM##################
 
 # Hwang Lab alpha study #
 
@@ -55,7 +55,7 @@ expInfo['expName'] = expName
 
 from psychopy import visual, core
 
-win = visual.Window([1680,1050],units='deg',fullscr=False,monitor='testMonitor')
+win = visual.Window([1680,1050],units='deg',fullscr=True,monitor='testMonitor')
 
 # ###############Flags####################################################################################
 
@@ -122,7 +122,7 @@ if expInfo['COMPUTER (b,e,d,m)']=='b':
     target_stim=visual.ImageStim(win, image='C:\Stimuli\T2.png') 
     distractor_stim=visual.ImageStim(win, image='C:\Stimuli\I3.png') #behavioral stimulus presentation Dell
     filename='Z:/AlphaStudy_Data/behavData'+u'/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
-    refresh_rate=50
+    refresh_rate=60
 elif expInfo['COMPUTER (b,e,d,m)']=='d':
     target_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\T2.png')
     distractor_stim=visual.ImageStim(win, image='C:\\Users\\dillc\\Downloads\\I3.png') #dillan's computer
@@ -158,7 +158,7 @@ if (not neutralFlag):
     chance= ((1/no_stim)*2) #the random likelihood of the target ending up in one circle is equal to 1/(# of circles), and there are 2 cued circles
     cue_valid.append(chance)
 
-num_trials=1#33 # change later to 33
+num_trials=33 # change later to 33
 
 num_reps=3 #the number of repeats for each condition, should be 3 in experiment
 
