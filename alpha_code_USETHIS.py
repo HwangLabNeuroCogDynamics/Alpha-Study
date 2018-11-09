@@ -1,4 +1,4 @@
-# ##############ver 10/31/18 3:53PM##################
+# ##############ver 11/1/18 3:58PM##################
 
 # Hwang Lab alpha study #
 
@@ -136,7 +136,7 @@ elif expInfo['COMPUTER (b,e,d,m)']=='m':
     yellowT=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/YellowT.png')
     redLpath='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/'
     filename='/Users/Shared/'+u'data/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
-    refresh_rate=60 #not sure what the real refresh rate is
+    refresh_rate=50 #not sure what the real refresh rate is
 elif expInfo['COMPUTER (b,e,d,m)']=='e':
     redT=visual.ImageStim(win, image='C:\Stimuli\T2.png') 
     redI=visual.ImageStim(win, image='C:\Stimuli\I3.png') #EEG stimulus presentation Dell
@@ -149,13 +149,13 @@ else:
     filename = _thisDir + os.sep + u'data/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
 
 if (expInfo['COMPUTER (b,e,d,m)']=='b') or (expInfo['COMPUTER (b,e,d,m)']=='e'):
-    redL=[visual.ImageStim(win, image=redLpath+'\RedL copy 0'),visual.ImageStim(win, image=redLpath+'\RedL copy 1'),visual.ImageStim(win, image=redLpath+'\RedL copy 2'),
-            visual.ImageStim(win, image=redLpath+'\RedL copy 3'),visual.ImageStim(win, image=redLpath+'\RedL copy 4'),visual.ImageStim(win, image=redLpath+'\RedL copy 5'),
-            visual.ImageStim(win, image=redLpath+'\RedL copy 6'),visual.ImageStim(win, image=redLpath+'\RedL copy 7'),visual.ImageStim(win, image=redLpath+'\RedL copy 8')]
+    redL=[visual.ImageStim(win, image=redLpath+'\RedL copy 0.png'),visual.ImageStim(win, image=redLpath+'\RedL copy 1.png'),visual.ImageStim(win, image=redLpath+'\RedL copy 2.png'),
+            visual.ImageStim(win, image=redLpath+'\RedL copy 3.png'),visual.ImageStim(win, image=redLpath+'\RedL copy 4.png'),visual.ImageStim(win, image=redLpath+'\RedL copy 5.png'),
+            visual.ImageStim(win, image=redLpath+'\RedL copy 6.png'),visual.ImageStim(win, image=redLpath+'\RedL copy 7.png'),visual.ImageStim(win, image=redLpath+'\RedL copy 8.png')]
 else:
-    redL=[visual.ImageStim(win, image=redLpath+'RedL copy 0'),visual.ImageStim(win, image=redLpath+'RedL copy 1'),visual.ImageStim(win, image=redLpath+'RedL copy 2'),
-        visual.ImageStim(win, image=redLpath+'RedL copy 3'),visual.ImageStim(win, image=redLpath+'RedL copy 4'),visual.ImageStim(win, image=redLpath+'RedL copy 5'),
-        visual.ImageStim(win, image=redLpath+'RedL copy 6'),visual.ImageStim(win, image=redLpath+'RedL copy 7'),visual.ImageStim(win, image=redLpath+'RedL copy 8')]
+    redL=[visual.ImageStim(win, image=redLpath+'RedL copy 0.png'),visual.ImageStim(win, image=redLpath+'RedL copy 1.png'),visual.ImageStim(win, image=redLpath+'RedL copy 2.png'),
+        visual.ImageStim(win, image=redLpath+'RedL copy 3.png'),visual.ImageStim(win, image=redLpath+'RedL copy 4.png'),visual.ImageStim(win, image=redLpath+'RedL copy 5.png'),
+        visual.ImageStim(win, image=redLpath+'RedL copy 6.png'),visual.ImageStim(win, image=redLpath+'RedL copy 7.png'),visual.ImageStim(win, image=redLpath+'RedL copy 8.png')]
 
 
 
@@ -166,7 +166,6 @@ else:
     distractor_stim=yellowT
     target_stim=redT
     other_stim=redL
-
 cue_types=['target','distractor'] # distractor or target or neutral cues
 
 if vFlag==0:
@@ -203,7 +202,7 @@ print(stimList)
 cue_type_reps=len(cue_valid)*num_reps #the number of times that the 'target' or 'distractor' cue types should be repeated is equal to the number of validity types (i.e. 2 or 3 per cue type) times the n repeats for each condition (ie, 3)
 
 EEGflag=0
-if expInfo['COMPUTER (b,e,d,m)']=='e':
+if expInfo['COMPUTER (b,e,d,m)']=='e': 
     EEGflag=1
     #added trigs
     startSaveflag=bytes([254])
@@ -1178,7 +1177,7 @@ else:
     cue_types_scramble=np.zeros((len(cue_types))) 
     colors_scramble=np.zeros((2))
     cues=cue_types #yields ['target','distractor'] so that the following for loop can select these and insert them into cue_types_scramble
-    colors=([-1,-1,1],[1,1,0])
+    colors=([-1,-1,1],[-1,1,-1]) #change
 order=list(order)
 cue_types_scramble=list(cue_types_scramble)
 colors_scramble=list(colors_scramble)
@@ -1699,13 +1698,13 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 #win.callonFlip(pport.setData,probetrig)
                 port.write(probetrig)
                 port.flush()
-                wait_here(.2)
+                #wait_here(.2)
                 port.close()
            
             win.update()
             clock=core.Clock()
     
-            subResp= event.waitKeys(1.5,keyList=['up','down','left','right'],timeStamped=clock)
+            subResp= event.waitKeys(2,keyList=['up','down','left','right'],timeStamped=clock)
             
             if subResp==None:
                 if EEGflag:
@@ -1727,7 +1726,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                     port.open()
                     port.write(subRespTrig)
                     port.flush()
-                    wait_here(.2)
+                    #wait_here(.2)
                     port.close()
                 
                 if subResp[0][0]==corrKey:
@@ -1779,7 +1778,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             
     
             if key: 
-                if (expInfo['COMPUTER (b,e,d,m)']=='b' or expInfo['COMPUTER (b,e,d,m)']=='m') and key[0]=='escape': #for the EEG stim presentation on the dell or mac in Dillan's office
+                if (expInfo['COMPUTER (b,e,d,m)']=='b' or expInfo['COMPUTER (b,e,d,m)']=='m' or expInfo['COMPUTER (b,e,d,m)']=='e') and key[0]=='escape': #for the EEG stim presentation on the dell or mac in Dillan's office
                     win.close()
                     core.quit()
                 elif expInfo['COMPUTER (b,e,d,m)']=='d'and key[0]=='Esc': # for dillan's laptop--key responses seem to be different?
