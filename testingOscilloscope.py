@@ -3,7 +3,7 @@ win = visual.Window([1680,1050],color=(0,0,0),colorSpace='rgb',fullscr=False)
 
 import serial
 
-port=serial.Serial('COM4',baudrate=115200) # based on the biosemi website-- may be wrong?
+#port=serial.Serial('COM4',baudrate=115200) # based on the biosemi website-- may be wrong?
 
 n_trials=100
 no_stim=12
@@ -210,7 +210,7 @@ for stim in stimuli:
 
 
 for n in range(n_trials):
-    port.close()
+    #port.close()
     
     for stim in stimuli:
         stim.opacity=0
@@ -221,8 +221,8 @@ for n in range(n_trials):
     for stim in stimuli:
         stim.opacity=1
     
-    port.open()
-    port.write(bytes([255]))
+    #port.open()
+    #port.write(bytes([255]))
 
     for n in range(30):
         win.flip()
