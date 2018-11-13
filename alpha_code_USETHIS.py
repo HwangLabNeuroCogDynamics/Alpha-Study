@@ -1,6 +1,6 @@
-# ##############ver 11/12/18 7:19PM##################
+# ##############ver 11/13/18 3:35PM##################
  # no cue and no distractor cond -- only got as far as line 1221, finish later
-    # changing target and dis cond to have only chance and 'other,' ie .95, validities. And adding a unilateral cue condition -- got to line 1582
+    # changing target and dis cond to have only chance and 'other,' ie .95, validities. And adding a unilateral cue condition 
 
 # Hwang Lab alpha study #
 
@@ -189,9 +189,9 @@ if (not neutralFlag):
 else:
     chance=np.nan
 
-num_trials=1 # change later to 33
+num_trials=33 # change later to 33
 
-num_reps=2 #the number of repeats for each condition, should be 3 in experiment
+num_reps=3 #the number of repeats for each condition, should be 3 in experiment
 
 if lat_stim_flag:
     num_reps=num_reps*2 #if we're having some blocks with a uni lateral cue we want to include in the # of blocks we're running through
@@ -210,8 +210,6 @@ if neutralFlag:
         stimList.append({'cue':'neutral','validity':-1})
 
 print(stimList)
-
-cue_type_reps=len(cue_valid)*num_reps #the number of times that the 'target' or 'distractor' cue types should be repeated is equal to the number of validity types (i.e. 2 or 3 per cue type) times the n repeats for each condition (ie, 3)
 
 EEGflag=0
 if expInfo['COMPUTER (b,e,d,m)']=='e': 
@@ -249,7 +247,7 @@ def draw_fixation(): #0 to 1, for the opacity
 
     fixation.draw()
 
-def pracCond(thisBlock,n_practrials=1,demo=False):
+def pracCond(thisBlock,n_practrials=10,demo=False):
     pracDataList=[]
     for n in range(n_practrials):
     
@@ -617,7 +615,7 @@ def make_csv(filename):
     
     with open(filename+'.csv', mode='w') as csv_file:
     
-        fieldnames=['flex or blocked?','no stim','allCircsFlag','TarInDistFlag','lateralized?','neutral?','block','cue','validity','trialNum','trial_type','corrResp','subResp','trialCorr?','RT','stim_loc(T,D)','tarinDisCond','ITI']
+        fieldnames=['flex or blocked?','no stim','allCircsFlag','TarInDistFlag','lateralized?','neutral?','block','cue','validity','uni or bi lat?','trialNum','trial_type','corrResp','subResp','trialCorr?','RT','stim_loc(T,D)','tarinDisCond','ITI']
     
         #fieldnames is simply asserting the categories at the top of the CSV
     
@@ -643,7 +641,7 @@ def make_csv(filename):
                 writer.writerow({'flex or blocked?': flex_cond_flag,'no stim':expInfo['no stim'],
                                 'allCircsFlag':allCircsFlag,'TarInDistFlag':TarindistFlag,'lateralized?':lat_stim_flag,
                                 'neutral?':expInfo['neutral?'],'block':ThisBlock['block'],'cue':ThisBlock['cueType'],'validity':ThisBlock['validity'],
-                                'trialNum':ThisTrial['trialNum'],'trial_type':ThisTrial['trial_type'],
+                                'uni or bi lat?':ThisBlock['blockLat'],'trialNum':ThisTrial['trialNum'],'trial_type':ThisTrial['trial_type'],
                                 'corrResp':ThisTrial['corrResp'],'subResp':ThisTrial['subjectResp'],'trialCorr?':ThisTrial['trialCorr?'],
                                 'RT':ThisTrial['RT'],'stim_loc(T,D)':ThisTrial['stim_loc'],'tarinDisCond':ThisTrial['tarinDisCond'],
                                 'ITI':ThisTrial['ITI']})
@@ -1193,7 +1191,7 @@ else:
     cue_types_scramble=np.zeros((len(cue_types))) 
     colors_scramble=np.zeros((2))
     cues=cue_types #yields ['target','distractor'] so that the following for loop can select these and insert them into cue_types_scramble
-    colors=([-1,-1,1],[-1,1,-1]) #change
+    colors=([-1,-1,1],[-1,1,-1]) 
 order=list(order)
 cue_types_scramble=list(cue_types_scramble)
 colors_scramble=list(colors_scramble)
@@ -1201,110 +1199,55 @@ for ind in order:
     cue_types_scramble[ind]=cues[order.index(ind)]
     colors_scramble[ind]=colors[order.index(ind)]
 
+cue_VnL=[] #here, we're initiating a list of the validities and the lateralizations (bilateral or unilateral) and pairing them for however many times they need to be carried out (2)
+if lat_stim_flag:
+    for c in cue_valid:
+        for lattype in ['bi','uni']:
+            for n in range(num_reps):
+                cue_VnL.append([c,lattype])
+else:
+    for c in cue_valid:
+        for lattype in ['bi']:
+            for n in range(num_reps):
+                cue_VnL.append([c,lattype])
+
+order2=np.random.choice(len(cue_VnL),len(cue_VnL),replace=False) #this is going to be the order that we ultimately call ea of the conditions in
+order2=list(order2)
+cue_VnL_scramble=np.zeros((len(cue_VnL)))
+cue_VnL_scramble=list(cue_VnL_scramble)
+for ind2 in order2:
+    cue_VnL_scramble[ind2]=cue_VnL[order2.index(ind2)]
+
 print(cue_types_scramble)
+print(cue_VnL_scramble)
 
 k=0
 for cue in cue_types_scramble: #looping through the types of cues in sequence, since we care about the order now. 
-    if neutralFlag and cue=='neutral':
-        if noDisflag:
-            reps=num_reps*2 # taking into account the neutral cue blocks in which there's no distractor
-        else:
-            reps=num_reps #if the cue type is neutral, we don't want to run it for the full # of cue_type_reps. We just want it to be run for num_reps
-    else:
-        reps=cue_type_reps
     
-    if lat_stim_flag:
-        reps=reps*2
-        lat_count=[]
-    valid_count=[]
-    if noDisflag:
-        neutral_count=[]
+    if neutralFlag and cue=='neutral': #if we have a neutral condition then we are not running through the conds in cue_VnL, so we just want as many blocks as it takes to have neutral w 0 validity
+        reps=num_reps
+        if noDisflag and lat_stim_flag:
+            reps=reps*3
+        elif noDisflag or lat_stim_flag:
+            reps=reps*2 #and double that number to allow for some blocks with no cue at all if noDisflag
+    else:
+        reps=len(cue_VnL_scramble)
+#    if noDisflag:
+#        neutral_count=[]
     
     for block in (range(reps)): #we want each cue type to repeat (num_reps * the # of validity conds * 2 laterality conds) times 
         
-        if lat_stim_flag:
-            if (lat_count.count('bi')<(num_reps)) or (lat_count.count('uni')<(num_reps)):
-                p=np.random.random()
-                if p>=0.5:
-                    blockLat='bi'
-                else:
-                    blockLat='uni'
-            elif (lat_count.count('bi')<(num_reps)) and (lat_count.count('uni')>=(num_reps)):  
-                blockLat='bi'
-            elif (lat_count.count('uni')<(num_reps)) and (lat_count.count('bi')>=(num_reps)):
-                blockLat='uni'
-            lat_count.append(blockLat)
+        blockLat=cue_VnL_scramble[block][1]
         
-        if neutralFlag: #if neutralFlag 
-            if cue == 'neutral': #and it's the neutral cue block
-                if not noDisflag: #and its a no-distractor condition
-                    thisValid=0.0
-                #else:
-                 #   if (neutral_count.count(0.0)<num_reps) and (neutral_count.count(-1)<num_reps):
-            elif (vFlag != -1): #if neutralFlag and its not the neutral cue block AND there are 2 validities, lo and hi (and no chance condition)
-                if (valid_count.count(lo)<(num_reps)) and (valid_count.count(hi)<(num_reps)): #if both validity conditions have occurred fewer than 3 times, randomly choose which one is next
-                    p=np.random.random()
-                    if p >.5:
-                        thisValid=lo
-                    else:
-                        thisValid=hi
-                elif (valid_count.count(lo)>=(num_reps)) and (valid_count.count(hi)<(num_reps)): #else choose the one that has not yet occurred 3 times 
-                    thisValid=hi
-                elif (valid_count.count(lo)<(num_reps)) and (valid_count.count(hi)>=(num_reps)):
-                    thisValid=lo
-            elif vFlag == -1: #if neutral Flag and its not the neutral cue block AND there's only one validity (and no chance condition)
-                thisValid=other
-        elif not neutralFlag: #if no neutral cond 
-            if vFlag != -1: #and there are 2 validities, lo and hi, and chance  
-                if (valid_count.count(lo)<(num_reps)) and (valid_count.count(hi)<(num_reps)) and (valid_count.count(chance)<(num_reps)): #if all validity conditions have occurred fewer than 3 times, randomly choose which one is next
-                    p=np.random.random()
-                    if p < 0.33:
-                        thisValid=lo
-                    elif 0.33<p<0.66:
-                        thisValid=chance 
-                    elif p > 0.66:
-                        thisValid=hi
-                elif (valid_count.count(lo)>=(num_reps)) and (valid_count.count(chance)<(num_reps)) and (valid_count.count(hi)<(num_reps)): #if 5 is done but 8 and chance aren't done
-                    p=np.random.random()
-                    if p>0.5:
-                        thisValid=hi
-                    else:
-                        thisValid=chance
-                elif (valid_count.count(lo)<(num_reps)) and (valid_count.count(chance)<(num_reps)) and (valid_count.count(hi)>=(num_reps)): # if 8 is done but 5 and chance aren't
-                    p=np.random.random()
-                    if p>0.5:
-                        thisValid=lo
-                    else:
-                        thisValid=chance
-                elif (valid_count.count(lo)<(num_reps)) and (valid_count.count(hi)<(num_reps)) and (valid_count.count(chance)>=(num_reps)): # if chance is done but 8 and 5 aren't
-                    p=np.random.random()
-                    if p>0.5:
-                        thisValid=lo
-                    else:
-                        thisValid=hi
-                else: #if two of the three are done but one other isn't 
-                    for v in cue_valid: #then loop through valid_count and stop at the one that isn't done and engage that one
-                        if valid_count.count(v) >= num_reps:
-                            continue 
-                        elif valid_count.count(v)<num_reps:
-                            thisValid=v
-            else: # and there is only 1 validity, and chance  
-                if (valid_count.count(other)<(num_reps)) and (valid_count.count(chance)<(num_reps)): #if both validity conditions have occurred fewer than 3 times, randomly choose which one is next
-                    p=np.random.random()
-                    if p >.5:
-                        thisValid=other
-                    else:
-                        thisValid=chance
-                elif (valid_count.count(other)>=(num_reps)) and (valid_count.count(chance)<(num_reps)): #else choose the one that has not yet occurred 3 times 
-                    thisValid=chance
-                elif (valid_count.count(other)<(num_reps)) and (valid_count.count(chance)>=(num_reps)):
-                    thisValid=other
-        
-        valid_count.append(thisValid)
+        if neutralFlag and cue=='neutral': #if neutralFlag 
+            if not noDisflag: #and its a no-distractor condition
+                thisValid=0.0
+            #else:
+             #   if (neutral_count.count(0.0)<num_reps) and (neutral_count.count(-1)<num_reps):
+        else:
+            thisValid=cue_VnL_scramble[block][0]
         
         trialDataList=[]
-        
-
         if neutralFlag and block==0 and cue=='neutral': # if neutralFlag is true and the block is neutral
             for circ in stimuli:
                 circ.opacity=0
@@ -1507,6 +1450,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             #core.wait(1.5) # DELAY #####################################################
             
             draw_fixation()
+            odds=thisBlock['validity']
             
             if not (lat_stim_flag and blockLat=='uni'):
                 target_loc1 = list(right_stim).index(cue_target_1[0]) #where are the two cued circles?
@@ -1514,12 +1458,16 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 target_loc2 = list(left_stim).index(cue_target_2[0]) 
                 stim_minus_two = np.delete(left_stim,target_loc2) #get a list of stimuli that don't include cued circles
                 stim_minus_both=list(stim_minus_one)+list(stim_minus_two)
+                which_circle= np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_both],1,p=[(odds/2),(odds/2),(1-odds)]) #decide if cue is valid, using validity % of this condition
             elif lat_stim_flag and blockLat=='uni':
                 target_loc=stimuli.index(cue_target_1[0]) #may error
                 stim_minus_one=np.delete(stimuli, target_loc)
+                if odds==chance:
+                    p=[(odds/2),(1-(odds/2))] #because the 'chance' validity is calculated assuming that there are 2 cued circles, we have to divide it by 2
+                else:
+                    p=[odds,(1-odds)]
+                which_circle=np.random.choice([cue_target_1[0],stim_minus_one],1,p=p)
             
-            odds=thisBlock['validity']
-            which_circle= np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_both],1,p=[(odds/2),(odds/2),(1-odds)]) #decide if cue is valid, using validity % of this condition
             
             if neutralFlag and thisBlock['cue']=='neutral':#since the neutral cue is neutral, it isn't going to be valid and targets/distractors will be randomly assigned
                 trial_type= 'None' 
@@ -1570,15 +1518,15 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             
                 if trial_type=='valid': #if this trial's cued locations are valid, put the distractor in one of them
                     distractor_stim.pos=which_circle[0].pos
-                        if (not lat_stim_flag) or (lat_stim_flag and blockLat=='bi'):
-                            if cue_side=='L': #if the dist is on the Left side of the clock, we want the target on the right and vice versa
-                                target_stim.pos=(np.random.choice(stim_minus_one,1))[0].pos
-                            else:
-                                target_stim.pos= (np.random.choice(stim_minus_two,1))[0].pos
-                        elif lat_stim_flag and blockLat=='uni':
+                    if (not lat_stim_flag) or (lat_stim_flag and blockLat=='bi'):
+                        if cue_side=='L': #if the dist is on the Left side of the clock, we want the target on the right and vice versa
                             target_stim.pos=(np.random.choice(stim_minus_one,1))[0].pos
+                        else:
+                            target_stim.pos= (np.random.choice(stim_minus_two,1))[0].pos
+                    elif lat_stim_flag and blockLat=='uni':
+                        target_stim.pos=(np.random.choice(stim_minus_one,1))[0].pos
                 else:
-                    if TarindistFlag and (np.random.choice([True,False],1,p=[.10,.90])[0]): #if the trial's cued location is invalid AND we want a target in a distractor-cued loc
+                   if TarindistFlag and (np.random.choice([True,False],1,p=[.10,.90])[0]): #if the trial's cued location is invalid AND we want a target in a distractor-cued loc
                         #we only want a target in a dist cued loc once in a while (10% of all invalid trials)
                         if (not lat_stim_flag) or (lat_stim_flag and blockLat=='bi'): #if there are 2 distractor cues
                             tarinDistloc=np.random.choice([cue_target_1[0],cue_target_2[0]],1) #randomly choose the left or right cue to put it in
@@ -1604,7 +1552,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                             port.flush()
                             wait_here(.2)
                             port.close()
-                    else:
+                   else:
                         if (not lat_stim_flag) or (lat_stim_flag and blockLat=='bi'):
                             probe1=np.random.choice(stim_minus_one,1,replace=False) #select two circles that aren't the cued circles
                             probe2=np.random.choice(stim_minus_two,1,replace=False)
@@ -1636,12 +1584,12 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                     else: 
                         trial_type='invalid' # else, the cues were entirely unhelpful
                 elif lat_stim_flag and blockLat=='uni':
-                    tarNdist=np.random.choice(stimuli,2,replace==False)
+                    tarNdist=np.random.choice(stimuli,2,replace=False)
                     distractor_stim.pos=tarNdist[0].pos
                     target_stim.pos=tarNdist[1].pos
                     if (distractor_stim.pos[0]==cue_target_1[0].pos[0] and distractor_stim.pos[1]==cue_target_1[0].pos[1]):
                         trial_type='Dvalid'
-                    elif (target_stim.pos[0]==cue_target_1[0]pos[0] and target_stim.pos[1]==cue_target_1[0].pos[1]):
+                    elif (target_stim.pos[0]==cue_target_1[0].pos[0] and target_stim.pos[1]==cue_target_1[0].pos[1]):
                         trial_type-'Tvalid'
                     else:
                         trial_type='invalid'
@@ -1767,10 +1715,11 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 if (expInfo['COMPUTER (b,e,d,m)']=='b' or expInfo['COMPUTER (b,e,d,m)']=='m' or expInfo['COMPUTER (b,e,d,m)']=='e') and key[0]=='escape': #for the EEG stim presentation on the dell or mac in Dillan's office
                     win.close()
                     core.quit()
+                    print('FORCED QUIT')
                 elif expInfo['COMPUTER (b,e,d,m)']=='d'and key[0]=='Esc': # for dillan's laptop--key responses seem to be different?
                     win.close()
                     core.quit()
-                print('FORCED QUIT')
+                    print('FORCED QUIT')
     
           
             if EEGflag:
@@ -1792,7 +1741,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     #            if key=='n':
     #                continue_msg2=visual.TextStim
         
-        blocks.update({'blockInfo_%i%s'%(block,cue):{'block':k,'cueType':thisBlock['cue'],'validity':thisBlock['validity'],'trialsData':trialDataList}})
+        blocks.update({'blockInfo_%i%s'%(block,cue):{'block':k,'cueType':thisBlock['cue'],'validity':thisBlock['validity'],'blockLat':blockLat,'trialsData':trialDataList}})
         # #########################saving data out###########################################
         make_csv(filename)
         k=k+1
