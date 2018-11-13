@@ -16,8 +16,12 @@ import serial #for sending triggers from this computer to biosemi computer
 import csv
 from psychopy import visual, core
 
+expInfo = {'subject': '', 'session': '01'}
+expInfo['date'] = data.getDateStr()  # add a simple timestamp
+expName='alpha_pilot'
 win = visual.Window([1680,1050],units='deg',fullscr=False,monitor='testMonitor')
 no_stim=6
+vis_deg=3.5
 
 redT=visual.ImageStim(win, image='C:\Stimuli\T2.png') 
 redI=visual.ImageStim(win, image='C:\Stimuli\I3.png') #EEG stimulus presentation Dell
@@ -36,6 +40,7 @@ other=0.95
 chance=(1/6)*2
 cue_types=['target','distractor']
 cue_valid=[other,chance]
+stimList=[]
 for cue in cue_types:
     for num in cue_valid:
         stimList.append({'cue':cue,'validity':num})
@@ -158,6 +163,7 @@ fixation.size=0.6
 EEGflag=1
 if EEGflag: 
     startSaveflag=bytes([254])
+    port=serial.Serial('COM4',baudrate=115200)
 
 order=np.random.choice(len(cue_types),len(cue_types),replace=False) # num of conds in cue_types #this is randomly coming up with the indices of the conds in the scrambled list
 cue_types_scramble=np.zeros((len(cue_types))) 
@@ -211,6 +217,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 info_msg2=visual.TextStim(win, pos=[0,-.5], units='norm',text='Press any key to continue')
                 info_msg2.draw()
                 win.update()
+                key1=event.waitKeys()
                 fixation.draw()
                 win.flip() 
                 core.wait(3)# pre-block pause
@@ -219,18 +226,24 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 circs.opacity=1
                 circs.setLineColor([0,0,0])
                 circs.setFillColor([0,0,0])
+             
+            if blockLat=='uni':
+                cue_target_1=np.random.choice(stimuli,1)
+            else:
+                cue_target_1=np.random.choice(right_stim,1)
+                cue_target_2=np.random.choice(left_stim,1)
             
-            cue_target_1=np.random.choice(stimuli,1)
             color_ind=cue_types_scramble.index(thisBlock['cue'])
             cue_target_1[0].setLineColor(colors_scramble[color_ind])
             if not (blockLat=='uni'):
                 cue_target_2[0].setLineColor(colors_scramble[color_ind])
             
             if EEGflag:
+                port.close()
                 port.open()
                 port.write(startSaveflag)
                 port.flush()
-                wait_here(.2)
+                core.wait(.2)
                 port.close()
             
             win.flip()
@@ -243,7 +256,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             win.flip()
             core.wait(1.5)
             
-            draw_fixation()
+            fixation.draw()
             odds=thisBlock['validity']
             
             if not (blockLat=='uni'):
@@ -262,7 +275,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                     p=[odds,(1-odds)]
                 which_circle=np.random.choice([cue_target_1[0],stim_minus_one],1,p=p)
             
-            if not (blockLat='uni'): #if we have bilateral cues
+            if not (blockLat=='uni'): #if we have bilateral cues
                 if (which_circle[0] in cue_target_1):
                     trial_type='valid'
                     cue_side='R'
@@ -332,6 +345,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                         trial_tarInDist=1
                         
                         if EEGflag:
+                            port.close()
                             port.open()
                             port.write(startSaveflag)
                             port.flush()
@@ -350,7 +364,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                             probe2=probe[1]
                             distractor_stim.pos=probe1.pos
                             target_stim.pos=probe2.pos
-                         distractor_stim.ori= (np.random.choice([0,90,180,270],1))[0] #choose the orientation of the distractor
+                            distractor_stim.ori= (np.random.choice([0,90,180,270],1))[0] #choose the orientation of the distractor
             distractor_stim.draw()
             target_stim.ori=5
             while target_stim.ori==5 or (target_stim.ori == distractor_stim.ori) or (target_stim.ori+180 == distractor_stim.ori) or (target_stim.ori-180==distractor_stim.ori):
@@ -382,3 +396,15 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                     circs.lineColorSpace='rgb255'
                     circs.setLineColor([255,255,0])
                     circs.setFillColor(None)
+                    
+            win.flip()
+            core.wait(2)
+            
+            fixation.draw()
+            for circs in stimuli:
+                circs.lineColorSpace='rgb'
+                circs.setLineColor([0,0,0])
+                circs.setFillColor([0,0,0])
+            
+            win.flip()
+            core.wait(ITI)
