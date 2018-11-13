@@ -1,4 +1,4 @@
-# ##############ver 11/9/18 10:19AM##################
+# ##############ver 11/12/18 7:19PM##################
  # no cue and no distractor cond -- only got as far as line 1221, finish later
     # changing target and dis cond to have only chance and 'other,' ie .95, validities. And adding a unilateral cue condition -- got to line 1582
 
@@ -1559,11 +1559,10 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                         probe2=np.random.choice(stim_minus_two,1,replace=False)
                         probe1=probe1[0]
                         probe2=probe2[0]
+                        tarNdist=np.random.choice([probe1,probe2],2,replace=False)
                     elif lat_stim_flag and blockLat=='uni':
-                        probe1=np.random.choice(stim_minus_one,2,replace=False) #select two circles that aren't the cued circles
-                        probe2=probe1[1]
-                        probe1=probe1[0]
-                    tarNdist=np.random.choice([probe1,probe2],2,replace=False) #then randomly  assign the target to one and dist to another
+                        tarNdist=np.random.choice(stim_minus_one,2,replace=False) #select two circles that aren't the cued circles
+                     #then randomly  assign the target to one and dist to another
                     distractor_stim.pos=tarNdist[0].pos 
                     target_stim.pos=tarNdist[1].pos
             
@@ -1595,6 +1594,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                                 distractor_stim.pos=(np.random.choice(stim_minus_two,1))[0].pos
                         elif lat_stim_flag and blockLat=='uni':
                             target_stim.pos=cue_target_1[0].pos
+                            distractor_stim.pos=np.random.choice(stim_minus_one,1)[0].pos
                         trial_tarInDist=1
                         
                         if EEGflag:
@@ -1604,87 +1604,76 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                             port.flush()
                             wait_here(.2)
                             port.close()
-    
-
-    
                     else:
-    
-                        probe1=np.random.choice(stim_minus_one,1,replace=False) #select two circles that aren't the cued circles
-    
-                        probe2=np.random.choice(stim_minus_two,1,replace=False)
-    
-                        tarNdist=np.random.choice([probe1[0],probe2[0]],2,replace=False) #them randomly assign the target to one and dist to another
-    
-                        distractor_stim.pos=tarNdist[0].pos 
-    
-                        target_stim.pos=tarNdist[1].pos
-    
-            
-    
+                        if (not lat_stim_flag) or (lat_stim_flag and blockLat=='bi'):
+                            probe1=np.random.choice(stim_minus_one,1,replace=False) #select two circles that aren't the cued circles
+                            probe2=np.random.choice(stim_minus_two,1,replace=False)
+                            tarNdist=np.random.choice([probe1[0],probe2[0]],2,replace=False) #them randomly assign the target to one and dist to another
+                            distractor_stim.pos=tarNdist[0].pos 
+                            target_stim.pos=tarNdist[1].pos
+                        elif lat_stim_flag and blockLat=='uni':
+                            probe=np.random.choice(stim_minus_one,2,replace=False)
+                            probe1=probe[0]
+                            probe2=probe[1]
+                            distractor_stim.pos=probe1.pos
+                            target_stim.pos=probe2.pos
+             
             elif neutralFlag and thisBlock['cue']=='neutral':
-    
-                probe1=np.random.choice(right_stim,1,replace=False) #select two circles, one on left and one on right
-    
-                probe2=np.random.choice(left_stim,1,replace=False)
-    
-                tarNdist=np.random.choice([probe1[0],probe2[0]],2,replace=False) #them randomly assign the target to one and dist to another
-    
-                distractor_stim.pos=tarNdist[0].pos 
-    
-                target_stim.pos=tarNdist[1].pos
-                # want to document if any of the randomly assigned circles match the cued circles
-                if ((distractor_stim.pos[0]==cue_target_1[0].pos[0] and distractor_stim.pos[1]==cue_target_1[0].pos[1]) or (distractor_stim.pos[0]==cue_target_2[0].pos[0] and distractor_stim.pos[1]==cue_target_2[0].pos[1])) and ((target_stim.pos[0]==cue_target_1[0].pos[0] and target_stim.pos[1]==cue_target_1[0].pos[1]) or (target_stim.pos[0]==cue_target_2[0].pos[0] and target_stim.pos[1]==cue_target_2[0].pos[1])):
-                    trial_type='bothvalid' #if they somehow happen to both be assigned a distractor and a target, both cues are valid
-                elif (target_stim.pos[0]==cue_target_1[0].pos[0] and target_stim.pos[1]==cue_target_1[0].pos[1]) or (target_stim.pos[0]==cue_target_2[0].pos[0] and target_stim.pos[1]==cue_target_2[0].pos[1]):
-                    trial_type='Tvalid' #if the target is assigned to one of the cue'd location, the cue was valid for the target
-                elif (distractor_stim.pos[0]==cue_target_1[0].pos[0] and distractor_stim.pos[1]==cue_target_1[0].pos[1]) or (distractor_stim.pos[0]==cue_target_2[0].pos[0] and distractor_stim.pos[1]==cue_target_2[0].pos[1]):
-                    trial_type='Dvalid' #and vice versa for distractor
-                else: 
-                    trial_type='invalid' # else, the cues were entirely unhelpful
-    
-    
+                
+                if (not lat_stim_flag) or (lat_stim_flag and blockLat=='bi'):
+                    probe1=np.random.choice(right_stim,1,replace=False) #select two circles, one on left and one on right
+                    probe2=np.random.choice(left_stim,1,replace=False)
+                    tarNdist=np.random.choice([probe1[0],probe2[0]],2,replace=False) #them randomly assign the target to one and dist to another
+                    distractor_stim.pos=tarNdist[0].pos 
+                    target_stim.pos=tarNdist[1].pos
+                    # want to document if any of the randomly assigned circles match the cued circles
+                    if ((distractor_stim.pos[0]==cue_target_1[0].pos[0] and distractor_stim.pos[1]==cue_target_1[0].pos[1]) or (distractor_stim.pos[0]==cue_target_2[0].pos[0] and distractor_stim.pos[1]==cue_target_2[0].pos[1])) and ((target_stim.pos[0]==cue_target_1[0].pos[0] and target_stim.pos[1]==cue_target_1[0].pos[1]) or (target_stim.pos[0]==cue_target_2[0].pos[0] and target_stim.pos[1]==cue_target_2[0].pos[1])):
+                        trial_type='bothvalid' #if they somehow happen to both be assigned a distractor and a target, both cues are valid
+                    elif (target_stim.pos[0]==cue_target_1[0].pos[0] and target_stim.pos[1]==cue_target_1[0].pos[1]) or (target_stim.pos[0]==cue_target_2[0].pos[0] and target_stim.pos[1]==cue_target_2[0].pos[1]):
+                        trial_type='Tvalid' #if the target is assigned to one of the cue'd location, the cue was valid for the target
+                    elif (distractor_stim.pos[0]==cue_target_1[0].pos[0] and distractor_stim.pos[1]==cue_target_1[0].pos[1]) or (distractor_stim.pos[0]==cue_target_2[0].pos[0] and distractor_stim.pos[1]==cue_target_2[0].pos[1]):
+                        trial_type='Dvalid' #and vice versa for distractor
+                    else: 
+                        trial_type='invalid' # else, the cues were entirely unhelpful
+                elif lat_stim_flag and blockLat=='uni':
+                    tarNdist=np.random.choice(stimuli,2,replace==False)
+                    distractor_stim.pos=tarNdist[0].pos
+                    target_stim.pos=tarNdist[1].pos
+                    if (distractor_stim.pos[0]==cue_target_1[0].pos[0] and distractor_stim.pos[1]==cue_target_1[0].pos[1]):
+                        trial_type='Dvalid'
+                    elif (target_stim.pos[0]==cue_target_1[0]pos[0] and target_stim.pos[1]==cue_target_1[0].pos[1]):
+                        trial_type-'Tvalid'
+                    else:
+                        trial_type='invalid'
+            
             distractor_stim.ori= (np.random.choice([0,90,180,270],1))[0] #choose the orientation of the distractor
-    
+            
             distractor_stim.draw()
             
             target_stim.ori=5
             
             while target_stim.ori==5 or (target_stim.ori == distractor_stim.ori) or (target_stim.ori+180 == distractor_stim.ori) or (target_stim.ori-180==distractor_stim.ori):
                 target_stim.ori= (np.random.choice([0,90,180,270],1))[0] #choose the orientation of the target
-    
+            
             target_stim.draw()
-    
             
-    
             if target_stim.ori==0:
-    
                 corrKey='up'
-    
             elif target_stim.ori==90:
-    
                 corrKey='right'
-    
             elif target_stim.ori==180:
-    
                 corrKey='down'
-    
             elif target_stim.ori==270:
-    
                 corrKey='left'
-    
             
-    
             for s in range(len(stimuli)): 
                 circs=stimuli[s]
                 if not allCircsFlag:
                     if not (((circs.pos[0]==target_stim.pos[0]) and (circs.pos[1]==target_stim.pos[1])) or ((circs.pos[0]==distractor_stim.pos[0]) and (circs.pos[1]==distractor_stim.pos[1]))): #if the circle isn't a target or distractor, its grey
                         circs.setLineColor([0,0,0])
-        
                         circs.setFillColor(None)
                     else:
-        
                         circs.setLineColor([1,-1,-1])
-        
                         circs.setFillColor(None)
                 else:
                     if not (((circs.pos[0]==target_stim.pos[0]) and (circs.pos[1]==target_stim.pos[1])) or ((circs.pos[0]==distractor_stim.pos[0]) and (circs.pos[1]==distractor_stim.pos[1]))): #if the circle is not a target or distractor then put other_stim in it
@@ -1700,7 +1689,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                         circs.lineColorSpace='rgb255'
                         circs.setLineColor([255,255,0])
                         circs.setFillColor(None)
-    
+             
             if EEGflag:
                 port.open()
                 #win.callonFlip(pport.setData,probetrig)
@@ -1708,10 +1697,9 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 port.flush()
                 #wait_here(.2)
                 port.close()
-           
+             
             win.update()
             clock=core.Clock()
-    
             subResp= event.waitKeys(2,keyList=['up','down','left','right'],timeStamped=clock)
             
             if subResp==None:
@@ -1721,15 +1709,13 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                     port.flush()
                     wait_here(.2)
                     port.close()
-            
+                 
                 trial_corr=np.nan
-    
+                 
                 RT=np.nan
-    
+                 
                 key='None'
-    
             else:
-                
                 if EEGflag:
                     port.open()
                     port.write(subRespTrig)
@@ -1738,27 +1724,19 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                     port.close()
                 
                 if subResp[0][0]==corrKey:
-    
                     trial_corr=1
-    
                 else:
-    
                     trial_corr=0
-    
                 RT=subResp[0][1]
-    
                 key=subResp[0][0]
-   
-    
+             
+             
             #core.wait(0) # PROBE AND RESP ############################################## 
-    
+             
             for circs in stimuli:
                 circs.lineColorSpace='rgb'
                 circs.setLineColor([0,0,0])
-    
                 circs.setFillColor([0,0,0])
-    
-            
     
             #this my have to be rounded up or down depending on refresh rate? see: https://discourse.psychopy.org/t/jittering-iti-by-code-in-the-builder/4116
     
