@@ -1,3 +1,5 @@
+# ver 11/14/18
+
 from psychopy import visual, core
 
 import numpy as np  # whole numpy lib is available, prepend 'np.'
