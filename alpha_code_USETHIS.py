@@ -1,6 +1,7 @@
-# ##############ver 11/13/18 3:35PM##################
+# ##############ver 11/14/18 3:12PM##################
  # no cue and no distractor cond -- only got as far as line 1221, finish later
     # changing target and dis cond to have only chance and 'other,' ie .95, validities. And adding a unilateral cue condition 
+        # had a typo which doubled num_reps, fixed
 
 # Hwang Lab alpha study #
 
@@ -31,7 +32,7 @@ os.chdir(_thisDir)
 
 expName = 'alpha_pilot'  # from the Builder filename that created this script
 
-expInfo = {'subject': '', 'session': '01','f or b?':'f','no stim':'6', 'lat?':'n','COMPUTER (b,e,d,m)':'b','neutral?':'n','how many validities':'1','noDis':'n'}
+expInfo = {'subject': '', 'session': '01','f or b?':'f','no stim':'6', 'lat?':'y','COMPUTER (b,e,d,m)':'b','neutral?':'n','how many validities':'1','noDis':'n'}
 
 # where 'f or b?' is flexible v blocked. blocked is default
 
@@ -59,7 +60,7 @@ expInfo['expName'] = expName
 
 from psychopy import visual, core
 
-win = visual.Window([1680,1050],units='deg',fullscr=False,monitor='testMonitor')
+win = visual.Window([1680,1050],units='deg',fullscr=True,monitor='testMonitor')
 
 # ###############Flags####################################################################################
 
@@ -193,8 +194,8 @@ num_trials=33 # change later to 33
 
 num_reps=3 #the number of repeats for each condition, should be 3 in experiment
 
-if lat_stim_flag:
-    num_reps=num_reps*2 #if we're having some blocks with a uni lateral cue we want to include in the # of blocks we're running through
+#if lat_stim_flag:
+#    num_reps=num_reps*2 #if we're having some blocks with a uni lateral cue we want to include in the # of blocks we're running through
 
 stimList=[]
 
@@ -247,7 +248,7 @@ def draw_fixation(): #0 to 1, for the opacity
 
     fixation.draw()
 
-def pracCond(thisBlock,n_practrials=1,demo=False):
+def pracCond(thisBlock,n_practrials=10,demo=False):
     pracDataList=[]
     for n in range(n_practrials):
     
@@ -1400,37 +1401,37 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
 #                cue_target_1[0].setLineColor([1,1,0])
 #        
 #                cue_target_2[0].setLineColor([1,1,0])
-#            
-#            if EEGflag:
-#                port.open()
-#                if thisBlock['cue']=='target':
-#                    if thisBlock['validity']==lo:
-#                        #win.callonFlip(pport.setData,target5trig)
-#                        port.write(targetLtrig)
-#                    elif thisBlock['validity']==hi:
-#                        #win.callonFlip(pport.setData,target8trig)
-#                        port.write(targetHtrig)
-#                    elif thisBlock['validity']==chance:
-#                        port.write(targetCtrig)
-#                    elif thisBlock['validity']==other:
-#                        port.write(targetOtrig)
-#                elif thisBlock['cue']=='distractor':
-#                    if thisBlock['validity']==lo:
-#                        #win.callonFlip(pport.setData,dis5trig)
-#                        port.write(disLtrig)
-#                    elif thisBlock['validity']==hi:
-#                        #win.callonFlip(pport.setData,dis8trig)
-#                        port.write(disHtrig)
-#                    elif thisBlock['validity']==chance:
-#                        port.write(disCtrig)
-#                    elif thisBlock['validity']==other:
-#                        port.write(disOtrig)
-#                elif neutralFlag and thisBlock['cue']=='neutral':
-#                    #win.callonFlip(pport.setData,neutraltrig)
-#                    port.write(neutraltrig)
-#                port.flush()
-#                wait_here(.2)
-#                port.close()
+            
+            if EEGflag:
+                port.open()
+                if thisBlock['cue']=='target':
+                    if thisBlock['validity']==lo:
+                        #win.callonFlip(pport.setData,target5trig)
+                        port.write(targetLtrig)
+                    elif thisBlock['validity']==hi:
+                        #win.callonFlip(pport.setData,target8trig)
+                        port.write(targetHtrig)
+                    elif thisBlock['validity']==chance:
+                        port.write(targetCtrig)
+                    elif thisBlock['validity']==other:
+                        port.write(targetOtrig)
+                elif thisBlock['cue']=='distractor':
+                    if thisBlock['validity']==lo:
+                        #win.callonFlip(pport.setData,dis5trig)
+                        port.write(disLtrig)
+                    elif thisBlock['validity']==hi:
+                        #win.callonFlip(pport.setData,dis8trig)
+                        port.write(disHtrig)
+                    elif thisBlock['validity']==chance:
+                        port.write(disCtrig)
+                    elif thisBlock['validity']==other:
+                        port.write(disOtrig)
+                elif neutralFlag and thisBlock['cue']=='neutral':
+                    #win.callonFlip(pport.setData,neutraltrig)
+                    port.write(neutraltrig)
+                port.flush()
+                wait_here(.2)
+                port.close()
             
             
             #win.flip()
@@ -1545,13 +1546,13 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                             distractor_stim.pos=np.random.choice(stim_minus_one,1)[0].pos
                         trial_tarInDist=1
                         
-#                        if EEGflag:
-#                            port.open()
-#                            #win.callonFlip(pport.setData,tIdtrig) # will this overwrite the probe flag?
-#                            port.write(tIdtrig)
-#                            port.flush()
-#                            wait_here(.2)
-#                            port.close()
+                        if EEGflag:
+                            port.open()
+                            #win.callonFlip(pport.setData,tIdtrig) # will this overwrite the probe flag?
+                            port.write(tIdtrig)
+                            port.flush()
+                            wait_here(.2)
+                            port.close()
                    else:
                         if (not lat_stim_flag) or (lat_stim_flag and blockLat=='bi'):
                             probe1=np.random.choice(stim_minus_one,1,replace=False) #select two circles that aren't the cued circles
@@ -1625,10 +1626,8 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                         circs.setFillColor(None)
                 else:
                     if not (((circs.pos[0]==target_stim.pos[0]) and (circs.pos[1]==target_stim.pos[1])) or ((circs.pos[0]==distractor_stim.pos[0]) and (circs.pos[1]==distractor_stim.pos[1]))): #if the circle is not a target or distractor then put other_stim in it
-#                        circs.setLineColor([1,-1,-1]) #if the circle is a non singleton distractor make it red
-#                        circs.setFillColor(None)
-                        circs.lineColorSpace='rgb255' #temporary change
-                        circs.setLineColor([255,255,0])
+                        circs.setLineColor([1,-1,-1]) #if the circle is a non singleton distractor make it red
+                        circs.setFillColor(None)
                         redL[s].ori=(np.random.choice([0,90,180,270],1))[0]
                         redL[s].pos=circs.pos
                         redL[s].draw()
@@ -1653,25 +1652,25 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             subResp= event.waitKeys(2,keyList=['up','down','left','right'],timeStamped=clock)
             
             if subResp==None:
-#                if EEGflag:
-#                    port.open()
-#                    port.write(subNonRespTrig)
-#                    port.flush()
-#                    wait_here(.2)
-#                    port.close()
-#                 
+                if EEGflag:
+                    port.open()
+                    port.write(subNonRespTrig)
+                    port.flush()
+                    wait_here(.2)
+                    port.close()
+                 
                 trial_corr=np.nan
                  
                 RT=np.nan
                  
                 key='None'
             else:
-#                if EEGflag:
-#                    port.open()
-#                    port.write(subRespTrig)
-#                    port.flush()
-#                    #wait_here(.2)
-#                    port.close()
+                if EEGflag:
+                    port.open()
+                    port.write(subRespTrig)
+                    port.flush()
+                    #wait_here(.2)
+                    port.close()
                 
                 if subResp[0][0]==corrKey:
                     trial_corr=1
@@ -1723,15 +1722,15 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                     core.quit()
                     print('FORCED QUIT')
     
-#          
-#            if EEGflag:
-#                port.open()
-#                #win.callonFlip(pport.setData,ITItrig)
-#                port.write(ITItrig)
-#                port.flush()
-#                wait_here(.2)
-#                port.close()
-#            #win.flip()
+          
+            if EEGflag:
+                port.open()
+                #win.callonFlip(pport.setData,ITItrig)
+                port.write(ITItrig)
+                port.flush()
+                wait_here(.2)
+                port.close()
+            #win.flip()
             wait_here(ITI)
             #core.wait(ITI) #ITI--want to jitter this?, with an average of 4 seconds
             
