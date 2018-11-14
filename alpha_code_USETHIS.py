@@ -1,6 +1,7 @@
-# ##############ver 11/13/18 3:35PM##################
+# ##############ver 11/14/18 3:12PM##################
  # no cue and no distractor cond -- only got as far as line 1221, finish later
     # changing target and dis cond to have only chance and 'other,' ie .95, validities. And adding a unilateral cue condition 
+        # had a typo which doubled num_reps, fixed
 
 # Hwang Lab alpha study #
 
@@ -31,7 +32,7 @@ os.chdir(_thisDir)
 
 expName = 'alpha_pilot'  # from the Builder filename that created this script
 
-expInfo = {'subject': '', 'session': '01','f or b?':'f','no stim':'6', 'lat?':'n','COMPUTER (b,e,d,m)':'b','neutral?':'n','how many validities':'1','noDis':'n'}
+expInfo = {'subject': '', 'session': '01','f or b?':'f','no stim':'6', 'lat?':'y','COMPUTER (b,e,d,m)':'b','neutral?':'n','how many validities':'1','noDis':'n'}
 
 # where 'f or b?' is flexible v blocked. blocked is default
 
@@ -59,7 +60,7 @@ expInfo['expName'] = expName
 
 from psychopy import visual, core
 
-win = visual.Window([1680,1050],units='deg',fullscr=False,monitor='testMonitor')
+win = visual.Window([1680,1050],units='deg',fullscr=True,monitor='testMonitor')
 
 # ###############Flags####################################################################################
 
@@ -193,8 +194,8 @@ num_trials=33 # change later to 33
 
 num_reps=3 #the number of repeats for each condition, should be 3 in experiment
 
-if lat_stim_flag:
-    num_reps=num_reps*2 #if we're having some blocks with a uni lateral cue we want to include in the # of blocks we're running through
+#if lat_stim_flag:
+#    num_reps=num_reps*2 #if we're having some blocks with a uni lateral cue we want to include in the # of blocks we're running through
 
 stimList=[]
 
