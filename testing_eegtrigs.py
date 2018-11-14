@@ -1,3 +1,5 @@
+# for osc testing: changes non singleton dis circles to yellow, used wait_here for probe period which makes letters disappear, commented out triggers for cue and tarinDist
+
 from __future__ import absolute_import, division
 from psychopy import locale_setup, sound, gui, visual, core, data, event, logging, clock
 from psychopy.constants import (NOT_STARTED, STARTED, PLAYING, PAUSED,
@@ -19,7 +21,7 @@ from psychopy import visual, core
 expInfo = {'subject': '', 'session': '01'}
 expInfo['date'] = data.getDateStr()  # add a simple timestamp
 expName='alpha_pilot'
-win = visual.Window([1680,1050],units='deg',fullscr=False,monitor='testMonitor')
+win = visual.Window([1680,1050],units='deg',fullscr=False,monitor='testMonitor',checkTiming=True)
 no_stim=6
 vis_deg=3.5
 
@@ -45,9 +47,15 @@ for cue in cue_types:
     for num in cue_valid:
         stimList.append({'cue':cue,'validity':num})
 
-num_trials=3
+num_trials=100
 num_reps=1
 
+def wait_here(t):
+#    interval=1/refresh_rate
+#    num_frames=int(t/interval)
+    for n in range(t): #change back to num_frames
+        fixation.draw()
+        win.flip()
 def make_ITI(exp_type):
     if exp_type=='b' or exp_type=='m' or exp_type=='d':
         ITI=np.random.choice([1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6],1)[0] #averages to around 2 second?
@@ -164,6 +172,7 @@ EEGflag=1
 if EEGflag: 
     startSaveflag=bytes([254])
     port=serial.Serial('COM4',baudrate=115200)
+    port.close()
 
 order=np.random.choice(len(cue_types),len(cue_types),replace=False) # num of conds in cue_types #this is randomly coming up with the indices of the conds in the scrambled list
 cue_types_scramble=np.zeros((len(cue_types))) 
@@ -237,15 +246,15 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             cue_target_1[0].setLineColor(colors_scramble[color_ind])
             if not (blockLat=='uni'):
                 cue_target_2[0].setLineColor(colors_scramble[color_ind])
-            
-            if EEGflag:
-                port.close()
-                port.open()
-                port.write(startSaveflag)
-                port.flush()
-                core.wait(.2)
-                port.close()
-            
+#            
+#            if EEGflag:
+#                port.close()
+#                port.open()
+#                port.write(startSaveflag)
+#                port.flush()
+#                core.wait(.2)
+#                port.close()
+#            
             win.flip()
             core.wait(.5)
             
@@ -344,13 +353,13 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                             distractor_stim.pos=np.random.choice(stim_minus_one,1)[0].pos
                         trial_tarInDist=1
                         
-                        if EEGflag:
-                            port.close()
-                            port.open()
-                            port.write(startSaveflag)
-                            port.flush()
-                            core.wait(.2)
-                            port.close()
+#                        if EEGflag:
+#                            port.close()
+#                            port.open()
+#                            port.write(startSaveflag)
+#                            #port.flush()
+#                            #core.wait(.2)
+#                            port.close()
                    else:
                         if blockLat=='bi':
                             probe1=np.random.choice(stim_minus_one,1,replace=False) #select two circles that aren't the cued circles
@@ -384,7 +393,8 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 circs=stimuli[s]
                 if not (((circs.pos[0]==target_stim.pos[0]) and (circs.pos[1]==target_stim.pos[1])) or ((circs.pos[0]==distractor_stim.pos[0]) and (circs.pos[1]==distractor_stim.pos[1]))): 
                     #if the circle is not a target or distractor then put other_stim in it
-                    circs.setLineColor([1,-1,-1]) #if the circle is a non singleton distractor make it red
+                    circs.setLineColor([255,255,0],colorSpace='rgb255')
+                    #circs.setLineColor([1,-1,-1]) #if the circle is a non singleton distractor make it red
                     circs.setFillColor(None)
                     redL[s].ori=(np.random.choice([0,90,180,270],1))[0]
                     redL[s].pos=circs.pos
@@ -397,8 +407,22 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                     circs.setLineColor([255,255,0])
                     circs.setFillColor(None)
                     
-            win.flip()
-            core.wait(2)
+            win.update()
+            t=2
+            interval=1/refresh_rate
+            num_frames=int(t/interval)
+            if EEGflag:
+                port.open()
+                win.callOnFlip(port.write,bytes([255]))
+                #port.open()
+                #port.write(bytes([255]))
+                #port.write(bytes([0]))
+            #win.flip()
+            #core.wait(2)
+            wait_here(num_frames)
+            
+            if EEGflag:
+                port.close()
             
             fixation.draw()
             for circs in stimuli:
@@ -407,4 +431,5 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 circs.setFillColor([0,0,0])
             
             win.flip()
-            core.wait(ITI)
+            #core.wait(ITI)
+            core.wait(.5)
