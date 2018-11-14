@@ -12,7 +12,7 @@ port=serial.Serial('COM4',baudrate=115200) # based on the biosemi website-- may 
 vis_deg=3.5
 n_trials=100
 no_stim=12
-
+letters=1
 if no_stim==12:
 
     
@@ -213,24 +213,25 @@ for stim in stimuli:
     stim.setFillColor(None)
     stim.autoDraw=True
 
-redT=visual.ImageStim(win, image='C:\Stimuli\T2.png') 
-redI=visual.ImageStim(win, image='C:\Stimuli\I3.png') #EEG stimulus presentation Dell
-yellowT=visual.ImageStim(win, image='C:\Stimuli\YellowT.png')
-redLpath='C:\Stimuli'
-redL=[visual.ImageStim(win, image=redLpath+'\RedL copy 0.png'),visual.ImageStim(win, image=redLpath+'\RedL copy 1.png'),visual.ImageStim(win, image=redLpath+'\RedL copy 2.png'),
-            visual.ImageStim(win, image=redLpath+'\RedL copy 3.png'),visual.ImageStim(win, image=redLpath+'\RedL copy 4.png'),visual.ImageStim(win, image=redLpath+'\RedL copy 5.png'),
-            visual.ImageStim(win, image=redLpath+'\RedL copy 6.png'),visual.ImageStim(win, image=redLpath+'\RedL copy 7.png'),visual.ImageStim(win, image=redLpath+'\RedL copy 8.png')]
+if letters:
+    redT=visual.ImageStim(win, image='C:\Stimuli\T2.png') 
+    redI=visual.ImageStim(win, image='C:\Stimuli\I3.png') #EEG stimulus presentation Dell
+    yellowT=visual.ImageStim(win, image='C:\Stimuli\YellowT.png')
+    redLpath='C:\Stimuli'
+    redL=[visual.ImageStim(win, image=redLpath+'\RedL copy 0.png'),visual.ImageStim(win, image=redLpath+'\RedL copy 1.png'),visual.ImageStim(win, image=redLpath+'\RedL copy 2.png'),
+                visual.ImageStim(win, image=redLpath+'\RedL copy 3.png'),visual.ImageStim(win, image=redLpath+'\RedL copy 4.png'),visual.ImageStim(win, image=redLpath+'\RedL copy 5.png'),
+                visual.ImageStim(win, image=redLpath+'\RedL copy 6.png'),visual.ImageStim(win, image=redLpath+'\RedL copy 7.png'),visual.ImageStim(win, image=redLpath+'\RedL copy 8.png')]
+    other_stim=sum([[redT],[redI],[yellowT],redL],[])
+    for a in range(len(other_stim)):
+        let=other_stim[a]
+        let.pos=stimuli[a].pos
+        let.size=(1.25,1.25)
+        let.autoDraw=True
+    
 
 fixation = visual.TextStim(win, text='+',units='norm', color=(1,1,1))
 fixation.autoDraw=True
 fixation.size=0.6
-other_stim=sum([[redT],[redI],[yellowT],redL],[])
-
-for a in range(len(other_stim)):
-    let=other_stim[a]
-    let.pos=stimuli[a].pos
-    let.size=(1.25,1.25)
-    let.autoDraw=True
 
 for n in range(n_trials):
     port.close()
@@ -240,9 +241,10 @@ for n in range(n_trials):
     for stim in stimuli:
         stim.opacity=0
         stim.draw()
-    for s in other_stim:
-        s.opacity=0
-        s.draw()
+    if letters:
+        for s in other_stim:
+            s.opacity=0
+            s.draw()
         
 #    win.flip()
 #    core.wait(.50844)
@@ -253,9 +255,10 @@ for n in range(n_trials):
     for stim in stimuli:
         stim.opacity=1
         stim.draw()
-    for s in other_stim:
-        s.opacity=1
-        s.draw()
+    if letters:
+        for s in other_stim:
+            s.opacity=1
+            s.draw()
     
     port.open()
     port.write(bytes([255]))
