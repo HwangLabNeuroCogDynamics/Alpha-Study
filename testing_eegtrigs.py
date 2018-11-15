@@ -1,4 +1,5 @@
-# for osc testing: changes non singleton dis circles to yellow, used wait_here for probe period which makes letters disappear, commented out triggers for cue and tarinDist
+# 11/15/18, want to finish script so it's ready for subjects-- FINISH PRAC FUNC and demo, call it in script
+# for osc testing: changes non singleton dis circles to yellow, commented out triggers for cue and tarinDist
 
 from __future__ import absolute_import, division
 from psychopy import locale_setup, sound, gui, visual, core, data, event, logging, clock
@@ -47,21 +48,198 @@ for cue in cue_types:
     for num in cue_valid:
         stimList.append({'cue':cue,'validity':num})
 
-num_trials=100
-num_reps=1
+num_trials=33
+num_reps=3
+
+def pracCond(thisBlock,n_practrials=10,demo=False):
+    pracDataList=[]
+    for n in range(n_practrials):
+        ITI=make_ITI('b')
+        # info for this block --for subject ######################################
+        if n==0:
+            for circs in stimuli:
+                circs.opacity = 0 
+            if demo:
+                info_msg3=visual.TextStim(win,pos=[0,0],units='norm',text=thisBlock['cue']+' cue demonstration')
+                info_msg3.draw()
+            else:
+                info_msg3=visual.TextStim(win,pos=[0,0],units='norm',text='Begin practice block')
+                info_msg3.draw()
+            win.update()
+            core.wait(2)
+            draw_fixation()
+            win.flip()
+            core.wait(3)# pre-block pause
+        for circs in stimuli:
+            circs.opacity=1
+            circs.setLineColor([0,0,0])
+            circs.setFillColor([0,0,0])
+        if not flex_cond_flag: # if the block is BLOCKED
+            if n==0: #and its the first trial
+                # randomly select two circles to cue
+                cue_target_1=np.random.choice(right_stim,1)
+                cue_target_2=np.random.choice(left_stim,1)
+        else: #otherwise, select a new circle every time
+            cue_target_1=np.random.choice(right_stim,1)
+            cue_target_2=np.random.choice(left_stim,1)
+        color_ind=cue_types_scramble.index(thisBlock['cue'])
+        cue_target_1[0].setLineColor(colors_scramble[color_ind])
+        cue_target_2[0].setLineColor(colors_scramble[color_ind])
+        draw_fixation()
+        win.flip()
+        core.wait(.5) # CUE PERIOD #################################################
+        draw_fixation()
+        # ## SOA period
+        for circs in stimuli:
+            circs.setLineColor([0,0,0])
+        win.flip()
+        core.wait(1.5) # DELAY #####################################################
+        draw_fixation()
+        target_loc1 = list(right_stim).index(cue_target_1[0]) #where are the two cued circles?
+        stim_minus_one = np.delete(right_stim, target_loc1) 
+        target_loc2 = list(left_stim).index(cue_target_2[0]) 
+        stim_minus_two = np.delete(left_stim,target_loc2) #get a list of stimuli that don't include cued circles
+        if thisBlock['validity']==1:
+            which_circle = np.random.choice([cue_target_1[0], cue_target_2[0], stim_minus_two],1,p=[0.5,0.5,0.0])
+        if thisBlock['cue']=='neutral':#since the neutral cue is neutral, it isn't going to be valid and targets/distractors will be randomly assigned
+            trial_type='n/a'
+        elif (which_circle[0] in cue_target_1):
+            trial_type='valid'
+            cue_side='R'
+        elif (which_circle[0] in cue_target_2): #if the dis or target is in one of the circles cued, it was a predictive trial. SAVE OUT this info later!!!!!
+            trial_type='valid'
+            cue_side='L'
+        else:
+            trial_type='invalid'
+        trial_tarInDist=0
+        if thisBlock['cue']=='target':
+            if trial_type=='valid': #if this trial's cued locations are valid, put the target in one of them
+                target_stim.pos= which_circle[0].pos 
+                if cue_side=='L': #if the target is on the Left side of the clock, we want the dist on the right and vice versa
+                    distractor_stim.pos=(np.random.choice(stim_minus_one,1))[0].pos
+                else:
+                    distractor_stim.pos= (np.random.choice(stim_minus_two,1))[0].pos
+            else: #if this trial is invalid 
+                    tar=np.random.choice(stim_minus_one,1,replace=False) #select two circles that aren't the cued circles
+                    dist=np.random.choice(stim_minus_two,1,replace=False)
+                    distractor_stim.pos=dist[0].pos #put the distractor in one and the target in the other
+                    target_stim.pos=tar[0].pos
+        elif thisBlock['cue']=='distractor':
+            if trial_type=='valid': #if this trial's cued locations are valid, put the distractor in one of them
+                distractor_stim.pos=which_circle[0].pos
+                if cue_side=='L': #if the dist is on the Left side of the clock, we want the target on the right and vice versa
+                    target_stim.pos=(np.random.choice(stim_minus_one,1))[0].pos
+                else:
+                    target_stim.pos= (np.random.choice(stim_minus_two,1))[0].pos
+            else:
+                probe1=np.random.choice(stim_minus_one,1,replace=False) #select two circles that aren't the cued circles
+                probe2=np.random.choice(stim_minus_two,1,replace=False)
+                tarNdist=np.random.choice([probe1[0],probe2[0]],2,replace=False) #them randomly assign the target to one and dist to another
+                distractor_stim.pos=tarNdist[0].pos 
+                target_stim.pos=tarNdist[1].pos
+        elif thisBlock['cue']=='neutral':
+            probe1=np.random.choice(stim_minus_one,1,replace=False) #select two circles that aren't the cued circles
+            probe2=np.random.choice(stim_minus_two,1,replace=False)
+            tarNdist=np.random.choice([probe1[0],probe2[0]],2,replace=False) #them randomly assign the target to one and dist to another
+            distractor_stim.pos=tarNdist[0].pos
+            target_stim.pos=tarNdist[1].pos
+        distractor_stim.ori= (np.random.choice([0,90,180,270],1))[0] #choose the orientation of the distractor
+        distractor_stim.draw()
+        target_stim.ori= (np.random.choice([0,90,180,270],1))[0] #choose the orientation of the target
+        target_stim.draw()
+        if target_stim.ori==0:
+            corrKey='up'
+        elif target_stim.ori==90:
+            corrKey='right'
+        elif target_stim.ori==180:
+            corrKey='down'
+        elif target_stim.ori==270:
+            corrKey='left'
+        for n in range(len(stimuli)): 
+            circs=stimuli[n]
+            if not allCircsFlag:
+                if not (((circs.pos[0]==target_stim.pos[0]) and (circs.pos[1]==target_stim.pos[1])) or ((circs.pos[0]==distractor_stim.pos[0]) and (circs.pos[1]==distractor_stim.pos[1]))): #if the circle isn't a target or distractor, its grey
+                    circs.setLineColor([0,0,0])
+                    circs.setFillColor(None)
+                else:
+                    circs.setLineColor([1,-1,-1])
+                    circs.setFillColor(None)
+            else:
+                if not (((circs.pos[0]==target_stim.pos[0]) and (circs.pos[1]==target_stim.pos[1])) or ((circs.pos[0]==distractor_stim.pos[0]) and (circs.pos[1]==distractor_stim.pos[1]))): #if the circle is not a target or distractor then put other_stim in it
+                    circs.setLineColor([1,-1,-1]) #if the circle is a non singleton distractor make it red
+                    circs.setFillColor(None)
+                    redL[n].ori=(np.random.choice([0,90,180,270],1))[0]
+                    redL[n].pos=circs.pos
+                    redL[n].draw()
+                elif (circs.pos[0]==target_stim.pos[0] and circs.pos[1]==target_stim.pos[1]):
+                    circs.setLineColor([1,-1,-1]) #if the circle is a target we want it to be red, too
+                    circs.setFillColor(None)
+                else: #if the circle is a chosen distractor, make it yellow
+                    circs.lineColorSpace='rgb255'
+                    circs.setLineColor([255,255,0])
+                    circs.setFillColor(None)
+        win.update()
+        clock=core.Clock()
+        if not demo:
+            subResp= event.waitKeys(1.5,keyList=['up','down','left','right'],timeStamped=clock)
+            if subResp==None:
+                trial_corr=0
+            else:
+                if subResp[0][0]==corrKey:
+                    trial_corr=1
+                else:
+                    trial_corr=0
+        else: 
+            core.wait(1.5)
+        draw_fixation()
+        for circs in stimuli:
+            circs.lineColorSpace='rgb'
+            circs.setLineColor([0,0,0])
+            circs.setFillColor([0,0,0])
+        if not demo:
+            Thistrial_data= trial_corr
+            pracDataList.append(Thistrial_data)
+        win.flip()
+        core.wait(ITI)
+        for circs in stimuli:
+            circs.opacity=0
+    if not demo:
+        acc_feedback=visual.TextStim(win, pos=[0,0],units='norm',text='Your accuracy for the practice round was %i percent. Practice again? (y/n)' %(100*(np.sum(pracDataList)/n_practrials)))
+        acc_feedback.draw()
+        win.update()
+        cont=event.waitKeys(keyList=['y','n'])
+        if cont[0]=='y':
+            pracCond(thisBlock,n_practrials)
 
 def wait_here(t):
-#    interval=1/refresh_rate
-#    num_frames=int(t/interval)
-    for n in range(t): #change back to num_frames
+    interval=1/refresh_rate
+    num_frames=int(t/interval)
+    for n in range(num_frames): #change back to num_frames
         fixation.draw()
         win.flip()
-def make_ITI(exp_type):
-    if exp_type=='b' or exp_type=='m' or exp_type=='d':
-        ITI=np.random.choice([1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6],1)[0] #averages to around 2 second?
-    elif exp_type=='e':
-        ITI=np.random.choice([3.4,3.5,3.6,3.7,3.8,3.9,4,4.1,4.2,4.3,4.4,4.5,4.6],1)[0] # averages to around 4 seconds?
+def make_ITI():
+    ITI=np.random.choice([3.4,3.5,3.6,3.7,3.8,3.9,4,4.1,4.2,4.3,4.4,4.5,4.6],1)[0] # averages to around 4 seconds?
     return ITI
+def make_csv(filename):
+    with open(filename+'.csv', mode='w') as csv_file:
+        fieldnames=['block','cue','validity','uni or bi lat?','trialNum','trial_type','corrResp','subResp','trialCorr?','RT','stim_loc(T,D)','tarinDisCond','ITI']
+        #fieldnames is simply asserting the categories at the top of the CSV
+        writer=csv.DictWriter(csv_file,fieldnames=fieldnames)
+        writer.writeheader()
+        print('\n\n\n')
+        for n in range(len(blocks.keys())): # loop through each block
+            blocks_data = list(blocks.keys())[n]
+            ThisBlock=blocks[blocks_data] #grabbing the block info for this block
+            #print(ThisBlock)
+            #print('\n')
+            for k in range(len(ThisBlock['trialsData'])): #this should be the # of trials
+                ThisTrial=ThisBlock['trialsData'][k] #grabbing the trial info out of data for this trial
+                #print(ThisTrial)
+                writer.writerow({'block':ThisBlock['block'],'cue':ThisBlock['cueType'],'validity':ThisBlock['validity'],
+                                'uni or bi lat?':ThisBlock['blockLat'],'trialNum':ThisTrial['trialNum'],'trial_type':ThisTrial['trial_type'],
+                                'corrResp':ThisTrial['corrResp'],'subResp':ThisTrial['subjectResp'],'trialCorr?':ThisTrial['trialCorr?'],
+                                'RT':ThisTrial['RT'],'stim_loc(T,D)':ThisTrial['stim_loc'],'tarinDisCond':ThisTrial['tarinDisCond'],
+                                'ITI':ThisTrial['ITI']})
 
 if no_stim==6:
     one_oclock = visual.Circle(
@@ -163,7 +341,13 @@ for stim in stimuli:
     stim.lineWidth=5
 distractor_stim.size=([1.25,1.25])
 target_stim.size=([1.25,1.25])
+distractor_stim.opacity=0
+target_stim.opacity=0
+distractor_stim.autoDraw=True
+target_stim.autoDraw=True
 for stim in other_stim:
+    stim.autoDraw=True
+    stim.opacity=0
     stim.size=([1.25,1.25])
 fixation = visual.TextStim(win, text='+',units='norm', color=(1,1,1))
 fixation.size=0.6
@@ -171,7 +355,45 @@ fixation.size=0.6
 EEGflag=1
 if EEGflag: 
     startSaveflag=bytes([254])
+    #cue_onset_trig=bytes([101])
+    tarU3_trig=bytes([111])
+    tarB3_trig=bytes([113])
+    tarU9_trig=bytes([115])
+    tarB9_trig=bytes([117])
+    disU3_trig=bytes([119])
+    disU9_trig=bytes([121])
+    disB3_trig=bytes([123])
+    disB9_trig=bytes([125])
+    tarinDist_trig=bytes([103])
+    subNonRespTrig=bytes([105])
+    subRespTrig=bytes([107])
+    ITItrig=bytes([109])
     port=serial.Serial('COM4',baudrate=115200)
+    port.close()
+
+intro_msg= visual.TextStim(win, pos=[0, .5],units='norm', text='Welcome to the experiment!')
+intro_msg2= visual.TextStim(win, pos=[0, 0], units='norm',text='You will see a series of circles that will indicate the location of the target "T" or of the distractor "I" some portion of the time')
+intro_msg3=visual.TextStim(win, pos=[0,-0.5],units='norm',text='Press any key to continue')
+intro_msg.draw()
+intro_msg2.draw() 
+intro_msg3.draw()
+win.flip()
+event.waitKeys()
+intro_mesg4= visual.TextStim(win,pos=[0,.5],units='norm',text='Please remain focused on the cross in the middle of the screen whenever there are NOT circles on the screen.')
+intro_mesg5=visual.TextStim(win,pos=[0,0], units='norm',text='Respond to the orientation of the capital "T" using the arrow keys on the keyboard')
+intro_mesg6=visual.TextStim(win,pos=[0,-0.5],units='norm',text='You will also see a capital "I." Do NOT respond to the orientation of the I. Press any key to continue.')
+intro_mesg4.draw()
+intro_mesg5.draw()
+intro_mesg6.draw()
+win.flip()
+event.waitKeys()
+win.flip()
+
+blocks={}
+if EEGflag:
+    port.open()
+    #win.callonFlip(pport.setData,delay1trig)
+    port.write(startSaveflag)
     port.close()
 
 order=np.random.choice(len(cue_types),len(cue_types),replace=False) # num of conds in cue_types #this is randomly coming up with the indices of the conds in the scrambled list
@@ -187,12 +409,10 @@ for ind in order:
     colors_scramble[ind]=colors[order.index(ind)]
 
 cue_VnL=[] #here, we're initiating a list of the validities and the lateralizations (bilateral or unilateral) and pairing them for however many times they need to be carried out (2)
-
 for c in cue_valid:
     for lattype in ['bi','uni']:
         for n in range(num_reps):
             cue_VnL.append([c,lattype])
-
 order2=np.random.choice(len(cue_VnL),len(cue_VnL),replace=False) #this is going to be the order that we ultimately call ea of the conditions in
 order2=list(order2)
 cue_VnL_scramble=np.zeros((len(cue_VnL)))
@@ -202,7 +422,8 @@ for ind2 in order2:
 
 print(cue_types_scramble)
 print(cue_VnL_scramble)
-
+if EEGflag:
+    port.open()
 k=0
 for cue in cue_types_scramble: #looping through the types of cues in sequence, since we care about the order now. 
     
@@ -216,7 +437,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
         thisBlock=stimList[stimList.index({'cue':cue,'validity':thisValid})]
         
         for n in range(num_trials):
-            ITI=make_ITI('e')
+            ITI=make_ITI()
             
             if n==0:
                 for circs in stimuli:
@@ -230,6 +451,8 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 fixation.draw()
                 win.flip() 
                 core.wait(3)# pre-block pause
+            
+            fixation.draw() 
             
             for circs in stimuli:
                 circs.opacity=1
@@ -246,26 +469,43 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             cue_target_1[0].setLineColor(colors_scramble[color_ind])
             if not (blockLat=='uni'):
                 cue_target_2[0].setLineColor(colors_scramble[color_ind])
-#            
-#            if EEGflag:
-#                port.close()
-#                port.open()
-#                port.write(startSaveflag)
-#                port.flush()
-#                core.wait(.2)
-#                port.close()
-#            
-            win.flip()
-            core.wait(.5)
+            
+            if thisBlock['cue']=='target':
+                if thisBlock['validity']==other:
+                    if blockLat=='bi':
+                        thistrialFlag=tarB9_trig
+                    elif blockLat=='uni':
+                        thistrialFlag=tarU9_trig
+                elif thisBlock['validity']==chance:
+                    if blockLat=='bi':
+                        thistrialFlag=tarB3_trig
+                    elif blockLat=='uni':
+                        thistrialFlag=tarU3_trig
+            elif thisBlock['cue']=='distractor':
+                if thisBlock['validity']==other:
+                    if blockLat=='bi':
+                        thistrialFlag=disB9_trig
+                    elif blockLat=='uni':
+                        thistrialFlag=disU9_trig
+                elif thisBlock['validity']==chance:
+                    if blockLat=='bi':
+                        thistrialFlag=disB3_trig
+                    elif blockLat=='uni':
+                        thistrialFlag=disU3_trig
+            
+            if EEGflag:
+                win.callOnFlip(port.write,thistrialFlag)
+            
+            wait_here(.5) # ############## Cue presentation ###################
             
             fixation.draw()
             for circs in stimuli:
                 circs.setLineColor([0,0,0])
             
-            win.flip()
-            core.wait(1.5)
+            wait_here(1.5) # ############ delay one/SOA period ###############
             
             fixation.draw()
+            
             odds=thisBlock['validity']
             
             if not (blockLat=='uni'):
@@ -341,9 +581,9 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                             tarinDistloc=np.random.choice([cue_target_1[0],cue_target_2[0]],1) #randomly choose the left or right cue to put it in
                             target_stim.pos=tarinDistloc[0].pos #put the target in the chosen 'distractor' circle
                             if tarinDistloc[0]==cue_target_1[0]:
-                                cue_side=='R'
+                                cue_side='R'
                             else:
-                                cue_side=='L'
+                                cue_side='L'
                             if cue_side=='L':
                                 distractor_stim.pos=(np.random.choice(stim_minus_one,1))[0].pos #put the distractor on the opposite side of the target
                             else:
@@ -352,14 +592,8 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                             target_stim.pos=cue_target_1[0].pos
                             distractor_stim.pos=np.random.choice(stim_minus_one,1)[0].pos
                         trial_tarInDist=1
-                        
-#                        if EEGflag:
-#                            port.close()
-#                            port.open()
-#                            port.write(startSaveflag)
-#                            #port.flush()
-#                            #core.wait(.2)
-#                            port.close()
+                        if EEGflag:
+                            port.write(tarinDist_trig)
                    else:
                         if blockLat=='bi':
                             probe1=np.random.choice(stim_minus_one,1,replace=False) #select two circles that aren't the cued circles
@@ -373,11 +607,14 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                             probe2=probe[1]
                             distractor_stim.pos=probe1.pos
                             target_stim.pos=probe2.pos
-                            distractor_stim.ori= (np.random.choice([0,90,180,270],1))[0] #choose the orientation of the distractor
+            
+            distractor_stim.ori= (np.random.choice([0,90,180,270],1))[0] #choose the orientation of the distractor
+            distractor_stim.opacity=1
             distractor_stim.draw()
             target_stim.ori=5
             while target_stim.ori==5 or (target_stim.ori == distractor_stim.ori) or (target_stim.ori+180 == distractor_stim.ori) or (target_stim.ori-180==distractor_stim.ori):
                 target_stim.ori= (np.random.choice([0,90,180,270],1))[0] #choose the orientation of the target
+            target_stim.opacity=1
             target_stim.draw()
             
             if target_stim.ori==0:
@@ -393,11 +630,12 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 circs=stimuli[s]
                 if not (((circs.pos[0]==target_stim.pos[0]) and (circs.pos[1]==target_stim.pos[1])) or ((circs.pos[0]==distractor_stim.pos[0]) and (circs.pos[1]==distractor_stim.pos[1]))): 
                     #if the circle is not a target or distractor then put other_stim in it
-                    circs.setLineColor([255,255,0],colorSpace='rgb255')
-                    #circs.setLineColor([1,-1,-1]) #if the circle is a non singleton distractor make it red
+                    #circs.setLineColor([255,255,0],colorSpace='rgb255')
+                    circs.setLineColor([1,-1,-1]) #if the circle is a non singleton distractor make it red
                     circs.setFillColor(None)
                     redL[s].ori=(np.random.choice([0,90,180,270],1))[0]
                     redL[s].pos=circs.pos
+                    redL[s].opacity=1
                     redL[s].draw()
                 elif (circs.pos[0]==target_stim.pos[0] and circs.pos[1]==target_stim.pos[1]):
                     circs.setLineColor([1,-1,-1]) #if the circle is a target we want it to be red, too
@@ -406,30 +644,94 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                     circs.lineColorSpace='rgb255'
                     circs.setLineColor([255,255,0])
                     circs.setFillColor(None)
-                    
-            win.update()
-            t=2
-            interval=1/refresh_rate
-            num_frames=int(t/interval)
-            if EEGflag:
-                port.open()
-                win.callOnFlip(port.write,bytes([255]))
-                #port.open()
-                #port.write(bytes([255]))
-                #port.write(bytes([0]))
-            #win.flip()
-            #core.wait(2)
-            wait_here(num_frames)
+            
+            fixation.draw()
+            #win.update()
+            
+#            t=2
+#            interval=1/refresh_rate
+#            num_frames=int(t/interval)
             
             if EEGflag:
-                port.close()
+                # port.flush()
+                win.callOnFlip(port.write,bytes([255]))
+#            if EEGflag:
+#                port.open()
+            
+            #wait_here(2) # ############### probe presentation ####################
+            
+            event.clearEvents()
+            max_win_count=int(2/(1/refresh_rate))
+            win_count=0
+            subResp=None
+            clock=core.Clock()
+            while not subResp:
+                win.flip()
+                subResp=event.getKeys(keyList=['up','down','left','right'], timeStamped=clock)
+                win_count=win_count+1
+                if win_count==max_win_count:
+                    break
+            
+            if not subResp:
+                if EEGflag:
+                    port.write(subNonRespTrig)
+                trial_corr=np.nan
+                RT=np.nan
+                key='None'
+            else:
+                if EEGflag:
+                    port.write(subRespTrig)
+                if subResp[0][0]==corrKey:
+                    trial_corr=1
+                else:
+                    trial_corr=0
+                RT=subResp[0][1]
+                key=subResp[0][0]
+            
             
             fixation.draw()
             for circs in stimuli:
                 circs.lineColorSpace='rgb'
                 circs.setLineColor([0,0,0])
                 circs.setFillColor([0,0,0])
+            for circs in other_stim:
+                circs.opacity=0
+            target_stim.opacity=0
+            distractor_stim.opacity=0
             
             win.flip()
             #core.wait(ITI)
-            core.wait(.5)
+            
+            for stim in stimuli:
+                if (stim.pos[0]==target_stim.pos[0]) and (stim.pos[1]==target_stim.pos[1]):
+                    target_circle=stim
+                elif (stim.pos[0]==distractor_stim.pos[0]) and (stim.pos[1]==distractor_stim.pos[1]):
+                    distractor_circle=stim
+                else:
+                    continue
+            
+            Thistrial_data= {'trialNum':(n+1),'trial_type':trial_type,'corrResp':corrKey,'subjectResp':key,'trialCorr?':trial_corr,'RT':RT, 'stim_loc':(target_circle.name,distractor_circle.name),'tarinDisCond':trial_tarInDist,'ITI':ITI}
+            trialDataList.append(Thistrial_data)
+            
+            print(trialDataList)
+            
+            key=event.getKeys()
+            if key: 
+                if key[0]=='escape': 
+                    win.close()
+                    core.quit()
+                    print('FORCED QUIT')
+            
+            if EEGflag:
+                win.callOnFlip(port.write,ITItrig)
+            
+            #core.wait(ITI) #ITI--want to jitter this?, with an average of 4 seconds
+            wait_here(ITI)
+#            port.close()
+#            
+        blocks.update({'blockInfo_%i%s'%(block,cue):{'block':k,'cueType':thisBlock['cue'],'validity':thisBlock['validity'],'blockLat':blockLat,'trialsData':trialDataList}})
+        # #########################saving data out###########################################
+        make_csv(filename)
+        k=k+1
+if EEGflag:
+    port.close()

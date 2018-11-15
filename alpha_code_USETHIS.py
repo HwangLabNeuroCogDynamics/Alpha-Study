@@ -1527,15 +1527,15 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                     elif lat_stim_flag and blockLat=='uni':
                         target_stim.pos=(np.random.choice(stim_minus_one,1))[0].pos
                 else:
-                   if TarindistFlag and (np.random.choice([True,False],1,p=[.10,.90])[0]): #if the trial's cued location is invalid AND we want a target in a distractor-cued loc
+                   if TarindistFlag and (np.random.choice([True,False],1,p=[0.10,0.90])[0]): #if the trial's cued location is invalid AND we want a target in a distractor-cued loc
                         #we only want a target in a dist cued loc once in a while (10% of all invalid trials)
                         if (not lat_stim_flag) or (lat_stim_flag and blockLat=='bi'): #if there are 2 distractor cues
                             tarinDistloc=np.random.choice([cue_target_1[0],cue_target_2[0]],1) #randomly choose the left or right cue to put it in
                             target_stim.pos=tarinDistloc[0].pos #put the target in the chosen 'distractor' circle
                             if tarinDistloc[0]==cue_target_1[0]:
-                                cue_side=='R'
+                                cue_side='R'
                             else:
-                                cue_side=='L'
+                                cue_side='L'
                             # if the target was place on the left side put the distractor on the right and vice versa
                             if cue_side=='L':
                                 distractor_stim.pos=(np.random.choice(stim_minus_one,1))[0].pos #put the distractor on the opposite side of the target
