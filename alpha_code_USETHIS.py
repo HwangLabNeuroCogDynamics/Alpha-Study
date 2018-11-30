@@ -1,7 +1,9 @@
-# ##############ver 11/14/18 3:12PM##################
- # no cue and no distractor cond -- only got as far as line 1221, finish later
-    # changing target and dis cond to have only chance and 'other,' ie .95, validities. And adding a unilateral cue condition 
-        # had a typo which doubled num_reps, fixed
+# ##############ver 11/28/18 1:53PM##################
+# added the flexible v blocked mixed trials 
+    # after looking at data collected around thanksgiving, we want to run a final piloting version w/ flex v blocked blocks and only bilateral cues and a neutral cond
+        # no cue and no distractor cond -- only got as far as line 1221, finish later
+            # changing target and dis cond to have only chance and 'other,' ie .95, validities. And adding a unilateral cue condition 
+                # had a typo which doubled num_reps, fixed
 
 # Hwang Lab alpha study #
 
@@ -32,7 +34,7 @@ os.chdir(_thisDir)
 
 expName = 'alpha_pilot'  # from the Builder filename that created this script
 
-expInfo = {'subject': '', 'session': '01','f or b?':'f','no stim':'6', 'lat?':'y','COMPUTER (b,e,d,m)':'b','neutral?':'n','how many validities':'1','noDis':'n'}
+expInfo = {'subject': '', 'session': '01','f and b?':'y','no stim':'6', 'lat?':'n','COMPUTER (b,e,d,m)':'b','neutral?':'y','how many validities':'1','noDis':'n'}
 
 # where 'f or b?' is flexible v blocked. blocked is default
 
@@ -78,7 +80,7 @@ else:
 
 #will blocks be flexbile or predictable?
 
-if expInfo['f or b?']=='f':
+if expInfo['f and b?']=='n':
 
     flex_cond_flag = True
 
@@ -248,7 +250,7 @@ def draw_fixation(): #0 to 1, for the opacity
 
     fixation.draw()
 
-def pracCond(thisBlock,n_practrials=10,demo=False):
+def pracCond(thisBlock,n_practrials=1,demo=False):
     pracDataList=[]
     for n in range(n_practrials):
     
@@ -287,23 +289,9 @@ def pracCond(thisBlock,n_practrials=10,demo=False):
 
             circs.setFillColor([0,0,0])
 
-        
+        cue_target_1=np.random.choice(right_stim,1)
 
-        if not flex_cond_flag: # if the block is BLOCKED
-
-            if n==0: #and its the first trial
-
-                # randomly select two circles to cue
-
-                cue_target_1=np.random.choice(right_stim,1)
-
-                cue_target_2=np.random.choice(left_stim,1)
-
-        else: #otherwise, select a new circle every time
-
-            cue_target_1=np.random.choice(right_stim,1)
-
-            cue_target_2=np.random.choice(left_stim,1)
+        cue_target_2=np.random.choice(left_stim,1)
 
 
 
@@ -616,7 +604,7 @@ def make_csv(filename):
     
     with open(filename+'.csv', mode='w') as csv_file:
     
-        fieldnames=['flex or blocked?','no stim','allCircsFlag','TarInDistFlag','lateralized?','neutral?','block','cue','validity','uni or bi lat?','trialNum','trial_type','corrResp','subResp','trialCorr?','RT','stim_loc(T,D)','tarinDisCond','ITI']
+        fieldnames=['flex and blocked?','no stim','allCircsFlag','TarInDistFlag','lateralized?','neutral?','block','cue','validity','uni or bi lat?','flex or blocked?','trialNum','trial_type','corrResp','subResp','trialCorr?','RT','stim_loc(T,D)','tarinDisCond','ITI']
     
         #fieldnames is simply asserting the categories at the top of the CSV
     
@@ -639,10 +627,10 @@ def make_csv(filename):
             for k in range(len(ThisBlock['trialsData'])): #this should be the # of trials
                 ThisTrial=ThisBlock['trialsData'][k] #grabbing the trial info out of data for this trial
                 #print(ThisTrial)
-                writer.writerow({'flex or blocked?': flex_cond_flag,'no stim':expInfo['no stim'],
+                writer.writerow({'flex and blocked?': expInfo['f and b?'],'no stim':expInfo['no stim'],
                                 'allCircsFlag':allCircsFlag,'TarInDistFlag':TarindistFlag,'lateralized?':lat_stim_flag,
                                 'neutral?':expInfo['neutral?'],'block':ThisBlock['block'],'cue':ThisBlock['cueType'],'validity':ThisBlock['validity'],
-                                'uni or bi lat?':ThisBlock['blockLat'],'trialNum':ThisTrial['trialNum'],'trial_type':ThisTrial['trial_type'],
+                                'uni or bi lat?':ThisBlock['blockLat'],'flex or blocked?':ThisBlock['blockFlex'],'trialNum':ThisTrial['trialNum'],'trial_type':ThisTrial['trial_type'],
                                 'corrResp':ThisTrial['corrResp'],'subResp':ThisTrial['subjectResp'],'trialCorr?':ThisTrial['trialCorr?'],
                                 'RT':ThisTrial['RT'],'stim_loc(T,D)':ThisTrial['stim_loc'],'tarinDisCond':ThisTrial['tarinDisCond'],
                                 'ITI':ThisTrial['ITI']})
@@ -676,9 +664,9 @@ event.waitKeys()
 
 intro_mesg4= visual.TextStim(win,pos=[0,.5],units='norm',text='Please remain focused on the cross in the middle of the screen whenever there are NOT circles on the screen.')
 
-intro_mesg5=visual.TextStim(win,pos=[0,0], units='norm',text='Respond to the orientation of the capital "T" using the arrow keys on the keyboard')
+intro_mesg5=visual.TextStim(win,pos=[0,0], units='norm',text='Respond to the orientation of the RED capital "T" using the arrow keys on the keyboard')
 
-intro_mesg6=visual.TextStim(win,pos=[0,-0.5],units='norm',text='You will also see a capital "I." Do NOT respond to the orientation of the I. Press any key to continue.')
+intro_mesg6=visual.TextStim(win,pos=[0,-0.5],units='norm',text='You will also see a YELLOW capital "T." Do NOT respond to the orientation of the YELLOW T. Press any key to continue.')
 
 intro_mesg4.draw()
 
@@ -1200,53 +1188,51 @@ for ind in order:
     cue_types_scramble[ind]=cues[order.index(ind)]
     colors_scramble[ind]=colors[order.index(ind)]
 
-cue_VnL=[] #here, we're initiating a list of the validities and the lateralizations (bilateral or unilateral) and pairing them for however many times they need to be carried out (2)
 if lat_stim_flag:
-    for c in cue_valid:
-        for lattype in ['bi','uni']:
-            for n in range(num_reps):
-                cue_VnL.append([c,lattype])
+    lattypes=['bi','uni']
 else:
-    for c in cue_valid:
-        for lattype in ['bi']:
-            for n in range(num_reps):
-                cue_VnL.append([c,lattype])
-
-order2=np.random.choice(len(cue_VnL),len(cue_VnL),replace=False) #this is going to be the order that we ultimately call ea of the conditions in
-order2=list(order2)
-cue_VnL_scramble=np.zeros((len(cue_VnL)))
-cue_VnL_scramble=list(cue_VnL_scramble)
-for ind2 in order2:
-    cue_VnL_scramble[ind2]=cue_VnL[order2.index(ind2)]
+    lattypes=['bi'] #if no lat_stim_flag, the 'default' is to only have bilateral cond, one for each type of cue validity
+if flex_cond_flag:
+    cue_changes=['flex']
+elif not flex_cond_flag:
+    cue_changes=['flex','blocked']
 
 print(cue_types_scramble)
-print(cue_VnL_scramble)
 
 k=0
 for cue in cue_types_scramble: #looping through the types of cues in sequence, since we care about the order now. 
     
-    if neutralFlag and cue=='neutral': #if we have a neutral condition then we are not running through the conds in cue_VnL, so we just want as many blocks as it takes to have neutral w 0 validity
-        reps=num_reps
-        if noDisflag and lat_stim_flag:
-            reps=reps*3
-        elif noDisflag or lat_stim_flag:
-            reps=reps*2 #and double that number to allow for some blocks with no cue at all if noDisflag
-    else:
-        reps=len(cue_VnL_scramble)
-#    if noDisflag:
-#        neutral_count=[]
+    if (not neutralFlag) or (cue != 'neutral'):
+        TnD_cue_VnL=[] #here, we're initiating a list of the validities and the lateralizations (bilateral or unilateral) and pairing them for however many times they need to be carried out (2)
+        for c in cue_valid:
+            for lattype in lattypes:
+                for v in cue_changes:
+                    for n in range(num_reps):
+                        TnD_cue_VnL.append([c,lattype,v])
+        cue_VnL=TnD_cue_VnL
+    if neutralFlag and cue=='neutral':
+        neutral_VnL=[]
+        for lattype in lattypes:
+            for v in cue_changes:
+                for n in range(num_reps):
+                    neutral_VnL.append([0,lattype,v])
+        cue_VnL=neutral_VnL
+    
+    order2=np.random.choice(len(cue_VnL),len(cue_VnL),replace=False) #this is going to be the order that we ultimately call ea of the conditions in
+    order2=list(order2)
+    cue_VnL_scramble=np.zeros((len(cue_VnL)))
+    cue_VnL_scramble=list(cue_VnL_scramble)
+    for ind2 in order2:
+        cue_VnL_scramble[ind2]=cue_VnL[order2.index(ind2)]
+    print(cue_VnL_scramble)
+    
+    reps=len(cue_VnL_scramble)
     
     for block in (range(reps)): #we want each cue type to repeat (num_reps * the # of validity conds * 2 laterality conds) times 
         
         blockLat=cue_VnL_scramble[block][1]
-        
-        if neutralFlag and cue=='neutral': #if neutralFlag 
-            if not noDisflag: #and its a no-distractor condition
-                thisValid=0.0
-            #else:
-             #   if (neutral_count.count(0.0)<num_reps) and (neutral_count.count(-1)<num_reps):
-        else:
-            thisValid=cue_VnL_scramble[block][0]
+        blockFlex=cue_VnL_scramble[block][2]
+        thisValid=cue_VnL_scramble[block][0]
         
         trialDataList=[]
         if neutralFlag and block==0 and cue=='neutral': # if neutralFlag is true and the block is neutral
@@ -1358,7 +1344,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
                 circs.setFillColor([0,0,0])
     
             
-            if not flex_cond_flag: # if the block is BLOCKED
+            if (not flex_cond_flag) and blockFlex=='blocked': # if the block is BLOCKED
             
                 if n==0: #and its the first trial
                 
@@ -1742,7 +1728,7 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
     #            if key=='n':
     #                continue_msg2=visual.TextStim
         
-        blocks.update({'blockInfo_%i%s'%(block,cue):{'block':k,'cueType':thisBlock['cue'],'validity':thisBlock['validity'],'blockLat':blockLat,'trialsData':trialDataList}})
+        blocks.update({'blockInfo_%i%s'%(block,cue):{'block':k,'cueType':thisBlock['cue'],'validity':thisBlock['validity'],'blockLat':blockLat,'blockFlex':blockFlex,'trialsData':trialDataList}})
         # #########################saving data out###########################################
         make_csv(filename)
         k=k+1
