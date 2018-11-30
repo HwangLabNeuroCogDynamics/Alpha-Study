@@ -830,6 +830,7 @@ if no_stim==12:
 
     nine_oclock = visual.Circle(
 
+
         win=win, name='9',
 
         size=(0.09, 0.15),
@@ -843,7 +844,6 @@ if no_stim==12:
         opacity=1, depth=-3.0, interpolate=True)
 
     nine_oclock.setAutoDraw(True)
-
     eight_oclock = visual.Circle(
 
         win=win, name='8',
