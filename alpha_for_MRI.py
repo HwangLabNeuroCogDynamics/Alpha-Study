@@ -26,7 +26,7 @@ dlg = gui.DlgFromDict(dictionary=expInfo, title=expName)
 if dlg.OK == False:
     core.quit()  # user pressed cancel
 expInfo['date'] = data.getDateStr()  # add a simple timestamp
-win = visual.Window([1680,1050],units='deg',fullscr=False,monitor='testMonitor',checkTiming=True)
+win = visual.Window([1440,900],units='deg',fullscr=False,monitor='testMonitor',checkTiming=True)
 no_stim=6
 vis_deg=3.5
 flex_cond_flag=0
@@ -36,11 +36,11 @@ flex_cond_flag=0
 #yellowT=visual.ImageStim(win, image='C:\Stimuli\YellowT.png')
 #redLpath='C:\Stimuli'
 #filename='Z:/AlphaStudy_Data/eegData/eeg_behavior_data'+u'/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
-redT=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/T2.png') 
-redI=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/I3.png')
-yellowT=visual.ImageStim(win, image='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/YellowT.png')
-redLpath='/Users/dcellier/Documents/GitHub/Alpha-Study/stimuli/'
-filename='/Users/Shared/'+u'data/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
+redT=visual.ImageStim(win, image='/Volumes/rdss_kahwang/alpha-study-stimpres-repository/stim/T2.png') 
+#redI=visual.ImageStim(win, image='/Volumes/rdss_kahwang/alpha-study-stimpres-repository/stim/I3.png')
+yellowT=visual.ImageStim(win, image='/Volumes/rdss_kahwang/alpha-study-stimpres-repository/stim/YellowT.png')
+redLpath='/Volumes/rdss_kahwang/alpha-study-stimpres-repository/stim/'
+filename='/Volumes/rdss_kahwang/AlphaStudy_Data/MRIData'+u'mri_behavData/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
 refresh_rate=50 #not sure what the real refresh rate is
 
 #refresh_rate=50
@@ -221,7 +221,7 @@ def wait_here(t):
         fixation.draw()
         win.flip()
 def make_ITI():
-    ITI=np.random.choice([3.4,3.5,3.6,3.7,3.8,3.9,4,4.1,4.2,4.3,4.4,4.5,4.6],1)[0] # averages to around 4 seconds?
+    ITI=np.random.choice([1,2,3,4,5,6,7,8,9,10],1,p=[(.7/9),(.7/9),(.7/9),.3,(.7/9),(.7/9),(.7/9),(.7/9),(.7/9),(.7/9)])[0] # averages to around 4 seconds?
     return ITI
 def make_csv(filename):
     with open(filename+'.csv', mode='w') as csv_file:

@@ -1,3 +1,4 @@
+# ~~ Alpha for EEG ~~
 # 12/06/18 added instruction screen after ea cue type
     # 12/03/18 updating paradigm to add flex vs blocked cond, and no unilateral cues
         # 11/15/18, want to finish script so it's ready for subjects-- FINISH PRAC FUNC and demo, call it in script
