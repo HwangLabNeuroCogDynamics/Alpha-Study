@@ -40,7 +40,7 @@ redT=visual.ImageStim(win, image='/Volumes/rdss_kahwang/alpha-study-stimpres-rep
 #redI=visual.ImageStim(win, image='/Volumes/rdss_kahwang/alpha-study-stimpres-repository/stim/I3.png')
 yellowT=visual.ImageStim(win, image='/Volumes/rdss_kahwang/alpha-study-stimpres-repository/stim/YellowT.png')
 redLpath='/Volumes/rdss_kahwang/alpha-study-stimpres-repository/stim/'
-filename='/Volumes/rdss_kahwang/AlphaStudy_Data/MRIData'+u'mri_behavData/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
+filename='/Volumes/rdss_kahwang/AlphaStudy_Data/MRIData/'+u'mri_behavData/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
 refresh_rate=50 #not sure what the real refresh rate is
 
 #refresh_rate=50

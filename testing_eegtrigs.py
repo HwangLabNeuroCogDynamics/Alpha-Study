@@ -1,4 +1,5 @@
 # ~~ Alpha for EEG ~~
+# 12/28/18 somehow the old list of eeg triggers was deleted :(, this one is outdated, missing neutrals
 # 12/06/18 added instruction screen after ea cue type
     # 12/03/18 updating paradigm to add flex vs blocked cond, and no unilateral cues
         # 11/15/18, want to finish script so it's ready for subjects-- FINISH PRAC FUNC and demo, call it in script
@@ -374,10 +375,11 @@ for cue in ['target','distractor']:
 if neutralFlag:
     stimList.append({'cue':'neutral','validity':0})
 
+# this list is outdated, lost previous version somehow 
+
 EEGflag=1 # change back to 1
 if EEGflag: 
     startSaveflag=bytes([254])
-    stopSaveflag=bytes([255])
     #cue_onset_trig=bytes([101])
     tarU3_trig=bytes([111])
     tarB3_trig=bytes([113])
@@ -388,13 +390,10 @@ if EEGflag:
     disB3_trig=bytes([123])
     disB9_trig=bytes([125])
     probetrig=bytes([127])
-    neutralU_trig=bytes([129])
-    neutralB_trig=bytes([131])
     tarinDist_trig=bytes([103])
     subNonRespTrig=bytes([105])
     subRespTrig=bytes([107])
     ITItrig=bytes([109])
-    endofBlocktrig=bytes([133])
     port=serial.Serial('COM4',baudrate=115200)
     port.close()
 
