@@ -77,7 +77,7 @@ for sub in subject_files: # insert for loop through subject list here
  
 	layout=mne.channels.read_montage('biosemi64')
 	raw_fe.set_montage(layout)
-	ica=ICA(n_components=25,random_state=25)
+	ica=ICA(n_components=25,random_state=25,method='infomax')
 	ica.fit(raw_fe,picks=our_picks)
 
 	eog_ic=[]
