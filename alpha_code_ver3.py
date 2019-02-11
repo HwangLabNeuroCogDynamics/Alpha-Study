@@ -1,6 +1,8 @@
-# ### MRI adaptation of alpha paradigm -- no distractor condition. 
-    # adding the event triggers for MRI ttl
-        # 0 deg rotation=6, 90=7,180=8,270=9
+# ALPHA REVISION NO. 2 ~~ changes to alpha post Feb 5th
+    # ~~ ALPHA REVISION ~~ changes to alpha study post our discussion with shaun
+    # 1/14/19 changed fixation cross to triangle/X for distractor present and absent cues
+    # 12/28/18 modified so that the event triggers will always be sent out w the behavioral file
+        # added HP/LP as conditions, didn't get through all if statements, also have to add the while loop so that likely_dis doesn't repeat, also have to fix CSV files to reflect this added condition
 
 from __future__ import absolute_import, division
 from psychopy import locale_setup, sound, gui, visual, core, data, event, logging, clock
@@ -13,52 +15,86 @@ from numpy import (sin, cos, tan, log, log10, pi, average,
 
                    sqrt, std, deg2rad, rad2deg, linspace, asarray)
 
-from numpy.random import random, randint, normal, shuffle,uniform
+from numpy.random import random, randint, normal, shuffle,uniform,permutation
 import os  # handy system and path functions
 import sys  # to get file system encoding
 import serial #for sending triggers from this computer to biosemi computer
 import csv
 from psychopy import visual, core
 
-expInfo = {'subject': '', 'session': '01'}
+expInfo = {'subject': '', 'session': '01','EEG? [y/n]':'n'}
 expName='alpha_pilot'
 dlg = gui.DlgFromDict(dictionary=expInfo, title=expName)
 if dlg.OK == False:
     core.quit()  # user pressed cancel
 expInfo['date'] = data.getDateStr()  # add a simple timestamp
-win = visual.Window([1440,900],units='deg',fullscr=False,monitor='testMonitor',checkTiming=True)
+win = visual.Window([1680,1050],units='deg',fullscr=True,monitor='testMonitor',checkTiming=True)
 no_stim=6
 vis_deg=3.5
 
-#redT=visual.ImageStim(win, image='C:\Stimuli\T2.png') 
-#redI=visual.ImageStim(win, image='C:\Stimuli\I3.png') #EEG stimulus presentation Dell
-#yellowT=visual.ImageStim(win, image='C:\Stimuli\YellowT.png')
-#redLpath='C:\Stimuli'
-#filename='Z:/AlphaStudy_Data/eegData/eeg_behavior_data'+u'/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
-redT=visual.ImageStim(win, image='/Volumes/rdss_kahwang/alpha-study-stimpres-repository/stim/T2.png') 
-#redI=visual.ImageStim(win, image='/Volumes/rdss_kahwang/alpha-study-stimpres-repository/stim/I3.png')
-yellowT=visual.ImageStim(win, image='/Volumes/rdss_kahwang/alpha-study-stimpres-repository/stim/YellowT.png')
-redLpath='/Volumes/rdss_kahwang/alpha-study-stimpres-repository/stim/'
-filename='/Volumes/rdss_kahwang/AlphaStudy_Data/MRIData/'+u'mri_behavData/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
-refresh_rate=50 #not sure what the real refresh rate is
+if expInfo['EEG? [y/n]']=='y':
+    EEGflag=1
+else:
+    EEGflag=0
 
-#refresh_rate=50
-#redL=[visual.ImageStim(win, image=redLpath+'\RedL copy 0.png'),visual.ImageStim(win, image=redLpath+'\RedL copy 1.png'),visual.ImageStim(win, image=redLpath+'\RedL copy 2.png'),
-#    visual.ImageStim(win, image=redLpath+'\RedL copy 3.png'),visual.ImageStim(win, image=redLpath+'\RedL copy 4.png'),visual.ImageStim(win, image=redLpath+'\RedL copy 5.png'),
-#    visual.ImageStim(win, image=redLpath+'\RedL copy 6.png'),visual.ImageStim(win, image=redLpath+'\RedL copy 7.png'),visual.ImageStim(win, image=redLpath+'\RedL copy 8.png')]
+if EEGflag:
+    port=serial.Serial('COM4',baudrate=115200)
+    port.close()
+    startSaveflag=bytes([254])
+    stopSaveflag=bytes([255])
+    #cue_onset_trig=bytes([101])
+    HHP_trig=bytes([111]) # high prob target, high prob distractor, and dis present cue
+    HLP_trig=bytes([113])
+    HHA_trig=bytes([115])
+    HLA_trig=bytes([117])
+    NLP_trig=bytes([119]) # no target cue, low prob distractor, dis present cue
+    NLA_trig=bytes([121])
+    NHP_trig=bytes([123])
+    NHA_trig=bytes([125])
+    tarVdisVH_trig=bytes([127]) # No target cue, valid distractor cue, and high prob loc condition (though dis may not have been in it)
+    tarVdisVL_trig=bytes([129])
+    tarNdisVH_trig=bytes([131])
+    tarNdisVL_trig=bytes([103])
+    tarVdisIH_trig=bytes([133])
+    tarVdisIL_trig=bytes([135])
+    tarNdisIH_trig=bytes([137])
+    tarNdisIL_trig=bytes([139])
+    subNonRespTrig=bytes([105])
+    subRespTrig=bytes([107])
+    ITItrig=bytes([109])
+    endofBlocktrig=bytes([133])
+    
+    trigDict={'startSaveflag':startSaveflag,'stopSaveflag':stopSaveflag,'HHP_trig':HHP_trig,'HLP_trig':HLP_trig,'HHA_trig':HHA_trig,'HLA_trig':HLA_trig,
+            'LLP_trig':NLP_trig,'LLA_trig':NLA_trig,'LHP_trig':NHP_trig,'LHA_trig':NHA_trig,'tarVdisVH_trig':tarVdisVH_trig,'tarVdisVL_trig':tarVdisVL_trig,
+            'tarIdisVH_trig':tarNdisVH_trig,'tarIdisVL_trig':tarNdisVL_trig,'tarVdisIH_trig':tarVdisIH_trig,'tarVdisIL_trig':tarVdisIL_trig,'tarIdisIH_trig':tarNdisIH_trig,
+            'tarIdisIL_trig':tarNdisIL_trig,'subNonRespTrig':subNonRespTrig,'subRespTrig':subRespTrig,'ITItrig':ITItrig,'endofBlocktrig':endofBlocktrig}
+    
 
+redT=visual.ImageStim(win, image='Z:/alpha-study-stimpres-repository/stim/T2.png') #(win, image='/Volumes/rdss_kahwang/alpha-study-stimpres-repository/stim/T2.png') #
+#redI=visual.ImageStim(win, image='/Volumes/rdss_kahwang/alpha-study-stimpres-repository/Alpha-Study/stim/I3.png') #EEG stimulus presentation Dell
+yellowT=visual.ImageStim(win, image='Z:/alpha-study-stimpres-repository/stim/YellowT.png')#(win, image='/Volumes/rdss_kahwang/alpha-study-stimpres-repository/stim/YellowT.png')#
+redLpath='Z:/alpha-study-stimpres-repository/stim/'# #win, image='/Volumes/rdss_kahwang/alpha-study-stimpres-repository/stim/YellowT.png')#'/Volumes/rdss_kahwang/alpha-study-stimpres-repository/stim/'#
+if EEGflag:
+    filename='Z:/AlphaStudy_Data/eegData/eeg_behavior_data'+u'/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
+else:
+    filename='Z:/AlphaStudy_Data/behavData'+u'/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date']) #for dells
+    #filename='/Volumes/rdss_kahwang/AlphaStudy_Data/behavData'+u'/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
+
+refresh_rate=50
 redL=[visual.ImageStim(win, image=redLpath+'RedL copy 0.png'),visual.ImageStim(win, image=redLpath+'RedL copy 1.png'),visual.ImageStim(win, image=redLpath+'RedL copy 2.png'),
     visual.ImageStim(win, image=redLpath+'RedL copy 3.png'),visual.ImageStim(win, image=redLpath+'RedL copy 4.png'),visual.ImageStim(win, image=redLpath+'RedL copy 5.png'),
     visual.ImageStim(win, image=redLpath+'RedL copy 6.png'),visual.ImageStim(win, image=redLpath+'RedL copy 7.png'),visual.ImageStim(win, image=redLpath+'RedL copy 8.png')]
-
 distractor_stim=yellowT
 target_stim=redT
 other_stim=redL
 
-num_trials=50
-num_reps=2
+num_trials=50 #has to be even number
+num_reps=2 
 
-def pracCond(thisBlock,n_practrials=6,demo=False):
+#trialNum':(n),'tarVorI':tarVorI,'disCue_type':disCue_type,'dPOA':dPOA,'disVorI':disVorI,'distractor_loc':loc,'corrResp':corrKey
+#blocks.update({'blockInfo_%i'%(block):{'block':block,'tarCue':thisBlock[0],'disCue':thisBlock[1],'highProbLoc?':disProb,'likely_dis':saveDis,'likelyDisHemisphere':disHemi,'trialsData':trialDataList}})
+
+def pracCond(thisBlock,n_practrials=4,demo=False):
     pracDataList=[]
     disCueprac=[]
     for r in range(int(n_practrials/2)):
@@ -76,10 +112,8 @@ def pracCond(thisBlock,n_practrials=6,demo=False):
                 info_msg3=visual.TextStim(win,pos=[0,0],units='norm',text='Begin demonstration')
                 info_msg3.draw()
             else:
-                info_msg3=visual.TextStim(win,pos=[0,0],units='norm',text='Begin practice block? Press UP to start')
+                info_msg3=visual.TextStim(win,pos=[0,0],units='norm',text='Begin practice block')
                 info_msg3.draw()
-                win.flip()
-                event.waitKeys(keyList=['up'])
             win.update()
             core.wait(2)
             fixation.text='+'
@@ -215,13 +249,15 @@ def wait_here(t):
         win.flip()
 
 def make_ITI():
-    ITI=np.random.choice([1,2,3,4,5,6,7,8,9,10],1,p=[(.7/9),(.7/9),(.7/9),.3,(.7/9),(.7/9),(.7/9),(.7/9),(.7/9),(.7/9)])[0] # averages to around 4 seconds?
+    if not EEGflag:
+        ITI=np.random.choice([1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6],1)[0] #averages to around 2 second?
+    else:
+        ITI=np.random.choice([3.4,3.5,3.6,3.7,3.8,3.9,4,4.1,4.2,4.3,4.4,4.5,4.6],1)[0] # averages to around 4 seconds?
     return ITI
 
-def make_csv(filename):
+def make_csv(filename,expDone=False):
     with open(filename+'.csv', mode='w') as csv_file:
-        fieldnames=['block','tarCue_validity','disCue_validity','highProbLoc?','highProbLocation','likelyDisHemisphere',
-                    'trialNum','disCue','disPresentOrAbsent','disVorI','distractor_loc','corrResp','subResp','trialCorr?','RT','timestamps (begin,cue,probe)','stim_loc(T,D)','ITI','triggers']
+        fieldnames=['block','tarCue_validity','disCue_validity','highProbLoc?','highProbLocation','likelyDisHemisphere','trialNum','disCue','disPresentOrAbsent','disVorI','distractor_loc','corrResp','subResp','trialCorr?','RT','stim_loc(T,D)','ITI','triggers']
         #fieldnames is simply asserting the categories at the top of the CSV
         writer=csv.DictWriter(csv_file,fieldnames=fieldnames)
         writer.writeheader()
@@ -242,17 +278,22 @@ def make_csv(filename):
                     dvalid='100%'
                 else:
                     dvalid='50%'
-                
                 writer.writerow({'block':ThisBlock['block'],'tarCue_validity':tvalid,'disCue_validity':dvalid, 'highProbLoc?':ThisBlock['highProbLoc?'], 'highProbLocation':ThisBlock['likely_dis'],
-                            'likelyDisHemisphere':ThisBlock['likelyDisHemisphere'],'trialNum':ThisTrial['trialNum'],
-                            'disCue':ThisTrial['disCue_type'],'disPresentOrAbsent':ThisTrial['dPOA'],'disVorI':ThisTrial['disVorI'],'distractor_loc':ThisTrial['distractor_loc'],
-                            'corrResp':ThisTrial['corrResp'],'subResp':ThisTrial['subjectResp'],'trialCorr?':ThisTrial['trialCorr?'],
-                            'RT':ThisTrial['RT'],'timestamps (begin,cue,probe)':ThisTrial['timestamps (begin,cue,probe)'],'stim_loc(T,D)':ThisTrial['stim_loc'],
-                            'ITI':ThisTrial['ITI']})
-        if block==lastBlock and MRIflag:
+                                'likelyDisHemisphere':ThisBlock['likelyDisHemisphere'],'trialNum':ThisTrial['trialNum'],
+                                'disCue':ThisTrial['disCue_type'],'disPresentOrAbsent':ThisTrial['dPOA'],'disVorI':ThisTrial['disVorI'],'distractor_loc':ThisTrial['distractor_loc'],
+                                'corrResp':ThisTrial['corrResp'],'subResp':ThisTrial['subjectResp'],'trialCorr?':ThisTrial['trialCorr?'],
+                                'RT':ThisTrial['RT'],'stim_loc(T,D)':ThisTrial['stim_loc'],
+                                'ITI':ThisTrial['ITI'],'triggers':''})
+        if EEGflag and expDone==True:
+            print(trigDict)
             for key in trigDict.keys():
-                writer.writerow({'triggers':(key,trigDict[key])})
-
+                writer.writerow({'block':'','tarCue_validity':'','disCue_validity':'', 'highProbLoc?':'', 'highProbLocation':'',
+                                        'likelyDisHemisphere':'','trialNum':'',
+                                        'disCue':'','disPresentOrAbsent':'','disVorI':'','distractor_loc':'',
+                                        'corrResp':'','subResp':'','trialCorr?':'',
+                                        'RT':'','stim_loc(T,D)':'',
+                                        'ITI':'','triggers':(key,trigDict[key])})
+    
 if no_stim==6:
     one_oclock = visual.Circle(
     
@@ -260,7 +301,7 @@ if no_stim==6:
     
             size=(0.09, 0.15),
     
-            ori=0, pos=((vis_deg/2), (sqrt(3)/2)*vis_deg),
+            ori=0, pos=((vis_deg/2), (sqrt(3)/2*vis_deg)),
     
             lineWidth=7, lineColor=None, lineColorSpace='rgb',
     
@@ -369,42 +410,6 @@ fixation_DA = visual.Polygon(win, edges=3, lineWidth=5, fillColor=None, units='n
 fixation_DA.size=(0.04,.08)
 
 
-
-# #### FLAGS ############################################
-
-MRIflag=0 # change back to 1
-if MRIflag: 
-    port=serial.Serial('COM4',baudrate=115200)
-    port.close()
-    startSaveflag=bytes([254])
-    stopSaveflag=bytes([255])
-    #cue_onset_trig=bytes([101])
-    HHP_trig=bytes([111]) # high prob target, high prob distractor, and dis present cue
-    HLP_trig=bytes([113])
-    HHA_trig=bytes([115])
-    HLA_trig=bytes([117])
-    NLP_trig=bytes([119]) # no target cue, low prob distractor, dis present cue
-    NLA_trig=bytes([121])
-    NHP_trig=bytes([123])
-    NHA_trig=bytes([125])
-    tarVdisVH_trig=bytes([127]) # No target cue, valid distractor cue, and high prob loc condition (though dis may not have been in it)
-    tarVdisVL_trig=bytes([129])
-    tarNdisVH_trig=bytes([131])
-    tarNdisVL_trig=bytes([103])
-    tarVdisIH_trig=bytes([133])
-    tarVdisIL_trig=bytes([135])
-    tarNdisIH_trig=bytes([137])
-    tarNdisIL_trig=bytes([139])
-    subNonRespTrig=bytes([105])
-    subRespTrig=bytes([107])
-    ITItrig=bytes([109])
-    endofBlocktrig=bytes([133])
-    
-    trigDict={'startSaveflag':startSaveflag,'stopSaveflag':stopSaveflag,'HHP_trig':HHP_trig,'HLP_trig':HLP_trig,'HHA_trig':HHA_trig,'HLA_trig':HLA_trig,
-            'LLP_trig':NLP_trig,'LLA_trig':NLA_trig,'LHP_trig':NHP_trig,'LHA_trig':NHA_trig,'tarVdisVH_trig':tarVdisVH_trig,'tarVdisVL_trig':tarVdisVL_trig,
-            'tarIdisVH_trig':tarNdisVH_trig,'tarIdisVL_trig':tarNdisVL_trig,'tarVdisIH_trig':tarVdisIH_trig,'tarVdisIL_trig':tarVdisIL_trig,'tarIdisIH_trig':tarNdisIH_trig,
-            'tarIdisIL_trig':tarNdisIL_trig,'subNonRespTrig':subNonRespTrig,'subRespTrig':subRespTrig,'ITItrig':ITItrig,'endofBlocktrig':endofBlocktrig}
-
 intro_msg= visual.TextStim(win, pos=[0, .5],units='norm', text='Welcome to the experiment!')
 intro_msg2= visual.TextStim(win, pos=[0, 0], units='norm',text='You will see a series of circles that will indicate the location of the RED target "T"')
 intro_msg3=visual.TextStim(win, pos=[0,-0.5],units='norm',text='Press any key to continue')
@@ -423,12 +428,6 @@ win.flip()
 event.waitKeys()
 win.flip()
 
-blocks={}
-if MRIflag:
-    port.open()
-    #win.callonFlip(pport.setData,delay1trig)
-    port.write(startSaveflag)
-    port.close()
 #targetlist=['tarH','tarN']
 distractorlist=['disH','disL']
 HPLPlist=['HP','LP'] # high prob distractor loc OR randomized prob
@@ -452,19 +451,24 @@ stimList_n=list(np.random.permutation(stimList_n))
 
 stimList=stimList_n+stimList_h
 print(stimList)
+
+if EEGflag:
+    port.open()
+    #win.callonFlip(pport.setData,delay1trig)
+    port.write(startSaveflag)
+    port.close()
+
 blocks={} # where we will save out the data
 likely_dis= np.random.choice(stimuli,1)[0]
 
 pracBlock=['tarN','disH','LP']
-pracCond(thisBlock=pracBlock,demo=True)
+pracCond(thisBlock=pracBlock,n_practrials=6,demo=True)
 pracCond(thisBlock=pracBlock,n_practrials=8,demo=False)
 
-lastBlock=len(stimList)-1
 for block in range(len(stimList)):
-    
     if block== len(stimList_n):
-        pracCond(thisBlock=['tarH','disH','LP'],n_practrials=8,demo=True)
-        pracCond(thisBlock=['tarH','disH','LP'],n_practrials=10,demo=False)
+        pracCond(thisBlock=['tarH','disH','LP'],n_practrials=6,demo=True)
+        pracCond(thisBlock=['tarH','disH','LP'],n_practrials=8,demo=False)
         #print('whatever')
     trialDataList=[]
     
@@ -480,7 +484,7 @@ for block in range(len(stimList)):
     fixation.text='+'
     fixation.draw()
     win.flip() 
-    #core.wait(1)# pre-block pause
+    core.wait(3)# pre-block pause
     thisBlock=stimList[block]
     
     if thisBlock[2]=='HP':
@@ -509,22 +513,17 @@ for block in range(len(stimList)):
     print(thisBlock)
     disCue_scramble=np.random.choice(disCue,num_trials,replace=False)
     #print(disCue_scramble)
-    runTimer=0
-    runTimer=core.MonotonicClock()
+    
     for n in range(num_trials):
-        if n==0:
-            MRI_wait=visual.TextStim(win, pos=[0,.5], units='norm', text='Please wait for scanner...') 
-            MRI_wait.draw()
-            win.flip()
-            event.waitKeys(keyList=['^','z'])
-            #win.flip()
-            fixation.autoDraw=True
-            fixation.color=([1,1,1])
-            win.flip() 
-            core.wait(3)# pre-block pause
-        
-        trialBegin_timestamp=runTimer.getTime()
         ITI=make_ITI()
+        
+#        if n==0 and block==0:
+#            for circs in stimuli:
+#                circs.opacity = 0 
+#            #pracCond(thisBlock=thisBlock,demo=True)
+#            #pracCond(thisBlock=thisBlock,demo=False)
+#            fixation.autoDraw=False
+#            fixation.opacity=0
         
         for circs in stimuli:
             circs.opacity=1
@@ -551,7 +550,7 @@ for block in range(len(stimList)):
         elif disCue_scramble[n]=='disA':
             fixation_DA.autoDraw=True #yellow
         
-        if MRIflag:
+        if EEGflag:
             if thisBlock[0]=='tarH':
                 if thisBlock[1]=='disL':
                     if disCue_scramble[n]=='disA':
@@ -575,9 +574,8 @@ for block in range(len(stimList)):
                     elif disCue_scramble[n]=='disP':
                         thistrialFlag=NHP_trig
         
-        if MRIflag:
+        if EEGflag:
             win.callOnFlip(port.write,thistrialFlag)
-        cue_pres_timestamp=runTimer.getTime()
         
         wait_here(1) # ############## Cue presentation ###################
         
@@ -713,7 +711,7 @@ for block in range(len(stimList)):
 #                    circs.setLineColor([1,-1,-1]) 
 #                    circs.setFillColor(None)
 #        
-        if MRIflag:
+        if EEGflag:
             if thisBlock[0]=='tarH':
                 if disVorI=='V':
                     if thisBlock[2]=='HP':
@@ -737,10 +735,11 @@ for block in range(len(stimList)):
                     else:
                         probetrig=tarNdisIL_trig
         
-        if MRIflag:
+        if EEGflag:
                 # port.flush()
                 win.callOnFlip(port.write,probetrig)
-                
+#            if EEGflag:
+#                port.open()
         
         #wait_here(2) # ############### probe presentation ####################
         
@@ -748,23 +747,22 @@ for block in range(len(stimList)):
         max_win_count=int(2/(1/refresh_rate))
         win_count=0
         subResp=None
-        probe_pres_timestamp=runTimer.getTime()
         clock=core.Clock()
         while not subResp:
             win.flip()
-            subResp=event.getKeys(keyList=['up','down','left','right'], timeStamped=clock) 
+            subResp=event.getKeys(keyList=['up','down','left','right'], timeStamped=clock)
             win_count=win_count+1
             if win_count==max_win_count:
                 break
         
         if not subResp:
-            if MRIflag:
+            if EEGflag:
                 port.write(subNonRespTrig)
             trial_corr=np.nan
             RT=np.nan
             key='None'
         else:
-            if MRIflag:
+            if EEGflag:
                 port.write(subRespTrig)
             if subResp[0][0]==corrKey:
                 trial_corr=1
@@ -822,8 +820,7 @@ for block in range(len(stimList)):
             loc='None'
             dPOA='Absent'
         
-        Thistrial_data= {'trialNum':(n),'disCue_type':disCue_type,'dPOA':dPOA,'disVorI':disVorI,'distractor_loc':loc,'corrResp':corrKey,
-                            'subjectResp':key,'trialCorr?':trial_corr,'RT':RT, 'timestamps (begin,cue,probe)':(trialBegin_timestamp,cue_pres_timestamp,probe_pres_timestamp),'stim_loc':stim_loc,'ITI':ITI}
+        Thistrial_data= {'trialNum':(n),'disCue_type':disCue_type,'dPOA':dPOA,'disVorI':disVorI,'distractor_loc':loc,'corrResp':corrKey,'subjectResp':key,'trialCorr?':trial_corr,'RT':RT, 'stim_loc':stim_loc,'ITI':ITI}
         trialDataList.append(Thistrial_data)
         
         print(Thistrial_data)
@@ -835,9 +832,9 @@ for block in range(len(stimList)):
                 core.quit()
                 print('FORCED QUIT')
         
-        if MRIflag:
+        if EEGflag:
             win.callOnFlip(port.write,ITItrig)
-        
+            
         #core.wait(ITI) #ITI--want to jitter this?, with an average of 4 seconds
         wait_here(ITI)
 #            port.close()
@@ -854,25 +851,28 @@ for block in range(len(stimList)):
     blocks.update({'blockInfo_%i'%(block):{'block':block,'tarCue':thisBlock[0],'disCue':thisBlock[1],'highProbLoc?':disProb,'likely_dis':saveDis,'likelyDisHemisphere':disHemi,'trialsData':trialDataList}})
     
     # #########################saving data out###########################################
-    make_csv(filename)
-    if MRIflag:
+    if block==(len(stimList)-1):
+        make_csv(filename,expDone=True)
+    else:
+        make_csv(filename,expDone=False)
+    if EEGflag:
         port.write(endofBlocktrig)
     if block==int(len(stimList)/2)-1:
         exit_msg= visual.TextStim(win, pos=[0, .5],units='norm', text='You are halfway through the study!')
-        exit_msg3=visual.TextStim(win, pos=[0,-0.5],units='norm',text='Please STAY STILL, take a break, and wait for the experimenter so that they can give further instruction')
+        exit_msg3=visual.TextStim(win, pos=[0,-0.5],units='norm',text='Please take a break and, when done, call the experimenter over to continue')
         exit_msg.draw() 
         exit_msg3.draw()
         win.flip()
         event.waitKeys(keyList=['q'])
 
-if MRIflag:
+if EEGflag:
     port.write(stopSaveflag)
     port.close()
 
 for stim in stimuli:
     stim.autoDraw=False
-fixation.autoDraw=False
-
+ fixation.autoDraw=False
+ 
 exit_msg= visual.TextStim(win, pos=[0, .5],units='norm', text='Thank you for participating in our experiment!')
 exit_msg2= visual.TextStim(win, pos=[0, 0], units='norm',text='Your time and cooperation is greatly appreciated.')
 exit_msg3=visual.TextStim(win, pos=[0,-0.5],units='norm',text='Press any key to exit')
@@ -957,4 +957,3 @@ event.waitKeys()
 #    thisTrial=[thisTrialtar,thisTrialdis,thisTrialdisValid]
 #    print(thisTrial)
 #    print(conds) 
-

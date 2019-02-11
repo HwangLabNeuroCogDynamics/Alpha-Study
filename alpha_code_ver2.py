@@ -1,4 +1,5 @@
 # ~~ ALPHA REVISION ~~ changes to alpha study post our discussion with shaun
+# 1/14/19 changed fixation cross to triangle/X for distractor present and absent cues
 # 12/28/18 modified so that the event triggers will always be sent out w the behavioral file
     # added HP/LP as conditions, didn't get through all if statements, also have to add the while loop so that likely_dis doesn't repeat, also have to fix CSV files to reflect this added condition
 
@@ -26,7 +27,7 @@ dlg = gui.DlgFromDict(dictionary=expInfo, title=expName)
 if dlg.OK == False:
     core.quit()  # user pressed cancel
 expInfo['date'] = data.getDateStr()  # add a simple timestamp
-win = visual.Window([1680,1050],units='deg',fullscr=False,monitor='testMonitor',checkTiming=True)
+win = visual.Window([1680,1050],units='deg',fullscr=True,monitor='testMonitor',checkTiming=True)
 no_stim=6
 vis_deg=3.5
 
@@ -68,15 +69,15 @@ if EEGflag:
             'tarIdisIL_trig':tarIdisIL_trig,'subNonRespTrig':subNonRespTrig,'subRespTrig':subRespTrig,'ITItrig':ITItrig,'endofBlocktrig':endofBlocktrig}
     
 
-redT=visual.ImageStim(win, image='/Volumes/rdss_kahwang/alpha-study-stimpres-repository/stim/T2.png') #win, image='Z:/alpha-study-stimpres-repository/stim/T2.png') #
+redT=visual.ImageStim(win, image='Z:/alpha-study-stimpres-repository/stim/T2.png') #(win, image='/Volumes/rdss_kahwang/alpha-study-stimpres-repository/stim/T2.png') 
 #redI=visual.ImageStim(win, image='/Volumes/rdss_kahwang/alpha-study-stimpres-repository/Alpha-Study/stim/I3.png') #EEG stimulus presentation Dell
-yellowT=visual.ImageStim(win, image='/Volumes/rdss_kahwang/alpha-study-stimpres-repository/stim/YellowT.png')#(win, image='Z:/alpha-study-stimpres-repository/stim/YellowT.png')#
-redLpath='/Volumes/rdss_kahwang/alpha-study-stimpres-repository/stim/'#'Z:/alpha-study-stimpres-repository/stim/'#
+yellowT=visual.ImageStim(win, image='Z:/alpha-study-stimpres-repository/stim/YellowT.png')#
+redLpath='Z:/alpha-study-stimpres-repository/stim/'#'/Volumes/rdss_kahwang/alpha-study-stimpres-repository/stim/'#win, image='/Volumes/rdss_kahwang/alpha-study-stimpres-repository/stim/YellowT.png')#
 if EEGflag:
     filename='Z:/AlphaStudy_Data/eegData/eeg_behavior_data'+u'/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
 else:
-    #filename='Z:/AlphaStudy_Data/behavData'+u'/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date']) #for dells
-    filename='/Volumes/rdss_kahwang/AlphaStudy_Data/behavData'+u'/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
+    filename='Z:/AlphaStudy_Data/behavData'+u'/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date']) #for dells
+    #filename='/Volumes/rdss_kahwang/AlphaStudy_Data/behavData'+u'/%s_%s_%s_%s' % (expInfo['subject'], expName, expInfo['session'],expInfo['date'])
 
 refresh_rate=50
 redL=[visual.ImageStim(win, image=redLpath+'RedL copy 0.png'),visual.ImageStim(win, image=redLpath+'RedL copy 1.png'),visual.ImageStim(win, image=redLpath+'RedL copy 2.png'),
@@ -86,8 +87,8 @@ distractor_stim=yellowT
 target_stim=redT
 other_stim=redL
 
-num_trials=2 #50 #has to be even number
-num_reps=1 
+num_trials=50 #has to be even number
+num_reps=2 
 
 #trialNum':(n),'tarVorI':tarVorI,'disCue_type':disCue_type,'dPOA':dPOA,'disVorI':disVorI,'distractor_loc':loc,'corrResp':corrKey
 #blocks.update({'blockInfo_%i'%(block):{'block':block,'tarCue':thisBlock[0],'disCue':thisBlock[1],'highProbLoc?':disProb,'likely_dis':saveDis,'likelyDisHemisphere':disHemi,'trialsData':trialDataList}})
@@ -114,8 +115,8 @@ def pracCond(thisBlock,n_practrials=10,demo=False):
                 info_msg3.draw()
             win.update()
             core.wait(2)
-            fixation.autoDraw=True
-            #fixation.draw()
+            fixation.text='+'
+            fixation.draw()
             win.flip()
             core.wait(3)# pre-block pause
         for circs in stimuli:
@@ -126,14 +127,19 @@ def pracCond(thisBlock,n_practrials=10,demo=False):
         cue_target_1.setLineColor([0,0,255],colorSpace='rgb255') 
         cue_target_2.setLineColor([0,0,255], colorSpace='rgb255')
         #print(disCue_scramble[n])
+        fixation.autoDraw=False
+        fixation.text=''
         if disCueprac[n]=='disP':
-            fixation.color=[-1,1,-1] #green
+            fixation_DP.autoDraw=True
         elif disCueprac[n]=='disA':
-            fixation.color=[1,1,0] #yellow
-        print(disCueprac)
+            fixation_DA.autoDraw=True #yellow
+        #print(disCueprac)
         wait_here(.5) # ############## Cue presentation ###################
+        fixation_DA.autoDraw=False
+        fixation_DP.autoDraw=False
         fixation.color=[1,1,1]
-        fixation.draw()
+        fixation.text='+'
+        fixation.autoDraw=True
         for circs in stimuli:
             circs.setLineColor([0,0,0],colorSpace='rgb')
         wait_here(1.5) # ############ delay one/SOA period ###############
@@ -390,8 +396,12 @@ for stim in other_stim:
     stim.autoDraw=True
     stim.opacity=0
     stim.size=([1.25,1.25])
-fixation = visual.TextStim(win, text='+',units='norm', color=(1,1,1))
+fixation = visual.TextStim(win, text='',units='norm', color=(1,1,1))
 fixation.size=0.6
+fixation_DP = visual.TextStim(win, text='x',units='norm', color=[-1,1,-1]) # distractor present cue
+fixation_DP.size=0.6
+fixation_DA = visual.Polygon(win, edges=3, lineWidth=7, fillColor=None, units='norm', lineColor=[-1,1,-1]) # distractor absent
+fixation_DA.size=(0.05,.09)
 
 
 intro_msg= visual.TextStim(win, pos=[0, .5],units='norm', text='Welcome to the experiment!')
@@ -448,9 +458,10 @@ for block in range(len(stimList)):
     win.update()
     key1=event.waitKeys()
     fixation.color=([1,1,1])
+    fixation.text='+'
+    fixation.draw()
     win.flip() 
     core.wait(3)# pre-block pause
-    
     thisBlock=stimList_scramble[block]
     
     if thisBlock[2]=='HP':
@@ -483,13 +494,13 @@ for block in range(len(stimList)):
     for n in range(num_trials):
         ITI=make_ITI()
         
-        if n==0 and block==0:
-            for circs in stimuli:
-                circs.opacity = 0 
-            #pracCond(thisBlock=thisBlock,demo=True)
-            #pracCond(thisBlock=thisBlock,demo=False)
-            fixation.autoDraw=True
-            fixation.opacity=0
+#        if n==0 and block==0:
+#            for circs in stimuli:
+#                circs.opacity = 0 
+#            #pracCond(thisBlock=thisBlock,demo=True)
+#            #pracCond(thisBlock=thisBlock,demo=False)
+#            fixation.autoDraw=False
+#            fixation.opacity=0
         
         for circs in stimuli:
             circs.opacity=1
@@ -507,10 +518,11 @@ for block in range(len(stimList)):
         cue_target_2.setLineColor([0,0,255], colorSpace='rgb255')
         
         #print(disCue_scramble[n])
+        fixation.text=''
         if disCue_scramble[n]=='disP':
-            fixation.color=[-1,1,-1] #green
+            fixation_DP.autoDraw=True #green
         elif disCue_scramble[n]=='disA':
-            fixation.color=[1,1,0] #yellow
+            fixation_DA.autoDraw=True #yellow
         
         if EEGflag:
             if thisBlock[0]=='tarH':
@@ -541,8 +553,11 @@ for block in range(len(stimList)):
         
         wait_here(.5) # ############## Cue presentation ###################
         
+        fixation.text='+'
+        fixation_DA.autoDraw=False
+        fixation_DP.autoDraw=False
         fixation.color=[1,1,1]
-        fixation.draw()
+        fixation.autoDraw=True
         for circs in stimuli:
             circs.setLineColor([0,0,0],colorSpace='rgb')
         
