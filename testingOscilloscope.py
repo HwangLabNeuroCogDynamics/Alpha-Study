@@ -6,13 +6,13 @@ import numpy as np  # whole numpy lib is available, prepend 'np.'
 from numpy import (sin, cos, tan, log, log10, pi, average,
 
                    sqrt, std, deg2rad, rad2deg, linspace, asarray)
-win = visual.Window([1680,1050],units='deg',fullscr=False,monitor='testMonitor')
+win = visual.Window([1680,1050],units='deg',fullscr=True,monitor='testMonitor')
 import serial
 
 port=serial.Serial('COM4',baudrate=115200) # based on the biosemi website-- may be wrong?
 
 vis_deg=3.5
-n_trials=100
+n_trials=5
 no_stim=12
 letters=1
 if no_stim==12:

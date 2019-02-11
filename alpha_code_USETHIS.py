@@ -62,7 +62,7 @@ expInfo['expName'] = expName
 
 from psychopy import visual, core
 
-win = visual.Window([1680,1050],units='deg',fullscr=True,monitor='testMonitor')
+win = visual.Window([1680,1050],units='deg',fullscr=False,monitor='testMonitor')
 
 # ###############Flags####################################################################################
 
@@ -250,7 +250,7 @@ def draw_fixation(): #0 to 1, for the opacity
 
     fixation.draw()
 
-def pracCond(thisBlock,n_practrials=1,demo=False):
+def pracCond(thisBlock,n_practrials=10,demo=False):
     pracDataList=[]
     for n in range(n_practrials):
     
@@ -644,7 +644,7 @@ def make_ITI(exp_type):
 
 intro_msg= visual.TextStim(win, pos=[0, .5],units='norm', text='Welcome to the experiment!')
 
-intro_msg2= visual.TextStim(win, pos=[0, 0], units='norm',text='You will see a series of circles that will indicate the location of the target "T" or of the distractor "I" some portion of the time')
+intro_msg2= visual.TextStim(win, pos=[0, 0], units='norm',text='You will see a series of circles that will indicate the location of the target "T" or of the distractor "T" some portion of the time')
 
 intro_msg3=visual.TextStim(win, pos=[0,-0.5],units='norm',text='Press any key to continue')
 
@@ -1254,10 +1254,10 @@ for cue in cue_types_scramble: #looping through the types of cues in sequence, s
             #begin practice
             thisBlock={'cue':cue,'validity':0.0}
             prac_intro1=visual.TextStim(win,pos=[0,.5],units='norm',text='We will begin with a practice block of the task you are about to perform. This round the cue will be a %s cue.'%cue)
-            prac_intro2=visual.TextStim(win,pos=[0,0],units='norm',text='Keep in mind that cue accuracy in this practice round will be 0 percent, meaning completely randomized, however this may vary throughout the actual task.')
+            #prac_intro2=visual.TextStim(win,pos=[0,0],units='norm',text='Keep in mind that cue accuracy in this practice round will be 0 percent, meaning completely randomized, however this may vary throughout the actual task.')
             prac_intro3=visual.TextStim(win,pos=[0,-.5],units='norm',text='You will always be informed what the cue type and accuracy is before beginning a block. Press any key to start the practice round')
             prac_intro1.draw()
-            prac_intro2.draw()
+            #prac_intro2.draw()
             prac_intro3.draw()
             win.update()
             event.waitKeys()
