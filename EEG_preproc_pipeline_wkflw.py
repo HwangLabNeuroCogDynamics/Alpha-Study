@@ -18,7 +18,7 @@ import pickle
 #import kai's test data
 ROOT = '/home/dcellier/RDSS/AlphaStudy_Data/eegData/'
 ROOT_raw=ROOT+'eeg_raw/'
-ROOT_proc=ROOT+'eeg_preproc/'
+ROOT_proc='/home/data/backed_up/shared/AlphaStudy_data/EEG_preprocessed/'
 subject_files=[]
 for filename in os.listdir(ROOT_raw): #compiling the subjects downloaded from MIPDB
 	if not filename=='realpeople':
@@ -37,96 +37,43 @@ for sub in subject_files: # insert for loop through subject list here
 	# # Re-reference, apply high and low pass filters (1 and 50) # # # # # # # # # #
 
 	raw_f=raw.copy()
-	raw_f,r= mne.set_eeg_reference(raw_f,ref_channels=['EXG1', 'EXG2'])#,'EXG8'])#mastoids, nose -- nose we decided we didn't want to use to reref
+	raw_f.filter(1,50)
 	raw_f.set_channel_types({'EXG1':'emg','EXG2':'emg','EXG3':'eog','EXG4':'eog','EXG5':'eog','EXG6':'eog',
                         'EXG7':'ecg','EXG8':'emg'})
-	raw_f.filter(1,50)
+	
 	#raw_f.plot(n_channels=72)
 	
 		# # # # # # selecting bad electrodes # # # # # #	
-	raw_fi=raw_f.copy()
-        raw_DataCH=(raw_fi.copy()).drop_channels(['EXG1', 'EXG2','EXG3','EXG4','EXG5','EXG6','EXG7','EXG8'])
-        tryAgain=1
-        while tryAgain:
+	raw_fi=raw_f.copy()	
+	raw_DataCH=(raw_fi.copy()).drop_channels(['EXG1', 'EXG2','EXG3','EXG4','EXG5','EXG6','EXG7','EXG8'])
+	tryAgain=1
+	while tryAgain:
 		raw_DataCH.plot(block=True) #pauses script while i visually inspect data and select which channels to delete
-                bads=raw_DataCH.info['bads']
-                text_msg2=raw_input('The channels you marked as bad are: '+str(bads)+' \n Are you ready to interpolate? [y/n]: ')
-                if text_msg2=='y':
-                        raw_fi.info['bads']=bads
-                        raw_fi=raw_fi.interpolate_bads()
-                        tryAgain=0
-                elif text_msg2=='n':
-                        tryAgain=1	
-                else:
-                        print('invalid entry: '+text_msg2)
-                        tryAgain=1
+		bads=raw_DataCH.info['bads']
+		text_msg2=raw_input('The channels you marked as bad are: '+str(bads)+' \n Are you ready to interpolate? [y/n]: ')
+		if text_msg2=='y':
+			raw_fi.info['bads']=bads
+			raw_fi=raw_fi.interpolate_bads()
+			tryAgain=0
+		elif text_msg2=='n':
+			tryAgain=1	
+		else:
+			print('invalid entry: '+text_msg2)
+			tryAgain=1
+	raw_fir,r= mne.set_eeg_reference(raw_fi,ref_channels=['EXG1', 'EXG2'])#,'EXG8'])#mastoids, nose -- nose we decided we didn't want to use to reref
 
 	# # Finding Events (triggers) # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-	events = mne.find_events(raw_fi, verbose=True)
+	events = mne.find_events(raw_fir, verbose=True)
 
-	raw_fe=raw_fi.copy() # raw_fe was originally the 2 epoched data
+	raw_fe=raw_fir.copy() # raw_fe was originally the 2 epoched data
 	#raw_fe.plot()
-
-	# # ICA on Raw data # # # # # # # # # # # # #  # # # # # # # # # # # # # # # # # # # # # # # # # # 
-
-	EOG_channels=['EXG3', 'EXG4', 'EXG5', 'EXG6']
-	ECG_channels=['EXG7']
-
-	our_picks=mne.pick_types(raw_fe.info,meg=False,eeg=True,eog=False)#mne.pick_types(raw_fi.info,meg=False,eeg=True,eog=True,emg=True,stim=True,ecg=True)
- 
-	layout=mne.channels.read_montage('biosemi64')
-	raw_fe.set_montage(layout)
-	ica=ICA(n_components=25,random_state=25,method='infomax')
-	ica.fit(raw_fe,picks=our_picks)
-
-	eog_ic=[]
-	for ch in EOG_channels:
-		# find IC's attributable to EOG artifacts
-		eog_idx,scores=ica.find_bads_eog(raw_fe,ch_name=ch)
-		eog_ic.append(eog_idx)
-	ecg_ic=[]
-	for ch in ECG_channels: # find IC's attributable to ECG artifacts
-		ecg_idx,scores=ica.find_bads_ecg(raw_fe,ch_name=ch)
-		ecg_ic.append(ecg_idx)
-	reject_ic=[]
-	for eog_inds in eog_ic:
-		for ele in eog_inds:
-			if ele not in reject_ic:
-				reject_ic.append(ele)
-	for ecg_inds in ecg_ic:
-		for ele in ecg_inds:
-			if ele not in reject_ic:
-				reject_ic.append(ele) #add these IC indices to the list of IC's to reject
-    
-	ica.exclude=[]
-	ica.exclude.extend(reject_ic)
-
-	plot=1
-	while plot:  
-		ica.plot_components(picks=range(25),ch_type=None,cmap='interactive',inst=raw_fe)# changed to ch_type=None from ch_type='EEG'because this yielded an error
-		#while len(ica.exclude)==len(reject_ic):
-		#	continue
-		ica.plot_overlay(raw_fe,exclude=ica.exclude)
-		verification_ic=raw_input('The ICs marked for rejection are: ' + str(ica.exclude) +'\n Are you sure you want to proceed? [y/n]: ')
-		if verification_ic=='y':
-			#ica.exclude.extend(bad_ics)
-			plot=0
-		else:
-			print('Please select which ICs you would like to reject')
-		#ica.plot_components(picks=range(25),ch_type=None,inst=thisEp)  
-	raw_fei=raw_fe.copy()
-	ica.apply(raw_fei)
-	raw_fei.drop_channels(['EXG1', 'EXG2','EXG3','EXG4','EXG5','EXG6','EXG7','EXG8'])
-
+	
 	# # Looping through conditions, epoching # # # # # # #  # # # # # # # # # # # # # # # # # # # # # # # #
 	
-	event_msg=raw_input('\n\n\n ATTENTION !!!!!!!!!!!!!!!!! \n events assuming alpha pilot 1 iter 1 \n\n\n Continue?  [y/n]: ')
-	if event_msg=='y':
-		event_id = {'target5_trig':105,'target8_trig':107,'dis5_trig':109,'dis8_trig':111}
-		#{#'delay1trig':101,'probetrig':103, .....
-  	          #'neutraltrig':113,'ITItrig':115}
-	elif event_msg=='n':
+	#event_msg=raw_input('\n\n\n Please identify which alpha iteration you are working on [press enter to continue] ')
+	
+	if 1:
 		con=1
 		while con:
 			iter_msg=raw_input('which iteration do you want to use? (1-5) or 6: ')
@@ -162,40 +109,99 @@ for sub in subject_files: # insert for loop through subject list here
 	tmin, tmax = -0.5, 2  #dont remember the window, making this up
 	baseline = (None, 0.0) #baseline correction applied with mne.Epochs, this is starting @ beginning of epoch ie -0.5 
 	epCond={}
+	print('\n\n\n Epoching Conds \n ')
 	for event in event_id.keys():
 		thisID={event:event_id[event]}
-		epCond[event]=mne.Epochs(raw_fei, events=events, baseline=baseline, event_id=thisID, tmin=tmin,tmax=tmax)
+		epCond[event]=mne.Epochs(raw_fe, events=events, baseline=baseline, event_id=thisID, tmin=tmin,tmax=tmax)
 
 	# # Inspect and reject bad epochs # # # # # # # # # # # #  # # # # # # # # # # 
 
-	for ev in epCond.keys():
+	for ev in []:#epCond.keys():
 		plotEpoch=1
-	        while plotEpoch:
+		if plotEpoch:#while plotEpoch:
+			print('plotting ' +ev)
 			thisEp=[]
 			thisEp=epCond[ev].copy()
-	               	thisEp.plot(block=True)
-	               	bads=raw_input('Are you sure you want to continue? [y/n]')
-			if bads=='y':
-				#ep=ep.drop_bad()
-				epCond[ev]=thisEp
-				plotEpoch=0
-			elif bads=='n':
-				continue
-			else:
-				print('oops, please indicate which epochs you would like to reject')
+			thisEp.load_data()
+			print(thisEp)
+			keep_plotting=1
+			while keep_plotting:
+				thisEp.plot(block=True, title=ev, n_epochs=2,n_channels=10)
+				bads=raw_input('Are you sure you want to continue? [y/n]: ')
+				if bads=='y':
+					#ep=ep.drop_bad()
+					epCond[ev]=thisEp
+					keep_plotting=0
+				elif bads=='n':
+					continue
+				else:
+					print('oops, please indicate which epochs you would like to reject')
 	
 
+
+	# # ICA on Raw data # # # # # # # # # # # # #  # # # # # # # # # # # # # # # # # # # # # # # # # # 
+
+	EOG_channels=['EXG3', 'EXG4', 'EXG5', 'EXG6']
+	ECG_channels=['EXG7']
+
+	our_picks=mne.pick_types(raw_fe.info,meg=False,eeg=True,eog=False)#mne.pick_types(raw_fi.info,meg=False,eeg=True,eog=True,emg=True,stim=True,ecg=True)
+ 
+	layout=mne.channels.read_montage('biosemi64')
+	
+	for ev in epCond.keys():
+		thisCond=epCond[ev]
+		thisCond.set_montage(layout)
+		ica=ICA(n_components=64,random_state=25)
+		ica.fit(thisCond,picks=our_picks)
+		eog_ic=[]
+		for ch in EOG_channels:
+			#find IC's attributable to EOG artifacts
+			eog_idx,scores=ica.find_bads_eog(thisCond,ch_name=ch)
+			eog_ic.append(eog_idx)
+		ecg_ic=[]
+		for ch in ECG_channels: # find IC's attributable to ECG artifacts
+			ecg_idx,scores=ica.find_bads_ecg(thisCond,ch_name=ch)
+			ecg_ic.append(ecg_idx)
+		reject_ic=[]
+		for eog_inds in eog_ic:
+			for ele in eog_inds:
+				if ele not in reject_ic:
+					reject_ic.append(ele)
+		for ecg_inds in ecg_ic:
+			for ele in ecg_inds:
+				if ele not in reject_ic:
+					reject_ic.append(ele) #add these IC indices to the list of IC's to reject
+		ica.exclude=[]
+		ica.exclude.extend(reject_ic)
+		plot=1
+		while plot:
+			ica.plot_components(picks=range(64),ch_type=None,cmap='interactive',inst=thisCond)# changed to ch_type=None from ch_type='EEG'because this yielded an error
+			#while len(ica.exclude)==len(reject_ic):#	continue
+			raw_input('The ICs marked for exclusion are: '+str(ica.exclude)+ '\n Press enter.')
+			thisCond.load_data()
+			thisCond.copy().plot(title=ev+': BEFORE ICA',n_epochs=5,n_channels=30)
+			thisCond_copy=thisCond.copy()
+			thisCond_Ic=ica.apply(thisCond_copy,exclude=ica.exclude)
+			thisCond_Ic.plot(block=True, title=ev+': AFTER ICA',n_epochs=5,n_channels=30)
+			verification_ic=raw_input('The ICs marked for rejection are: ' + str(ica.exclude) +'\n Are you sure you want to proceed? [y/n]: ')
+			if verification_ic=='y':
+				plot=0
+			else:
+				print('Please select which ICs you would like to reject')
+		#ica.plot_components(picks=range(25),ch_type=None,inst=thisEp)  
+		thisCond_copy=thisCond.copy()
+		ica.apply(thisCond_copy)
+		thisCond_copy.drop_channels(['EXG1', 'EXG2','EXG3','EXG4','EXG5','EXG6','EXG7','EXG8'])		
+		epCond[ev]=thisCond_copy
+	
 	print('\n\n\n\n SAVING OUT INFO ~~~~~~~ \n\n')
 	save_path=ROOT_proc+sub_name+'/'
 	os.mkdir(save_path)
-	def save_object(obj,filename):
-		with open(filename,'wb') as output:
-			pickle.dump(obj,output,pickle.HIGHEST_PROTOCOL)
-
+	
 	for event in event_id.keys():
 		event_name=event.split('_')[0]
 		thisEp=epCond[event]
-		save_object(thisEp,filename=save_path+event_name)
+		thisEp.save(save_path+event_name+'-epo.fif')
 	ask=1
 	exit_loop=0
 	while ask:	
