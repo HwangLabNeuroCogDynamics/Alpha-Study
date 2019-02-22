@@ -456,14 +456,14 @@ if EEGflag:
     port.open()
     #win.callonFlip(pport.setData,delay1trig)
     port.write(startSaveflag)
-    port.close()
+    #port.close()
 
 blocks={} # where we will save out the data
 likely_dis= np.random.choice(stimuli,1)[0]
 
 pracBlock=['tarN','disH','LP']
-pracCond(thisBlock=pracBlock,n_practrials=6,demo=True)
-pracCond(thisBlock=pracBlock,n_practrials=8,demo=False)
+#pracCond(thisBlock=pracBlock,n_practrials=6,demo=True)
+#pracCond(thisBlock=pracBlock,n_practrials=8,demo=False)
 
 for block in range(len(stimList)):
     if block== len(stimList_n):
@@ -871,7 +871,7 @@ if EEGflag:
 
 for stim in stimuli:
     stim.autoDraw=False
- fixation.autoDraw=False
+fixation.autoDraw=False
  
 exit_msg= visual.TextStim(win, pos=[0, .5],units='norm', text='Thank you for participating in our experiment!')
 exit_msg2= visual.TextStim(win, pos=[0, 0], units='norm',text='Your time and cooperation is greatly appreciated.')

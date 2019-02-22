@@ -26,7 +26,7 @@ dlg = gui.DlgFromDict(dictionary=expInfo, title=expName)
 if dlg.OK == False:
     core.quit()  # user pressed cancel
 expInfo['date'] = data.getDateStr()  # add a simple timestamp
-win = visual.Window([1440,900],units='deg',fullscr=False,monitor='testMonitor',checkTiming=True)
+win = visual.Window([1440,900],units='deg',fullscr=True,monitor='testMonitor',checkTiming=True)
 no_stim=6
 vis_deg=3.5
 
@@ -249,9 +249,7 @@ def make_csv(filename):
                             'corrResp':ThisTrial['corrResp'],'subResp':ThisTrial['subjectResp'],'trialCorr?':ThisTrial['trialCorr?'],
                             'RT':ThisTrial['RT'],'timestamps (begin,cue,probe)':ThisTrial['timestamps (begin,cue,probe)'],'stim_loc(T,D)':ThisTrial['stim_loc'],
                             'ITI':ThisTrial['ITI']})
-        if block==lastBlock and MRIflag:
-            for key in trigDict.keys():
-                writer.writerow({'triggers':(key,trigDict[key])})
+
 
 if no_stim==6:
     one_oclock = visual.Circle(
@@ -372,38 +370,8 @@ fixation_DA.size=(0.04,.08)
 
 # #### FLAGS ############################################
 
-MRIflag=0 # change back to 1
-if MRIflag: 
-    port=serial.Serial('COM4',baudrate=115200)
-    port.close()
-    startSaveflag=bytes([254])
-    stopSaveflag=bytes([255])
-    #cue_onset_trig=bytes([101])
-    HHP_trig=bytes([111]) # high prob target, high prob distractor, and dis present cue
-    HLP_trig=bytes([113])
-    HHA_trig=bytes([115])
-    HLA_trig=bytes([117])
-    NLP_trig=bytes([119]) # no target cue, low prob distractor, dis present cue
-    NLA_trig=bytes([121])
-    NHP_trig=bytes([123])
-    NHA_trig=bytes([125])
-    tarVdisVH_trig=bytes([127]) # No target cue, valid distractor cue, and high prob loc condition (though dis may not have been in it)
-    tarVdisVL_trig=bytes([129])
-    tarNdisVH_trig=bytes([131])
-    tarNdisVL_trig=bytes([103])
-    tarVdisIH_trig=bytes([133])
-    tarVdisIL_trig=bytes([135])
-    tarNdisIH_trig=bytes([137])
-    tarNdisIL_trig=bytes([139])
-    subNonRespTrig=bytes([105])
-    subRespTrig=bytes([107])
-    ITItrig=bytes([109])
-    endofBlocktrig=bytes([133])
-    
-    trigDict={'startSaveflag':startSaveflag,'stopSaveflag':stopSaveflag,'HHP_trig':HHP_trig,'HLP_trig':HLP_trig,'HHA_trig':HHA_trig,'HLA_trig':HLA_trig,
-            'LLP_trig':NLP_trig,'LLA_trig':NLA_trig,'LHP_trig':NHP_trig,'LHA_trig':NHA_trig,'tarVdisVH_trig':tarVdisVH_trig,'tarVdisVL_trig':tarVdisVL_trig,
-            'tarIdisVH_trig':tarNdisVH_trig,'tarIdisVL_trig':tarNdisVL_trig,'tarVdisIH_trig':tarVdisIH_trig,'tarVdisIL_trig':tarVdisIL_trig,'tarIdisIH_trig':tarNdisIH_trig,
-            'tarIdisIL_trig':tarNdisIL_trig,'subNonRespTrig':subNonRespTrig,'subRespTrig':subRespTrig,'ITItrig':ITItrig,'endofBlocktrig':endofBlocktrig}
+MRIflag=1# change back to 1
+
 
 intro_msg= visual.TextStim(win, pos=[0, .5],units='norm', text='Welcome to the experiment!')
 intro_msg2= visual.TextStim(win, pos=[0, 0], units='norm',text='You will see a series of circles that will indicate the location of the RED target "T"')
@@ -424,11 +392,7 @@ event.waitKeys()
 win.flip()
 
 blocks={}
-if MRIflag:
-    port.open()
-    #win.callonFlip(pport.setData,delay1trig)
-    port.write(startSaveflag)
-    port.close()
+
 #targetlist=['tarH','tarN']
 distractorlist=['disH','disL']
 HPLPlist=['HP','LP'] # high prob distractor loc OR randomized prob
@@ -456,8 +420,8 @@ blocks={} # where we will save out the data
 likely_dis= np.random.choice(stimuli,1)[0]
 
 pracBlock=['tarN','disH','LP']
-pracCond(thisBlock=pracBlock,demo=True)
-pracCond(thisBlock=pracBlock,n_practrials=8,demo=False)
+#pracCond(thisBlock=pracBlock,demo=True)
+#pracCond(thisBlock=pracBlock,n_practrials=8,demo=False)
 
 lastBlock=len(stimList)-1
 for block in range(len(stimList)):
@@ -516,7 +480,7 @@ for block in range(len(stimList)):
             MRI_wait=visual.TextStim(win, pos=[0,.5], units='norm', text='Please wait for scanner...') 
             MRI_wait.draw()
             win.flip()
-            event.waitKeys(keyList=['^','z'])
+            event.waitKeys(keyList=['lshift','z'])
             #win.flip()
             fixation.autoDraw=True
             fixation.color=([1,1,1])
@@ -550,33 +514,7 @@ for block in range(len(stimList)):
             fixation_DP.autoDraw=True #green
         elif disCue_scramble[n]=='disA':
             fixation_DA.autoDraw=True #yellow
-        
-        if MRIflag:
-            if thisBlock[0]=='tarH':
-                if thisBlock[1]=='disL':
-                    if disCue_scramble[n]=='disA':
-                        thistrialFlag=HLA_trig
-                    elif disCue_scramble[n]=='disP':
-                        thistrialFlag=HLP_trig
-                elif thisBlock[1]=='disH':
-                    if disCue_scramble[n]=='disA':
-                        thistrialFlag=HHA_trig
-                    elif disCue_scramble[n]=='disP':
-                        thistrialFlag=HHP_trig
-            elif thisBlock[0]=='tarN':
-                if thisBlock[1]=='disL':
-                    if disCue_scramble[n]=='disA':
-                        thistrialFlag=NLA_trig
-                    elif disCue_scramble[n]=='disP':
-                        thistrialFlag=NLP_trig
-                elif thisBlock[1]=='disH':
-                    if disCue_scramble[n]=='disA':
-                        thistrialFlag=NHA_trig
-                    elif disCue_scramble[n]=='disP':
-                        thistrialFlag=NHP_trig
-        
-        if MRIflag:
-            win.callOnFlip(port.write,thistrialFlag)
+
         cue_pres_timestamp=runTimer.getTime()
         
         wait_here(1) # ############## Cue presentation ###################
@@ -713,33 +651,6 @@ for block in range(len(stimList)):
 #                    circs.setLineColor([1,-1,-1]) 
 #                    circs.setFillColor(None)
 #        
-        if MRIflag:
-            if thisBlock[0]=='tarH':
-                if disVorI=='V':
-                    if thisBlock[2]=='HP':
-                        probetrig=tarVdisVH_trig
-                    else:
-                        probetrig=tarVdisVL_trig
-                elif disVorI=='I':
-                    if thisBlock[2]=='HP':
-                        probetrig=tarVdisIH_trig
-                    else:
-                        probetrig=tarVdisIL_trig
-            elif  thisBlock[0]=='tarN':
-                if disVorI=='V':
-                    if thisBlock[2]=='HP':
-                        probetrig=tarNdisVH_trig
-                    else:
-                        probetrig=tarNdisVL_trig
-                elif disVorI=='I':
-                    if thisBlock[2]=='HP':
-                        probetrig=tarNdisIH_trig
-                    else:
-                        probetrig=tarNdisIL_trig
-        
-        if MRIflag:
-                # port.flush()
-                win.callOnFlip(port.write,probetrig)
                 
         
         #wait_here(2) # ############### probe presentation ####################
@@ -758,14 +669,10 @@ for block in range(len(stimList)):
                 break
         
         if not subResp:
-            if MRIflag:
-                port.write(subNonRespTrig)
             trial_corr=np.nan
             RT=np.nan
             key='None'
         else:
-            if MRIflag:
-                port.write(subRespTrig)
             if subResp[0][0]==corrKey:
                 trial_corr=1
             else:
@@ -835,8 +742,6 @@ for block in range(len(stimList)):
                 core.quit()
                 print('FORCED QUIT')
         
-        if MRIflag:
-            win.callOnFlip(port.write,ITItrig)
         
         #core.wait(ITI) #ITI--want to jitter this?, with an average of 4 seconds
         wait_here(ITI)
@@ -855,8 +760,6 @@ for block in range(len(stimList)):
     
     # #########################saving data out###########################################
     make_csv(filename)
-    if MRIflag:
-        port.write(endofBlocktrig)
     if block==int(len(stimList)/2)-1:
         exit_msg= visual.TextStim(win, pos=[0, .5],units='norm', text='You are halfway through the study!')
         exit_msg3=visual.TextStim(win, pos=[0,-0.5],units='norm',text='Please STAY STILL, take a break, and wait for the experimenter so that they can give further instruction')
@@ -865,9 +768,6 @@ for block in range(len(stimList)):
         win.flip()
         event.waitKeys(keyList=['q'])
 
-if MRIflag:
-    port.write(stopSaveflag)
-    port.close()
 
 for stim in stimuli:
     stim.autoDraw=False
