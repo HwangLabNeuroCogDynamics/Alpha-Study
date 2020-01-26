@@ -1,0 +1,165 @@
+
+
+~~ sub 197 ~~
+NOTES: weird waviness in all channels, 
+		errored out	bc 588 events v 600 in behav log,
+		but then I just cut some of the behav log to fit
+		Ugly IC's, I think it was a bad subject
+Channels F3, P9,T8,O1,FC4,F1,PO8,P8,FC5
+Cue
+	Epochs 10 +7
+	ICA [5, 0, 1, 2, 3, 4, 9, 8, 7, 6, 11, 15, 22, 23, 29, 27, 26, 25, 31, 19, 24, 30]
+Probe
+	Epochs 10 +6
+	ICA [3, 12, 0, 1, 4, 9, 8, 7, 6, 5, 10, 13, 14, 19, 18, 22, 24, 16, 20, 26, 27, 28, 29, 31, 25]
+
+~~ sub 206 ~~
+NOTES: IC's kind of bad for cue period
+Channels T7, T8
+Cue
+	Epochs 3 +8
+	ICA [3, 1, 10, 4, 0, 2, 9, 12, 14, 5, 6, 25, 28, 23, 18]
+Probe
+	Epochs 6 +18
+	ICA  [2, 16, 24, 8, 1, 3, 5, 14, 19, 29, 20, 27, 31, 12, 10]
+
+~~ sub 204 ~~
+NOTES: error, bc more behavioral events than on bdf
+Channels C6, T8,T7
+Cue
+	Epochs
+	ICA
+Probe
+	Epochs
+	ICA
+
+~~ sub 211 ~~
+NOTES: Clean IC's, good subject
+Channels none
+Cue
+	Epochs 6 +2
+	ICA  [11, 0, 5, 26, 28, 24, 31, 30, 21, 20]
+Probe
+	Epochs 18 +1 (mne dropped it?) +3
+	ICA [0, 5, 3, 18, 28, 22, 31, 29, 26, 25, 30]
+
+~~ sub 214 ~~
+NOTES:  IC's not so great
+Channels
+Cue
+	Epochs 8 +9
+	ICA [0, 5, 1, 2, 6, 29, 27, 26, 25, 30, 31, 19, 18, 24, 17]
+Probe
+	Epochs 5 +9
+	ICA [0, 1, 5, 2, 21, 22, 26, 28, 19, 31, 30, 25, 20, 10, 16, 27]
+
+~~ sub 198 ~~
+NOTES: error, more behavioral events than in bdf
+Channels None
+Cue
+	Epochs
+	ICA
+Probe
+	Epochs
+	ICA
+
+~~ sub 223 ~~
+NOTES: PSD has some slight waviness, lots of noisy epochs
+Channels: Iz
+Cue
+	Epochs 11 +3
+	ICA [13, 15, 2, 21, 22, 23, 30, 26, 31, 14, 25, 17, 16]
+Probe
+	Epochs 17 +1
+	ICA [1, 13, 15, 21, 20, 22, 23, 27, 30, 18, 19]
+
+~~ sub 225 ~~
+NOTES: raw data looks good! beautiful IC's
+Channels: none
+Cue
+	Epochs none +2
+	ICA [0, 10, 23, 24, 31, 26, 15]
+Probe
+	Epochs 5 +1
+	ICA[0, 5, 3, 13, 22, 25, 30, 26, 27, 28, 29, 24, 23]
+
+~~ sub 224~~
+NOTES: no eyetracking
+Channels T8
+Cue
+	Epochs 1 +0
+	ICA [2, 0, 17, 22, 30, 31, 23, 14, 29, 8]
+Probe
+	Epochs 2 +0
+	ICA [2, 0, 16, 22, 24, 29, 28, 23, 31, 30, 20, 12, 25]
+
+~~ sub 226 ~~
+NOTES: channels and PSD looks good
+Channels
+Cue
+	Epochs 2 +0
+	ICA [6, 1, 20, 31, 17, 19] # IC00 was a little odd, still kept it
+Probe
+	Epochs 8 +6
+	ICA [0, 9, 8, 5, 21, 2, 31, 30, 28, 26]
+
+~~ sub 228 ~~
+NOTES: very odd theta bump in addition to alpha bump. noisy sub
+Channels T8, P10
+Cue
+	Epochs 22 +1
+	ICA [12, 15, 2, 28, 22, 21, 20, 25]
+Probe
+	Epochs 51 +3
+	ICA [15, 3, 0, 26, 28, 24, 19, 12]
+
+~~ sub 233 ~~
+NOTES: spike @ 60Hz
+Channels none
+Cue
+	Epochs 7 +5
+	ICA [15, 0, 14, 29, 31]
+Probe
+	Epochs 7 +10
+	ICA [6, 0, 29, 21, 25, 28, 23]
+
+~~ sub ~~
+NOTES: 
+Channels
+Cue
+	Epochs
+	ICA
+Probe
+	Epochs
+	ICA
+
+~~ sub ~~
+NOTES: 
+Channels
+Cue
+	Epochs
+	ICA
+Probe
+	Epochs
+	ICA
+
+~~ sub ~~
+NOTES: 
+Channels
+Cue
+	Epochs
+	ICA
+Probe
+	Epochs
+	ICA
+
+~~ sub ~~
+NOTES: 
+Channels
+Cue
+	Epochs
+	ICA
+Probe
+	Epochs
+	ICA
+

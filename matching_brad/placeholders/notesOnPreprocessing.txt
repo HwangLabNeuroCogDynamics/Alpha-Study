@@ -1,0 +1,40 @@
+NOTES:
+running through alpha eyetracker again to embed trial trigs in the csv output
+
+sub196 eyetracking was processed without a calibration for reference. sub 196 eyetracking process gives an error, i just skipped it for now 
+
+sub197 alpha has fewer bdf events than behavioral events, should feed in a shortened beahviroal log (cut out first 22 trials)
+	-- I did this, looks ok now and has been preprocessed 
+
+sub198 left early, has incomplete session. Where is bdf? Found bdf, but no eyetracking
+
+sub212 missing eyetracking testing, file is lost?
+	their bdf was accidentally saved as eyetracking_testing,
+	moved this to RDSS 
+
+sub214, no triggers sent to eyetracker?
+
+sub222, line noise makes it unusable
+
+sub223 eyetracking ok
+
+sub224, no eyetracking because of weird encoding :( processed without eyes. Also had to fix the shortest_event thing
+
+sub225 eyetracking ok, 
+
+sub226 eyetracking ok
+
+sub228 eyetracking ok,
+		trial # 48 from the first block had to be deleted from behav files bc the probe triggers for this trial were lost. The original files are ok for the other epochs, but I had to generate a truncated to match file for probes only
+
+sub230, can't use because only four blocks were caught, no eyetracking
+
+sub233, calibration is corrupt but I still processed the testing file. Processed EEG ok
+
+
+
+
+
+
+
+
