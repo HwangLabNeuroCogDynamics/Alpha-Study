@@ -8,6 +8,13 @@ sub197 alpha has fewer bdf events than behavioral events, should feed in a short
 
 sub198 left early, has incomplete session. Where is bdf? Found bdf, but no eyetracking
 
+sub211
+	- metadata not matching bdf events, have to rerun subject 
+	- manually relabeled the 'block' columns of ea behavioral log
+	- this still didn't work?? cant figure out the issue here
+	- didn't have an intact eyetracking script, which I think is part of the behavioral metadata problem. Ran the eyetrack preproc script
+	- i think it should work now, finish the preproc
+
 sub212 missing eyetracking testing, file is lost?
 	their bdf was accidentally saved as eyetracking_testing,
 	moved this to RDSS 
@@ -18,7 +25,10 @@ sub222, line noise makes it unusable
 
 sub223 eyetracking ok
 
-sub224, no eyetracking because of weird encoding :( processed without eyes. Also had to fix the shortest_event thing
+sub224, 
+	- no eyetracking because of weird encoding,processed without eyes. Also had to fix the shortest_event thing. 
+	- Had an extra block, I had to manually re-set the 'block' column to match the actual order for block 4-11
+	- Because of incorrect behav files, the csv's and the bdf events arent exactly matched, causing incorrect metadata, so I had to re-process
 
 sub225 eyetracking ok, 
 
@@ -29,7 +39,10 @@ sub228 eyetracking ok,
 
 sub230, can't use because only four blocks were caught, no eyetracking
 
-sub233, calibration is corrupt but I still processed the testing file. Processed EEG ok
+sub233, 
+	- calibration is corrupt but I still processed the testing file. Processed EEG ok
+	- have to rerun bc of issue with metadata not matching! Behav block 8 was labeled 7, manually readjusted
+	- re-processed
 
 
 

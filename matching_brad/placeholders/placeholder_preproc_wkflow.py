@@ -37,6 +37,7 @@ subNum_list=['197','206','211','214','223','224','225','226','228','233'] #'193'
         # sub 223 processed w eyetracking
         # sub 224 no eyetracking,processed without it.
                     # error re: shortest_event error? Manually fixed it like I did w thalhi (hardcoding)
+                    # had to re-preprocess it because I realize the metadata was being incorrectly paired w each trial
         # sub 225 eyetracking ok, successfully processed
         # sub 226, processed
         # sub 228 processed, but with one missing probe trial
@@ -69,7 +70,9 @@ for sub in subject_files: # insert for loop through subject list here
 			print(f)
 			behav_file=pd.read_csv(ROOT_behav+f,engine='python')
 			behav_files=behav_files.append(behav_file,ignore_index=True)
+	behav_files=behav_files.sort_values(['block','trialNum']).reset_index() # adding so that pandas imports trials and blocks in order
 	#behav_files.dropna(axis=0,inplace=True,how='any')
+	#behav_files.to_csv('/home/dcellier/RDSS/AlphaStudy_Data/eegData/eeg_behavior_data/compiledAllBlocks_fromPreprocScript_s233_before_eyes.csv')   
 	if not os.path.exists(eyetrack_compiled_path+'sub_'+sub_name+'_trialsCompiled.csv'):
 		## check to see if there's an edited version of the eyetracking
 		if os.path.exists(eyetrack_compiled_path+'sub_'+sub_name+'_trialsCompiled_TRUNCATED_TO_MATCH.csv'):
@@ -85,6 +88,7 @@ for sub in subject_files: # insert for loop through subject list here
 	else:            
 		eyes=pd.read_csv(eyetrack_compiled_path+'sub_'+sub_name+'_trialsCompiled.csv')
 		behav_files=pd.concat([behav_files,eyes],ignore_index=False,axis=1)
+	#behav_files.to_csv('/home/dcellier/RDSS/AlphaStudy_Data/eegData/eeg_behavior_data/compiledAllBlocks_fromPreprocScript_s233_after_eyes.csv')       
 	print(behav_files)
     
 	raw=mne.io.read_raw_edf(raw_file,montage=mne.channels.read_montage('biosemi64'),preload=True)
