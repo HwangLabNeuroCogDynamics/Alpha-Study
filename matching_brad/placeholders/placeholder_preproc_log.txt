@@ -53,16 +53,6 @@ Probe
 	Epochs 5 +9
 	ICA [0, 1, 5, 2, 21, 22, 26, 28, 19, 31, 30, 25, 20, 10, 16, 27]
 
-~~ sub 198 ~~
-NOTES: error, more behavioral events than in bdf
-Channels None
-Cue
-	Epochs
-	ICA
-Probe
-	Epochs
-	ICA
-
 ~~ sub 223 ~~
 NOTES: PSD has some slight waviness, lots of noisy epochs
 Channels: Iz
@@ -123,9 +113,72 @@ Probe
 	Epochs 7 +12
 	ICA [7, 0, 22, 26, 27, 21, 20, 25, 30, 23, 29]
 
-~~ sub ~~
+~~ sub 240 ~~
+NOTES: Ic's kinda rough but there were some really nice ones
+Channels T7,F5,TP7,P7
+Cue
+	Epochs 1 +1
+	ICA [5, 0, 3, 6, 8, 14, 20, 25, 13, 19, 31, 23, 29, 28]
+Probe
+	Epochs 1 +4
+	ICA [0, 1, 2, 7, 16, 28, 26, 31, 30, 24, 9, 14, 15, 17, 22, 27, 8, 18]
+
+~~ sub 231 ~~
+NOTES: psd >60Hz looks a little funky and wavy, raw data and epochs looks really off, Probe IC's are all bad
+Channels T7, T8, P10, TP7, CP5
+Cue
+	Epochs 29 +10
+	ICA [2, 30, 1, 7, 9, 31, 26, 25, 29, 24, 23, 18, 8, 10, 27, 22, 3, 0, 14, 13, 20]
+Probe
+	Epochs 15 +11
+	ICA  [2, 6, 10, 15, 1, 8, 9, 14, 19, 23, 28, 25, 31, 30, 4, 7, 11, 13, 17, 20, 26, 27, 16, 21, 18, 0]
+
+~~ sub 239 ~~
+NOTES:  Nice IC's
+Channels TP7
+Cue
+	Epochs 21 +1
+	ICA [7, 0, 23, 22, 18, 25, 24, 16, 31]
+Probe
+	Epochs 27 +0
+	ICA [1, 2, 9, 11, 0, 18, 22, 28, 25, 27]
+
+~~ sub 244 ~~
+NOTES: ICs kinda sucky
+Channels P7, P10, T8, P9, F5
+Cue	
+	Epochs 1 +16
+	ICA [5, 15, 2, 22, 7, 11, 18, 17, 19, 31, 26, 27, 28, 29, 14, 23, 10]
+Probe
+	Epochs 3 +5
+	ICA [3, 9, 10, 20, 22, 23, 29, 31, 30, 19, 13, 25, 16, 24, 5, 1, 21, 27]
+
+
+~~ sub 237 ~~
 NOTES: 
-Channels
+Channels P9
+Cue
+	Epochs 2 +5
+	ICA [10, 1, 11, 16, 2, 7, 8, 13, 14, 20, 31, 29, 28, 25, 15, 21]
+Probe
+	Epochs 4
+	ICA [6, 0, 5, 10, 15, 20, 25, 30, 31, 26, 21, 22, 27, 18, 28, 19, 9, 7, 24, 11, 17]
+
+
+~~ sub 241 ~~
+NOTES: data looks very spiky?
+Channels  F4,P10,P8
+Cue
+	Epochs 33  +14
+	ICA [5, 4, 0, 1, 2, 6, 11, 13, 14, 18, 21, 30, 24, 19, 20, 16]
+Probe
+	Epochs  25 +32
+	ICA [3, 4, 0, 2, 6, 10, 25, 23, 17, 19, 9, 8, 20]
+
+
+~~ sub  ~~
+NOTES: 
+Channels 
 Cue
 	Epochs
 	ICA
@@ -133,9 +186,10 @@ Probe
 	Epochs
 	ICA
 
-~~ sub ~~
+
+~~ sub  ~~
 NOTES: 
-Channels
+Channels 
 Cue
 	Epochs
 	ICA
@@ -143,9 +197,10 @@ Probe
 	Epochs
 	ICA
 
-~~ sub ~~
+
+~~ sub  ~~
 NOTES: 
-Channels
+Channels 
 Cue
 	Epochs
 	ICA
@@ -153,13 +208,26 @@ Probe
 	Epochs
 	ICA
 
-~~ sub ~~
+
+~~ sub  ~~
 NOTES: 
-Channels
+Channels 
 Cue
 	Epochs
 	ICA
 Probe
 	Epochs
 	ICA
+
+
+~~ sub  ~~
+NOTES: 
+Channels 
+Cue
+	Epochs
+	ICA
+Probe
+	Epochs
+	ICA
+
 

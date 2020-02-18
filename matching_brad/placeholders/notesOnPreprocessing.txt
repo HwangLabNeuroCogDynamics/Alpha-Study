@@ -39,10 +39,63 @@ sub228 eyetracking ok,
 
 sub230, can't use because only four blocks were caught, no eyetracking
 
+sub231, 
+
 sub233, 
 	- calibration is corrupt but I still processed the testing file. Processed EEG ok
 	- have to rerun bc of issue with metadata not matching! Behav block 8 was labeled 7, manually readjusted
 	- re-processed
+
+sub234
+	- multiple calibration and testing files, eyetracking processed ok?
+	-
+
+sub235
+	- has eyetracking, looks ok
+	- power spectrum looks insane, data unusuable
+	- raw data looks ok
+	- skipped preproc
+	- Probably also an issue of the table
+
+sub238 
+	- has eyetracking
+	- power spectrum also looks unusable
+	- skipped preproc
+	- This is Rukshad's subject with the line noise issue because of the motorized table lol
+
+sub231
+	- power spectrum looks ok, but raw data looks off
+	- epochs data look weirdly fuzzy, raw data looks not fuzzy enough?
+	- IC's are really bad, I pretty much rejected all of them?
+
+sub239
+	- preprocessed! don't use it though, only has 3 blocks and the sub was asleep pretty much the whole time
+
+sub240
+	- preprocessed ok!
+	- eyetracking also ok 
+	- power noise from table during first block, but we figured it out after that
+
+sub244
+	- errored out at first because has two extra rows in metadata than events? (602 v 600) fix this. It's because there's two extra rows of eyetracking. Had to manually delete the first 2 bc they're extra! Behavioral logs look ok tho
+	-preprocessed
+
+sub234
+	- block 7 of behav file is accidentally repeated, have to manually adjust it to say 'block 8' before I process. FIXED!
+	- 
+	
+sub245
+	- battery on amp box ran out in between 2nd and 3rd blocks, have to concat two files? And it has too few trials
+
+sub241
+	- subject was fidgety, rejected a lot of epochs
+
+sub237
+	- looks normal
+
+
+
+
 
 
 

@@ -29,7 +29,7 @@ print(subs)
 ## plotting the calibrations so that I can have a point of reference for the scale of the testing file
 def plot_calibrations(sub_num,eyetracking_files=eyetracking_files):
     
-    subs_calibrations=[f for f in eyetracking_files if ((sub_num in f) and ('calibration' in f) and ('meta' not in f))]
+    subs_calibrations=[f for f in eyetracking_files if ((sub_num in f) and ('calibration' in f) and ('Copy' not in f) and ('meta' not in f))]
     
     print("\nPLOTTING CALIBRATION")
     for calib_f in subs_calibrations: # there may be multiple calibration files for multiple blocks
@@ -250,7 +250,7 @@ for sub in subs:
         # some subs have more than one file bc we re-calibrated in the middle of it
         thisSubs_files=[]
         for file in eyetracking_files:
-            if (sub in file) and ('testing' in file) and ('meta' not in file):
+            if (sub in file) and ('testing' in file) and ('meta' not in file) and ('Copy' not in file):
                 thisSubs_files.append(file)
                 
         if len(thisSubs_files) ==1:
@@ -302,7 +302,7 @@ for sub in subs:
                     out_df.to_csv(eyetrack_out_path+'sub_'+sub+'_trialsCompiled.csv')
 
         elif len(thisSubs_files) >1:
-            testing_log=pd.Dataframe()
+            testing_log=pd.DataFrame()
             for file in thisSubs_files:
                 print( "\n COMPILING MULTIPLE FILES")
                 one_file=pd.read_csv(eyetrack_in_path+file)

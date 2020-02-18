@@ -20,7 +20,12 @@ ROOT_behav=ROOT+'eeg_behavior_data/'
 ROOT_proc='/data/backed_up/shared/AlphaStudy_data/placeholders/preproc_EEG_matchingBrad/'
 eyetrack_compiled_path='/data/backed_up/shared/AlphaStudy_data/placeholders/eyetracking_compiled_trials/'
 subject_files=[]
-subNum_list=['197','206','211','214','223','224','225','226','228','233'] #'193','196','198','204','212,'213','222','230'
+subNum_list=['197','206','211','214','223',
+             '224','225','226','228','233',
+             '234','237','241','244','245',
+             '247','240','231','239','251',
+             '252']
+                #'193','196','198','204','212,'213','222','230','235','238',
         # sub 193 didn't have a full session
         # sub 196 should be processed, but doesn't have eyetracking calibration for now
         # sub 197 successfully preprocessed.
@@ -28,7 +33,7 @@ subNum_list=['197','206','211','214','223','224','225','226','228','233'] #'193'
         # sub 204 only has 531 events on bdf file, unusable
         # sub 206 successfully preprocessed
         # sub 211 preprocessed but missing ~ a block worth of eyetracking 
-        # sub 212 had one more cue event than pdf. had to make a special behavioral csv for the cue epochs only
+        # sub 212 had one more cue event than bdf. had to make a special behavioral csv for the cue epochs only
                     # But the missing cue event is a random one, not at beginning or end, so I have no idea
                     # which trial to cut out of behavioral log ughhhhh
         # sub 213 has missing events too, because of issue with PauseOn, unusable 
@@ -39,10 +44,23 @@ subNum_list=['197','206','211','214','223','224','225','226','228','233'] #'193'
                     # error re: shortest_event error? Manually fixed it like I did w thalhi (hardcoding)
                     # had to re-preprocess it because I realize the metadata was being incorrectly paired w each trial
         # sub 225 eyetracking ok, successfully processed
-        # sub 226, processed
+        # sub 226 processed
         # sub 228 processed, but with one missing probe trial
-        # sub 230, incomplete sub because some blocks were saved as behavioral
+        # sub 230 incomplete sub because some blocks were saved as behavioral
+        # sub 231 preprocessed ok, w eyetracking. Probs don't analyze, not sure why it looks so weird
         # sub 233 processed ok, no eyetracking calibration
+        # sub 234
+        # sub 235 power spectrum looks insane, going to skip this processing (probs also from motorized table)
+        # sub 237 preprocessed ok 
+        # sub 238 power spectrum looks insane here too, skipping. Power noise from the table (rukshads subject)
+        # sub 239 session was cut short because he fell asleep, only did 3 blocks and didn't really do them. 
+                    # Processed but shouldn't analyze
+        # sub 240 eyetracking ok, preproc ok
+        # sub 241 
+        # sub 244 preprocessed ok
+        # sub 245
+        
+        
         
 for filename in os.listdir(ROOT_raw): #compiling the subjects downloaded from MIPDB
 	for subNum in subNum_list:
