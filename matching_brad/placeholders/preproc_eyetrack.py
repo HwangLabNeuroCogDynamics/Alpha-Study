@@ -243,7 +243,7 @@ def continue_msg():
         print('Compiling trials, saving out')
 
 for sub in subs:
-    if sub not in ['198','214','196','224','230']: # excluding this subject for now because the calibration file is corrupt
+    if sub not in ['198','214','196','224','230','245']: # excluding this subject for now because the calibration file is corrupt
         if sub not in ['196','233']: # sub196 doesn't have a functioning calibration file, but want to process anyway
             plot_calibrations(sub_num=sub)
             
