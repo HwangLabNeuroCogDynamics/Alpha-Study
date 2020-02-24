@@ -24,7 +24,7 @@ subNum_list=['197','206','211','214','223',
              '224','225','226','228','233',
              '234','237','241','244','245',
              '247','240','231','239','251',
-             '252']
+             '252','253']
                 #'193','196','198','204','212,'213','222','230','235','238',
         # sub 193 didn't have a full session
         # sub 196 should be processed, but doesn't have eyetracking calibration for now
@@ -49,7 +49,7 @@ subNum_list=['197','206','211','214','223',
         # sub 230 incomplete sub because some blocks were saved as behavioral
         # sub 231 preprocessed ok, w eyetracking. Probs don't analyze, not sure why it looks so weird
         # sub 233 processed ok, no eyetracking calibration
-        # sub 234
+        # sub 234 processed ok w eyetracking
         # sub 235 power spectrum looks insane, going to skip this processing (probs also from motorized table)
         # sub 237 preprocessed ok 
         # sub 238 power spectrum looks insane here too, skipping. Power noise from the table (rukshads subject)
@@ -59,6 +59,10 @@ subNum_list=['197','206','211','214','223',
         # sub 241 
         # sub 244 preprocessed ok
         # sub 245
+        # sub 247 preprocessed ok, had to set min_duration of events to the (2/512)
+        # sub 251 had to set min duration to the (2/512)
+        # sub 252
+        # sub 253
         
         
         
@@ -143,7 +147,7 @@ for sub in subject_files: # insert for loop through subject list here
 
 
 	# # Finding Events (triggers) # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-	if sub_name=='224':
+	if sub_name in ['224','247','251']:
 		events=mne.find_events(raw_fir,verbose=True,min_duration=(2/512))
 	else:
 		events = mne.find_events(raw_fir, verbose=True)

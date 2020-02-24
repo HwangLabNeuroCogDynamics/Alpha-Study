@@ -94,6 +94,21 @@ sub237
 	- looks normal
 
 sub247
+	- eyetracking ok
+	- weird, was not detecting one probe event until I edited the mne.find_events to min_duration = (2/512)
+	-preprocessing ok
+
+sub234
+	- preprocessed ok. Crappy sub
+
+sub251
+	- had to set min duration to (2/512)
+
+sub253
+	- eyetracking calibration errored out, figure out why
+
+sub252
+	- preproc ok
 
 
 
