@@ -70,6 +70,7 @@ sub231
 
 sub239
 	- preprocessed! don't use it though, only has 3 blocks and the sub was asleep pretty much the whole time
+	- deleted the preprocessed folder bc i don't want to accidentally use it
 
 sub240
 	- preprocessed ok!
@@ -86,6 +87,8 @@ sub234
 	
 sub245
 	- battery on amp box ran out in between 2nd and 3rd blocks, have to concat two files? And it has too few trials
+	- i concatenated the two files, and put the originals in the "old pilots" folder, and the concatenated version is in the regular '/home/dcellier/RDSS/AlphaStudy_Data/eegData/eeg_raw/'
+	- error: "invalid start byte"
 
 sub241
 	- subject was fidgety, rejected a lot of epochs
@@ -105,10 +108,66 @@ sub251
 	- had to set min duration to (2/512)
 
 sub253
-	- eyetracking calibration errored out, figure out why
+	- calibration file for block 0 seemed to only have one eye
+	- doesn't have triggers in the testing file?
+	- processed without it
 
 sub252
 	- preproc ok
+
+sub243
+	-testing file eyetracking errored out, doesn't contain any triggers it looks like :/
+	-preproc ok
+	-had to fix block2 and manually adjust because it said it was block 1 and it screwed up the preproc
+
+sub246
+	- eyetracking calibration files have the incorrect encoding, so have to ignore them
+	- testing files still error out anyway, the datatype of the trigger column are something other than integer, having trouble converting them
+	- combined two raw bdfs, saved the original in "old pilots folder," and concatenated version in '/home/dcellier/RDSS/AlphaStudy_Data/eegData/eeg_raw/'
+	- but it doesn't work "invalid start byte"
+
+sub248
+	- calibration file for block0 is the wrong encoding type, so processed testing without it
+	- preproc ok
+
+sub254	
+	- calibration looks ok
+	- no triggers in eyetrack testing file
+	- shortest event error
+	- errored out because 2 missing probe trigs
+	- deleted a row from block 5 trial 50, and block 7 trial 21 in behav data because a probe event was missing
+	- preproc ok
+
+sub255
+	- calibration ok,
+	- no triggers
+	- missing two blocks of behavioral data??
+
+sub257
+	- calibration block 0 is not good
+	- No testing file?
+	- preproc ok
+
+sub261
+	- calibration ok, has 626 trials? Testing preproc ok
+	- have to fix the eyetracking so that it'll match behav  metadata
+
+sub264
+	- claibration ok, no triggers
+	- preproc ok
+
+sub249
+	- calibration looks kind of whack
+	- no triggers in testing file
+	- shortest_event error
+	- preproc ok
+
+sub227
+	- calibration looks great but then second one is erroring out
+	- doesn't have all blocks of EEG because was falling asleep and also doesn't have eyetracking for blocks 2-4
+
+sub 258
+	- eyetracking ok
 
 
 

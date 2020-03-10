@@ -22,10 +22,11 @@ eyetrack_compiled_path='/data/backed_up/shared/AlphaStudy_data/placeholders/eyet
 subject_files=[]
 subNum_list=['197','206','211','214','223',
              '224','225','226','228','233',
-             '234','237','241','244','245',
-             '247','240','231','239','251',
-             '252','253']
-                #'193','196','198','204','212,'213','222','230','235','238',
+             '234','237','241','244','251',
+             '247','240','231','254','264',
+             '252','253','243','249','258',
+             '257','248']#'255', '261' ignore for now
+                #'193','196','198','204','212,'213','222','230','235','238','245','227','246','239'
         # sub 193 didn't have a full session
         # sub 196 should be processed, but doesn't have eyetracking calibration for now
         # sub 197 successfully preprocessed.
@@ -45,6 +46,7 @@ subNum_list=['197','206','211','214','223',
                     # had to re-preprocess it because I realize the metadata was being incorrectly paired w each trial
         # sub 225 eyetracking ok, successfully processed
         # sub 226 processed
+        # sub 227 only has four blocks because kept falling asleep. didn't process
         # sub 228 processed, but with one missing probe trial
         # sub 230 incomplete sub because some blocks were saved as behavioral
         # sub 231 preprocessed ok, w eyetracking. Probs don't analyze, not sure why it looks so weird
@@ -56,14 +58,22 @@ subNum_list=['197','206','211','214','223',
         # sub 239 session was cut short because he fell asleep, only did 3 blocks and didn't really do them. 
                     # Processed but shouldn't analyze
         # sub 240 eyetracking ok, preproc ok
-        # sub 241 
+        # sub 241 preproc ok
+        # sub 243 no eyetracking,preproc ok
         # sub 244 preprocessed ok
-        # sub 245
+        # sub 245 no eyetracking, errored out
+        # sub 246 no eyetrack calib file,
         # sub 247 preprocessed ok, had to set min_duration of events to the (2/512)
+        # sub 248 eyetrack ok, preproc ok
+        # sub 249 no eyetracking, min duration error at first
         # sub 251 had to set min duration to the (2/512)
         # sub 252
-        # sub 253
-        
+        # sub 253 no eyetracking, preproc without it
+        # sub 254 no eyetracking, shortest event error, missing 2 probe trigs, preproc ok
+        # sub 255
+        # sub 257 no eyetracking, preproc ok
+        # sub 261
+        # sub 264 preproc ok, no eyetracking
         
         
 for filename in os.listdir(ROOT_raw): #compiling the subjects downloaded from MIPDB
@@ -110,7 +120,7 @@ for sub in subject_files: # insert for loop through subject list here
 	else:            
 		eyes=pd.read_csv(eyetrack_compiled_path+'sub_'+sub_name+'_trialsCompiled.csv')
 		behav_files=pd.concat([behav_files,eyes],ignore_index=False,axis=1)
-	#behav_files.to_csv('/home/dcellier/RDSS/AlphaStudy_Data/eegData/eeg_behavior_data/compiledAllBlocks_fromPreprocScript_s233_after_eyes.csv')       
+	behav_files.to_csv('/home/dcellier/RDSS/AlphaStudy_Data/eegData/eeg_behavior_data/compiledAllBlocks_fromPreprocScript_s243.csv')       
 	print(behav_files)
     
 	raw=mne.io.read_raw_edf(raw_file,montage=mne.channels.read_montage('biosemi64'),preload=True)
@@ -147,7 +157,7 @@ for sub in subject_files: # insert for loop through subject list here
 
 
 	# # Finding Events (triggers) # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-	if sub_name in ['224','247','251']:
+	if sub_name in ['224','247','251','249','254']:
 		events=mne.find_events(raw_fir,verbose=True,min_duration=(2/512))
 	else:
 		events = mne.find_events(raw_fir, verbose=True)
@@ -197,6 +207,8 @@ for sub in subject_files: # insert for loop through subject list here
         
 	if sub_name=='228': # hard coding this bc one trig is missing from one trial for probes only
 		epCond['probe events']=mne.Epochs(raw_fe, events=events, baseline=(2,5.4), event_id=probe_event_id, tmin=probe_tmin, tmax=probe_tmax,metadata=pd.read_csv('/data/backed_up/shared/AlphaStudy_data/placeholders/eyetracking_compiled_trials/sub_228_trialsCompiled_wBehav_data_FOR_PROBE.csv'))
+	elif sub_name=='254': # hard coding this bc one trig is missing from one trial for probes only
+		epCond['probe events']=mne.Epochs(raw_fe, events=events, baseline=(2,5.4), event_id=probe_event_id, tmin=probe_tmin, tmax=probe_tmax,metadata=pd.read_csv('/home/dcellier/RDSS/AlphaStudy_Data/eegData/eeg_behavior_data/sub254_TRUNCATED_TO_MATCH_probeOnly.csv'))
 	else:
 		epCond['probe events']=mne.Epochs(raw_fe, events=events, baseline=(2,5.4), event_id=probe_event_id, tmin=probe_tmin, tmax=probe_tmax,metadata=behav_files)
      # baseline correcting to the ITI
