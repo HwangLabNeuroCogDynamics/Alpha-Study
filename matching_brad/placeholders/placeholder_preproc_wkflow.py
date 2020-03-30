@@ -25,8 +25,8 @@ subNum_list=['197','206','211','214','223',
              '234','237','241','244','251',
              '247','240','231','254','264',
              '252','253','243','249','258',
-             '257','248']#'255', '261' ignore for now
-                #'193','196','198','204','212,'213','222','230','235','238','245','227','246','239'
+             '257','248','255','245']
+                #'193','196','198','204','212,'213','222','230','235','238','227','246','239''261',
         # sub 193 didn't have a full session
         # sub 196 should be processed, but doesn't have eyetracking calibration for now
         # sub 197 successfully preprocessed.
@@ -61,7 +61,7 @@ subNum_list=['197','206','211','214','223',
         # sub 241 preproc ok
         # sub 243 no eyetracking,preproc ok
         # sub 244 preprocessed ok
-        # sub 245 no eyetracking, errored out
+        # sub 245 no eyetracking, preproc ok, missing 47 trials in block 2 
         # sub 246 no eyetrack calib file,
         # sub 247 preprocessed ok, had to set min_duration of events to the (2/512)
         # sub 248 eyetrack ok, preproc ok
@@ -70,9 +70,9 @@ subNum_list=['197','206','211','214','223',
         # sub 252
         # sub 253 no eyetracking, preproc without it
         # sub 254 no eyetracking, shortest event error, missing 2 probe trigs, preproc ok
-        # sub 255
+        # sub 255 no eyetracking, preproc ok, 2 blocks of missing behav data
         # sub 257 no eyetracking, preproc ok
-        # sub 261
+        # sub 261 no eyetracking, too many bdf events
         # sub 264 preproc ok, no eyetracking
         
         
@@ -122,8 +122,10 @@ for sub in subject_files: # insert for loop through subject list here
 		behav_files=pd.concat([behav_files,eyes],ignore_index=False,axis=1)
 	behav_files.to_csv('/home/dcellier/RDSS/AlphaStudy_Data/eegData/eeg_behavior_data/compiledAllBlocks_fromPreprocScript_s243.csv')       
 	print(behav_files)
-    
-	raw=mne.io.read_raw_edf(raw_file,montage=mne.channels.read_montage('biosemi64'),preload=True)
+	if sub_name in ['261','245']:
+		raw=mne.io.read_raw_fif(raw_file,preload=True)
+	else:
+		raw=mne.io.read_raw_edf(raw_file,montage=mne.channels.read_montage('biosemi64'),preload=True)
 	#raw.plot(n_channels=72)
 
 	# # Re-reference, apply high and low pass filters (1 and 50) # # # # # # # # # #

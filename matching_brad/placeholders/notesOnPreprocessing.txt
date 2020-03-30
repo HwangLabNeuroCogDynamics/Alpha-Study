@@ -89,6 +89,12 @@ sub245
 	- battery on amp box ran out in between 2nd and 3rd blocks, have to concat two files? And it has too few trials
 	- i concatenated the two files, and put the originals in the "old pilots" folder, and the concatenated version is in the regular '/home/dcellier/RDSS/AlphaStudy_Data/eegData/eeg_raw/'
 	- error: "invalid start byte"
+	- no eyetracking
+	- errored out because too few events in BDF (553)
+	- block 3 didn't start recording until the end of the block, so 
+		there are 47 missing triggers. Deleted the first 47 trials of the
+		behavioral log for block 3 (see __ORIGINAL__ for the original file) so
+		that I can preproc
 
 sub241
 	- subject was fidgety, rejected a lot of epochs
@@ -142,6 +148,7 @@ sub255
 	- calibration ok,
 	- no triggers
 	- missing two blocks of behavioral data??
+	- made two faux blocks of behavioral data for preprocessing (blocks 4 & 5), and then deleted all the associated epochs :(
 
 sub257
 	- calibration block 0 is not good
@@ -151,9 +158,15 @@ sub257
 sub261
 	- calibration ok, has 626 trials? Testing preproc ok
 	- have to fix the eyetracking so that it'll match behav  metadata
+		-- the extra 26 trials don't make sense, I don't know where they're from
+			so I'm going to ignore eyetracking for this one
+	- saved as two seperate bdf's, concatenated into one, giving me an
+		error "invalid start byte"
+	- fixed this
+	- now there's a mismatch between metadata and bdf, bdf has 5 extra events (?)
 
 sub264
-	- claibration ok, no triggers
+	- calibration ok, no triggers
 	- preproc ok
 
 sub249

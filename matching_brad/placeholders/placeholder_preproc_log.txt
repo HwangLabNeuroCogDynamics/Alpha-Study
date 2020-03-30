@@ -282,11 +282,11 @@ Probe
 NOTES: 
 Channels Fp1, AF7, T7, Fpz, Fp2, AF8
 Cue
-	Epochs
-	ICA
+	Epochs 5 +8
+	ICA [1, 2, 8, 9, 6, 5, 10, 13, 23, 24, 29, 20, 25, 28]
 Probe
-	Epochs
-	ICA
+	Epochs 2 +12
+	ICA [2, 4, 8, 7, 10, 23, 28, 25, 30, 31, 13, 14, 0, 19, 24, 17, 9, 20]
 
 ~~ sub 264 ~~
 NOTES: 
@@ -308,15 +308,15 @@ Probe
 	Epochs 0 +3
 	ICA [19, 1, 10, 2, 4, 14, 16, 12, 21, 26, 25, 28, 29, 24, 7, 0, 18, 15]
 
-~~ sub  ~~
+~~ sub 245 ~~
 NOTES: 
-Channels 
+Channels 'Fp1', 'AF7', 'AF3', 'F3', 'F1', 'Fpz', 'Fp2', 'AF8', 'AF4'
 Cue
-	Epochs
-	ICA
+	Epochs 28 +3
+	ICA [0, 23, 1, 2, 3, 9, 11, 12, 17, 20, 25, 28, 30, 5]
 Probe
-	Epochs
-	ICA
+	Epochs 5 +22
+	ICA [0, 1, 9, 8, 16, 21, 22, 19, 31, 26, 25, 7, 23, 17, 4, 15, 20]
 
 ~~ sub  ~~
 NOTES: 
