@@ -1,0 +1,17 @@
+,SOA,alphaAvg,cue_side,cue_type,elec_cluster,thisSubCat
+0,long,-0.922145329788642,right,target,contra,DisCueUser
+1,long,-0.8254747960364733,right,target,ipsi,DisCueUser
+2,long,-0.33751576497449737,left,target,ipsi,DisCueUser
+3,long,-0.09155282510327402,left,target,contra,DisCueUser
+4,long,0.23577190212429772,right,distractor,contra,DisCueUser
+5,long,-0.09011743004009094,right,distractor,ipsi,DisCueUser
+6,long,0.5894369579976326,left,distractor,ipsi,DisCueUser
+7,long,0.4374369496989164,left,distractor,contra,DisCueUser
+8,long,-1.0478088056903399,right,target,contra,TarCueUser
+9,long,-0.9996825728912131,right,target,ipsi,TarCueUser
+10,long,-0.23212208238315396,left,target,ipsi,TarCueUser
+11,long,-0.0029794466681411975,left,target,contra,TarCueUser
+12,long,0.3234619721844734,right,distractor,contra,TarCueUser
+13,long,-0.0067570122558856735,right,distractor,ipsi,TarCueUser
+14,long,0.6631819665407006,left,distractor,ipsi,TarCueUser
+15,long,0.5372096165272795,left,distractor,contra,TarCueUser
