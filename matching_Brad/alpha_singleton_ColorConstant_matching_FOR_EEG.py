@@ -48,6 +48,8 @@ for key in ['escape']:
     event.globalKeys.add(key, func=core.quit)
     
 
+## spat_lout: spatial layout, determines whether stimuli are only displayed in the lower half of the screen or if all locations around the circle are displayed
+
 if expInfo['spat_lout [all or lower]'] =='all':
     pos_stim=='all'
 elif expInfo['spat_lout [all or lower]'] == 'lower':
@@ -55,6 +57,8 @@ elif expInfo['spat_lout [all or lower]'] == 'lower':
 else:
     print('Please enter a valid response to the spat_lout box')
     core.quit()
+
+## t= target, d= distractor, this is the shape that the spatial cue is pointing to for this whole run! 
 
 if expInfo['session [t or d]']=='t':
     cue_type='tar'
@@ -67,6 +71,8 @@ else:
 if expInfo['colorCode [1-5]'] not in ['1','2','3','4','5']:
     print("Please enter a valid response to the ColorCode box")
     core.quit()
+
+## Activate the EEG triggers, set EEGflag to zero for debugging 
 
 EEGflag=1
 if EEGflag:
@@ -477,8 +483,8 @@ elif pos_stim=='lower': # the 'lower' flag makes it so that all stimuli are pres
 
 
 
-#size=(3.2,2.5) #(.2,.2)
-size=(4.66,3.6)#(2.33,2.33)
+#size=94.66,3.6)
+diamond_size=(4.66,3.6)
 images={'blue_diamond':visual.ImageStim(win=win,name='blue_diamond', units='deg', 
     ori=0, size=diamond_size,image=os.getcwd()+'/stimuli/blue_diamond_eq.png'),
     'orange_diamond':visual.ImageStim(win=win,name='orange_diamond', units='deg', 
@@ -514,6 +520,8 @@ colors_list=['red','blue','pink','yellow','orange']
 neut_color='green'#two_colors[0] #neutral is always green now
 dist_color=colors_list[int(expInfo['colorCode [1-5]'])-1] #using the color code as the index
 
+## generate_target() gives the shapes that will become the target, distractor, and neutral shapes. can be called once per block or per trial, depending on how often you want colors to be changed out
+
 def generate_target():
     
     potential_dis_shapes=[shape for shape in images_names if dist_color in shape]
@@ -532,7 +540,7 @@ def generate_target():
     distractor_stim=images[distractor_name]
     target_stim=images[target_color+'_'+target_shape]
     other_name=target_color+'_'+other_shape
-    other_stim=[visual.ImageStim(win=win,image=images[other_name].image, units='deg',ori=0,size=size,name=other_name) for i in range(no_stim)] # making 4 copies of Other_shape 
+    other_stim=[visual.ImageStim(win=win,image=images[other_name].image, units='deg',ori=0,size=images[other_name].size,name=other_name) for i in range(no_stim)] # making 4 copies of Other_shape 
     for g in range(no_stim):
         #other_stim[g].autoDraw=True
         other_stim[g].pos=(stimuli[g].pos[0]*vis_deg_multiplier,stimuli[g].pos[1]*vis_deg_multiplier)#(stimuli[g].pos[0]/6,stimuli[g].pos[1]/6)#
@@ -561,13 +569,13 @@ fixation.size=0.6
  #   ori=0,size=disc_bar_size,image=os.getcwd()+'/stimuli/Verticle.png') #visual.TextStim(win, text='|',units='deg', color=(1,1,1))
 disc_bar_size=(1.4,1.63)#
 bars=[visual.ImageStim(win=win,name='bar', units='deg', ori=0,size=disc_bar_size,image=os.getcwd()+'/stimuli/grey_Verticle.png')  for i in range(no_stim)]
-#placeholdersCircs=[visual.ImageStim(win=win,name=('GreyCirc%i'%(i)), units='deg', ori=0,size=size,image=images['grey_circle'].image,
-#                    pos=(stimuli[i].pos[0]*vis_deg_multiplier,stimuli[i].pos[1]*vis_deg_multiplier))  for i in range(no_stim)]
 placeholdersDia=[visual.ImageStim(win=win,name=('GreyDia%i'%(i)), units='deg', ori=0,size=size,image=images['grey_diamond'].image,
                     pos=(stimuli[i].pos[0]*vis_deg_multiplier,stimuli[i].pos[1]*vis_deg_multiplier))  for i in range(no_stim)]
 
 for circs in stimuli:
     circs.autoDraw=False
+
+## Display task instruction screens
 
 intro_msg= visual.TextStim(win, pos=[0, .5],units='norm', text='Welcome to the experiment!')
 intro_msg2= visual.TextStim(win, pos=[0, 0], units='norm',text='You will see a series circles, then a series of shapes. You must find the shape that is unique. This is the target shape.')#You must find the target shape. The target shape is the %s' % (target_stim.name.split('_')[0])+' '+(target_stim.name.split('_')[1]))
@@ -603,7 +611,7 @@ event.waitKeys()
 stimList=[] #list of trials
 cuePosList=[]
 # 64 trials in ea block 
-# 5/8 of all trials should be neutral, 3/8 spatial cues (distractor)
+# 5/8 of all trials should be neutral, 3/8 spatial cues (distractor or target)
 for n in range(40):#(48): #hard coding the # of trials to match brad
     stimList.append('neut')
 for n in range(24): #16
@@ -626,8 +634,13 @@ if EEGflag:
 likely_dis= np.random.choice(stimuli,1)[0]
 
 blocks={}
+
+## if this is the first time we're intializing the script, run through the practice 
+
 if thisRunNum==1:
     pracCond(n_practrials=20,demo=False)
+
+## Enter block loop
 
 for block in range(len(stimList_blocks)):
     
@@ -649,12 +662,9 @@ for block in range(len(stimList_blocks)):
     thisBlock=stimList_blocks[block]
     
     neutCue=[] # of the neutral blocks, 32 are DisA and 8 are DisP
-    ##of the neutral blocks, 2/3 are distractor absent and 1/3 is distractor present [OLD]
     for r in range(8):
-    ##(16): #grabbing out the 3/4 neutral trials, and of those neutral trials assigning 2/3 to be dis present
         neutCue.append('P')
     for r in range(32):
-    ## (32):
         neutCue.append('A')
     # we assign these to each neutral trial by calling this list and popping off the P's or A's until the end of the loop
     
@@ -662,6 +672,8 @@ for block in range(len(stimList_blocks)):
     neutCue_scramble=list(np.random.permutation(neutCue))
     cuePosList_scramble=list(np.random.permutation(cuePosList)) # this is a scrambled list of clock positions to cue to, the len of the number of cue_type trials 
     #print(disCue_scramble)
+    
+    ## Enter trial loop
     
     for trial in range(len(thisBlock)):
         distractor_stim,target_stim,other_stim,other_name=generate_target()
@@ -757,17 +769,11 @@ for block in range(len(stimList_blocks)):
             corrKey='q'#'up'
         elif target_ori==90:
             corrKey='p'#'left'
-        #elif target_ori==180:
-#            corrKey='down'
-#        elif target_ori==270:
-#            corrKey='left'
         
         if EEGflag:
                 # port.flush()
                 probetrig=probe_trigDict[thisBlock[trial]+disAorP+'_trig']
                 win.callOnFlip(port.write,bytes([probetrig]))
-#            if EEGflag:
-#                port.open()
         
         #wait_here(2) # ############### probe presentation ####################
         
