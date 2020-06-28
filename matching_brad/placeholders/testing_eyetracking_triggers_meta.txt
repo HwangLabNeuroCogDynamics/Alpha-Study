@@ -1,0 +1,11 @@
+LiveTrack Viewer Windows:3.6.1
+Firmware:91 0091 May  9 2018 30102
+LiveTrack Serial:40000030
+Capture Rate:500
+Capture Width:1280
+Capture Height:280
+Capture OffsetX:0
+Capture OffsetY:0
+Viewing Distance:0
+RPC:100
+

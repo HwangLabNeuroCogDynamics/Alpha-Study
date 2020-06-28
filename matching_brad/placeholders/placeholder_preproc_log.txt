@@ -1,0 +1,354 @@
+
+
+~~ sub 197 ~~
+NOTES: weird waviness in all channels, 
+		errored out	bc 588 events v 600 in behav log,
+		but then I just cut some of the behav log to fit
+		Ugly IC's, I think it was a bad subject
+Channels F3, P9,T8,O1,FC4,F1,PO8,P8,FC5
+Cue
+	Epochs 10 +7
+	ICA [5, 0, 1, 2, 3, 4, 9, 8, 7, 6, 11, 15, 22, 23, 29, 27, 26, 25, 31, 19, 24, 30]
+Probe
+	Epochs 10 +6
+	ICA [3, 12, 0, 1, 4, 9, 8, 7, 6, 5, 10, 13, 14, 19, 18, 22, 24, 16, 20, 26, 27, 28, 29, 31, 25]
+
+~~ sub 206 ~~
+NOTES: IC's kind of bad for cue period
+Channels T7, T8
+Cue
+	Epochs 3 +8
+	ICA [3, 1, 10, 4, 0, 2, 9, 12, 14, 5, 6, 25, 28, 23, 18]
+Probe
+	Epochs 6 +18
+	ICA  [2, 16, 24, 8, 1, 3, 5, 14, 19, 29, 20, 27, 31, 12, 10]
+
+~~ sub 204 ~~
+NOTES: error, bc more behavioral events than on bdf
+Channels C6, T8,T7
+Cue
+	Epochs
+	ICA
+Probe
+	Epochs
+	ICA
+
+~~ sub 211 ~~
+NOTES: Clean IC's, good subject
+Channels none
+Cue
+	Epochs 10 +1
+	ICA  [0, 27, 26, 31, 30, 29, 28, 4]
+Probe
+	Epochs 17 +2
+	ICA  [0, 3, 6, 14, 22, 27, 28, 31, 30, 25, 19, 24]
+
+~~ sub 214 ~~
+NOTES:  IC's not so great
+Channels
+Cue
+	Epochs 8 +9
+	ICA [0, 5, 1, 2, 6, 29, 27, 26, 25, 30, 31, 19, 18, 24, 17]
+Probe
+	Epochs 5 +9
+	ICA [0, 1, 5, 2, 21, 22, 26, 28, 19, 31, 30, 25, 20, 10, 16, 27]
+
+~~ sub 223 ~~
+NOTES: PSD has some slight waviness, lots of noisy epochs
+Channels: Iz
+Cue
+	Epochs 11 +3
+	ICA [13, 15, 2, 21, 22, 23, 30, 26, 31, 14, 25, 17, 16]
+Probe
+	Epochs 17 +1
+	ICA [1, 13, 15, 21, 20, 22, 23, 27, 30, 18, 19]
+
+~~ sub 225 ~~
+NOTES: raw data looks good! beautiful IC's
+Channels: none
+Cue
+	Epochs none +2
+	ICA [0, 10, 23, 24, 31, 26, 15]
+Probe
+	Epochs 5 +1
+	ICA[0, 5, 3, 13, 22, 25, 30, 26, 27, 28, 29, 24, 23]
+
+~~ sub 224~~
+NOTES: no eyetracking, 2nd time preprocessing
+Channels T8
+Cue
+	Epochs 0 +0
+	ICA [1, 0, 18, 24, 31, 14, 23, 22, 25, 30, 21]
+Probe
+	Epochs 0 +0
+	ICA [2, 0, 14, 21, 20, 22, 23, 24, 29, 28, 25, 31, 8, 10, 30, 16]
+
+~~ sub 226 ~~
+NOTES: channels and PSD looks good
+Channels
+Cue
+	Epochs 2 +0
+	ICA [6, 1, 20, 31, 17, 19] # IC00 was a little odd, still kept it
+Probe
+	Epochs 8 +6
+	ICA [0, 9, 8, 5, 21, 2, 31, 30, 28, 26]
+
+~~ sub 228 ~~
+NOTES: very odd theta bump in addition to alpha bump. noisy sub
+Channels T8, P10
+Cue
+	Epochs 22 +1
+	ICA [12, 15, 2, 28, 22, 21, 20, 25]
+Probe
+	Epochs 51 +3
+	ICA [15, 3, 0, 26, 28, 24, 19, 12]
+
+~~ sub 233 ~~
+NOTES: spike @ 60Hz, such pretty IC's
+Channels none
+Cue
+	Epochs 4 +7
+	ICA [13, 0, 12, 29, 27, 31]
+Probe
+	Epochs 7 +12
+	ICA [7, 0, 22, 26, 27, 21, 20, 25, 30, 23, 29]
+
+~~ sub 240 ~~
+NOTES: Ic's kinda rough but there were some really nice ones
+Channels T7,F5,TP7,P7
+Cue
+	Epochs 1 +1
+	ICA [5, 0, 3, 6, 8, 14, 20, 25, 13, 19, 31, 23, 29, 28]
+Probe
+	Epochs 1 +4
+	ICA [0, 1, 2, 7, 16, 28, 26, 31, 30, 24, 9, 14, 15, 17, 22, 27, 8, 18]
+
+~~ sub 231 ~~
+NOTES: psd >60Hz looks a little funky and wavy, raw data and epochs looks really off, Probe IC's are all bad
+Channels T7, T8, P10, TP7, CP5
+Cue
+	Epochs 29 +10
+	ICA [2, 30, 1, 7, 9, 31, 26, 25, 29, 24, 23, 18, 8, 10, 27, 22, 3, 0, 14, 13, 20]
+Probe
+	Epochs 15 +11
+	ICA  [2, 6, 10, 15, 1, 8, 9, 14, 19, 23, 28, 25, 31, 30, 4, 7, 11, 13, 17, 20, 26, 27, 16, 21, 18, 0]
+
+~~ sub 239 ~~
+NOTES:  Nice IC's
+Channels TP7
+Cue
+	Epochs 21 +1
+	ICA [7, 0, 23, 22, 18, 25, 24, 16, 31]
+Probe
+	Epochs 27 +0
+	ICA [1, 2, 9, 11, 0, 18, 22, 28, 25, 27]
+
+~~ sub 244 ~~
+NOTES: ICs kinda sucky
+Channels P7, P10, T8, P9, F5
+Cue	
+	Epochs 1 +16
+	ICA [5, 15, 2, 22, 7, 11, 18, 17, 19, 31, 26, 27, 28, 29, 14, 23, 10]
+Probe
+	Epochs 3 +5
+	ICA [3, 9, 10, 20, 22, 23, 29, 31, 30, 19, 13, 25, 16, 24, 5, 1, 21, 27]
+
+
+~~ sub 237 ~~
+NOTES: 
+Channels P9
+Cue
+	Epochs 2 +5
+	ICA [10, 1, 11, 16, 2, 7, 8, 13, 14, 20, 31, 29, 28, 25, 15, 21]
+Probe
+	Epochs 4
+	ICA [6, 0, 5, 10, 15, 20, 25, 30, 31, 26, 21, 22, 27, 18, 28, 19, 9, 7, 24, 11, 17]
+
+
+~~ sub 241 ~~
+NOTES: data looks very spiky?
+Channels  F4,P10,P8
+Cue
+	Epochs 33  +14
+	ICA [5, 4, 0, 1, 2, 6, 11, 13, 14, 18, 21, 30, 24, 19, 20, 16]
+Probe
+	Epochs  25 +32
+	ICA [3, 4, 0, 2, 6, 10, 25, 23, 17, 19, 9, 8, 20]
+
+
+~~ sub 247 ~~
+NOTES: another bump in psd at ~37 Hertz. ICs are nice
+Channels none
+Cue
+	Epochs 4 +0
+	ICA [11, 1, 18, 24]
+Probe
+	Epochs 4 +3
+	ICA [10, 0, 28, 27, 26, 31, 18, 23, 22]
+
+
+~~ sub 234 ~~
+NOTES: ICs look baaad
+Channels T8, TP8  
+Cue
+	Epochs 0 +1
+	ICA [0, 8, 12, 10, 17, 22, 21, 20, 25, 30, 31, 26, 27, 18, 19, 24, 14]
+Probe
+	Epochs 0 +5
+	ICA [1, 0, 21, 27, 26, 25, 30, 31, 28, 23, 24, 19, 18, 13, 9, 14]
+
+
+~~ sub 251 ~~
+NOTES: IC's look great!
+Channels F7
+Cue
+	Epochs 1 +0
+	ICA [11, 0, 23, 29, 31, 25, 19, 21]
+Probe
+	Epochs 1 +0
+	ICA [8, 0, 16, 23, 26, 31, 24, 29, 20, 15, 19, 18, 27, 28]
+
+
+~~ sub 252 ~~
+NOTES: 
+Channels  P1, P2
+Cue
+	Epochs 0 +0
+	ICA [1, 0, 16, 22, 23, 29, 7, 28, 18, 19, 25]
+Probe
+	Epochs 1 +0
+	ICA [0, 1, 4, 21, 26, 27, 22, 23, 28, 29, 30]
+
+~~ sub 253 ~~
+NOTES: 
+Channels TP7, T8
+Cue
+	Epochs 2 +0
+	ICA [16, 7, 1, 8, 9, 12, 11, 21, 23, 28, 31, 30, 22, 26, 19, 14, 27, 4]
+Probe
+	Epochs 1 +1
+	ICA [9, 27, 0, 1, 3, 14, 11, 10, 5, 16, 20, 26, 22, 29, 31, 30, 25, 15, 18]
+
+~~ sub 243 ~~
+NOTES: kind of a messy sub
+Channels  P10, T7, P9, T8
+	Epochs 1 +2
+	ICA [0, 1, 9, 18, 16, 21, 22, 26, 27, 28, 29, 31, 30, 15]
+Probe
+	Epochs 5 +6
+	ICA [2, 6, 25, 12, 22, 23, 21, 20, 26, 28, 29, 9, 0, 30, 19]
+
+~~ sub 249 ~~
+NOTES: this is a very noisy sub 
+Channels POz, C3, Pz, P9, T8
+Cue
+	Epochs 13 +3
+	ICA  [6, 12, 8, 2, 3, 0, 7, 13, 11, 10, 15, 20, 25, 30, 26, 27, 22, 28, 29, 18, 24, 14, 31]
+Probe
+	Epochs 7 +7
+	ICA [1, 11, 7, 4, 0, 5, 6, 16, 15, 20, 22, 19, 27, 31, 30, 17, 13, 23, 14]
+
+~~ sub 254 ~~
+NOTES: first 5 cue IC's look good, the others are messy
+Channels none
+Cue
+	Epochs 18 +1
+	ICA [0, 7, 21, 26, 25, 30, 31, 28, 27, 29, 24, 19, 14, 13, 22, 17, 15, 23, 18, 12, 11, 20, 16]
+Probe
+	Epochs 2 +0
+	ICA [0, 16, 17, 18, 23, 22, 27, 26, 25, 30, 31, 29, 15, 11, 12, 13, 14, 19, 9, 7, 24, 6]
+
+~~ sub 257 ~~
+NOTES: IC's look good
+Channels T7
+Cue
+	Epochs 1 +1
+	ICA  [0, 16, 28, 31, 4, 10]
+Probe
+	Epochs 0
+	ICA [0, 12, 14, 24, 27, 28, 1, 2]
+
+~~ sub 248 ~~
+NOTES: these IC's are real bad but epochs looked ok
+Channels TP7, F5, Fp1, AF7, T7
+Cue
+	Epochs 1 +5
+	ICA [0, 1, 2, 6, 7, 8, 9, 13, 16, 17, 20, 22, 24, 27, 26, 25, 28, 19, 15, 11, 4]
+Probe
+	Epochs 0 +3
+	ICA  [1, 21, 3, 5, 6, 8, 13, 14, 18, 19, 23, 15, 16, 20, 30, 28, 27, 31, 4, 12, 22]
+
+~~ sub 255 ~~
+NOTES: 
+Channels Fp1, AF7, T7, Fpz, Fp2, AF8
+Cue
+	Epochs 5 +8
+	ICA [1, 2, 8, 9, 6, 5, 10, 13, 23, 24, 29, 20, 25, 28]
+Probe
+	Epochs 2 +12
+	ICA [2, 4, 8, 7, 10, 23, 28, 25, 30, 31, 13, 14, 0, 19, 24, 17, 9, 20]
+
+~~ sub 264 ~~
+NOTES: 
+Channels T8
+Cue
+	Epochs 0
+	ICA [1, 18, 19, 27, 22, 29, 23, 26]
+Probe
+	Epochs 0
+	ICA [0, 21, 20, 23, 24, 29, 25, 30, 31, 15, 28, 27]
+
+~~ sub 258 ~~
+NOTES: 
+Channels T7, T8, TP7, TP8, AF8, AF4, Fp2, Fp1
+Cue
+	Epochs 2 +0
+	ICA [0, 2, 3, 5, 18, 17, 21, 15, 24, 27, 31, 30, 25, 8, 9]
+Probe
+	Epochs 0 +3
+	ICA [19, 1, 10, 2, 4, 14, 16, 12, 21, 26, 25, 28, 29, 24, 7, 0, 18, 15]
+
+~~ sub 245 ~~
+NOTES: 
+Channels 'Fp1', 'AF7', 'AF3', 'F3', 'F1', 'Fpz', 'Fp2', 'AF8', 'AF4'
+Cue
+	Epochs 28 +3
+	ICA [0, 23, 1, 2, 3, 9, 11, 12, 17, 20, 25, 28, 30, 5]
+Probe
+	Epochs 5 +22
+	ICA [0, 1, 9, 8, 16, 21, 22, 19, 31, 26, 25, 7, 23, 17, 4, 15, 20]
+
+~~ sub  ~~
+NOTES: 
+Channels 
+Cue
+	Epochs
+	ICA
+Probe
+	Epochs
+	ICA
+
+~~ sub  ~~
+NOTES: 
+Channels 
+Cue
+	Epochs
+	ICA
+Probe
+	Epochs
+	ICA
+
+~~ sub  ~~
+NOTES: 
+Channels 
+Cue
+	Epochs
+	ICA
+Probe
+	Epochs
+	ICA
+
+
+
+
+

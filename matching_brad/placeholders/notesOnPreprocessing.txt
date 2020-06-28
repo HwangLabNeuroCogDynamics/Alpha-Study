@@ -1,0 +1,195 @@
+NOTES:
+running through alpha eyetracker again to embed trial trigs in the csv output
+
+sub196 eyetracking was processed without a calibration for reference. sub 196 eyetracking process gives an error, i just skipped it for now 
+
+sub197 alpha has fewer bdf events than behavioral events, should feed in a shortened beahviroal log (cut out first 22 trials)
+	-- I did this, looks ok now and has been preprocessed 
+
+sub198 left early, has incomplete session. Where is bdf? Found bdf, but no eyetracking
+
+sub211
+	- metadata not matching bdf events, have to rerun subject 
+	- manually relabeled the 'block' columns of ea behavioral log
+	- this still didn't work?? cant figure out the issue here
+	- didn't have an intact eyetracking script, which I think is part of the behavioral metadata problem. Ran the eyetrack preproc script
+	- i think it should work now, finish the preproc
+
+sub212 missing eyetracking testing, file is lost?
+	their bdf was accidentally saved as eyetracking_testing,
+	moved this to RDSS 
+
+sub214, no triggers sent to eyetracker?
+
+sub222, line noise makes it unusable
+
+sub223 eyetracking ok
+
+sub224, 
+	- no eyetracking because of weird encoding,processed without eyes. Also had to fix the shortest_event thing. 
+	- Had an extra block, I had to manually re-set the 'block' column to match the actual order for block 4-11
+	- Because of incorrect behav files, the csv's and the bdf events arent exactly matched, causing incorrect metadata, so I had to re-process
+
+sub225 eyetracking ok, 
+
+sub226 eyetracking ok
+
+sub228 eyetracking ok,
+		trial # 48 from the first block had to be deleted from behav files bc the probe triggers for this trial were lost. The original files are ok for the other epochs, but I had to generate a truncated to match file for probes only
+
+sub230, can't use because only four blocks were caught, no eyetracking
+
+sub231, 
+
+sub233, 
+	- calibration is corrupt but I still processed the testing file. Processed EEG ok
+	- have to rerun bc of issue with metadata not matching! Behav block 8 was labeled 7, manually readjusted
+	- re-processed
+
+sub234
+	- multiple calibration and testing files, eyetracking processed ok?
+	-
+
+sub235
+	- has eyetracking, looks ok
+	- power spectrum looks insane, data unusuable
+	- raw data looks ok
+	- skipped preproc
+	- Probably also an issue of the table
+
+sub238 
+	- has eyetracking
+	- power spectrum also looks unusable
+	- skipped preproc
+	- This is Rukshad's subject with the line noise issue because of the motorized table lol
+
+sub231
+	- power spectrum looks ok, but raw data looks off
+	- epochs data look weirdly fuzzy, raw data looks not fuzzy enough?
+	- IC's are really bad, I pretty much rejected all of them?
+
+sub239
+	- preprocessed! don't use it though, only has 3 blocks and the sub was asleep pretty much the whole time
+	- deleted the preprocessed folder bc i don't want to accidentally use it
+
+sub240
+	- preprocessed ok!
+	- eyetracking also ok 
+	- power noise from table during first block, but we figured it out after that
+
+sub244
+	- errored out at first because has two extra rows in metadata than events? (602 v 600) fix this. It's because there's two extra rows of eyetracking. Had to manually delete the first 2 bc they're extra! Behavioral logs look ok tho
+	-preprocessed
+
+sub234
+	- block 7 of behav file is accidentally repeated, have to manually adjust it to say 'block 8' before I process. FIXED!
+	- 
+	
+sub245
+	- battery on amp box ran out in between 2nd and 3rd blocks, have to concat two files? And it has too few trials
+	- i concatenated the two files, and put the originals in the "old pilots" folder, and the concatenated version is in the regular '/home/dcellier/RDSS/AlphaStudy_Data/eegData/eeg_raw/'
+	- error: "invalid start byte"
+	- no eyetracking
+	- errored out because too few events in BDF (553)
+	- block 3 didn't start recording until the end of the block, so 
+		there are 47 missing triggers. Deleted the first 47 trials of the
+		behavioral log for block 3 (see __ORIGINAL__ for the original file) so
+		that I can preproc
+
+sub241
+	- subject was fidgety, rejected a lot of epochs
+
+sub237
+	- looks normal
+
+sub247
+	- eyetracking ok
+	- weird, was not detecting one probe event until I edited the mne.find_events to min_duration = (2/512)
+	-preprocessing ok
+
+sub234
+	- preprocessed ok. Crappy sub
+
+sub251
+	- had to set min duration to (2/512)
+
+sub253
+	- calibration file for block 0 seemed to only have one eye
+	- doesn't have triggers in the testing file?
+	- processed without it
+
+sub252
+	- preproc ok
+
+sub243
+	-testing file eyetracking errored out, doesn't contain any triggers it looks like :/
+	-preproc ok
+	-had to fix block2 and manually adjust because it said it was block 1 and it screwed up the preproc
+
+sub246
+	- eyetracking calibration files have the incorrect encoding, so have to ignore them
+	- testing files still error out anyway, the datatype of the trigger column are something other than integer, having trouble converting them
+	- combined two raw bdfs, saved the original in "old pilots folder," and concatenated version in '/home/dcellier/RDSS/AlphaStudy_Data/eegData/eeg_raw/'
+	- but it doesn't work "invalid start byte"
+
+sub248
+	- calibration file for block0 is the wrong encoding type, so processed testing without it
+	- preproc ok
+
+sub254	
+	- calibration looks ok
+	- no triggers in eyetrack testing file
+	- shortest event error
+	- errored out because 2 missing probe trigs
+	- deleted a row from block 5 trial 50, and block 7 trial 21 in behav data because a probe event was missing
+	- preproc ok
+
+sub255
+	- calibration ok,
+	- no triggers
+	- missing two blocks of behavioral data??
+	- made two faux blocks of behavioral data for preprocessing (blocks 4 & 5), and then deleted all the associated epochs :(
+
+sub257
+	- calibration block 0 is not good
+	- No testing file?
+	- preproc ok
+
+sub261
+	- calibration ok, has 626 trials? Testing preproc ok
+	- have to fix the eyetracking so that it'll match behav  metadata
+		-- the extra 26 trials don't make sense, I don't know where they're from
+			so I'm going to ignore eyetracking for this one
+	- saved as two seperate bdf's, concatenated into one, giving me an
+		error "invalid start byte"
+	- fixed this
+	- now there's a mismatch between metadata and bdf, bdf has 5 extra events (?)
+
+sub264
+	- calibration ok, no triggers
+	- preproc ok
+
+sub249
+	- calibration looks kind of whack
+	- no triggers in testing file
+	- shortest_event error
+	- preproc ok
+
+sub227
+	- calibration looks great but then second one is erroring out
+	- doesn't have all blocks of EEG because was falling asleep and also doesn't have eyetracking for blocks 2-4
+
+sub 258
+	- eyetracking ok
+
+
+
+
+
+
+
+
+
+
+
+
