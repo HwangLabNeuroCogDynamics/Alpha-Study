@@ -1,4 +1,5 @@
 ## Singleton search paradigm, collaboration w Shaun Vecera & Brad Stilwell
+# 06/26/2020: adjusting sizing
 # 04/17/2020: for EEG, we want to run our "sledgehammer" version, where we're maximizing exposure to cue as well as singleton trials, and we have placeholders.
     # ADDING target condition for EEG too. Target to be run separately
 # 02/19/2020: after 02/19 meeting with shaun and brad, adding a version of the task where we have no placeholders, 
